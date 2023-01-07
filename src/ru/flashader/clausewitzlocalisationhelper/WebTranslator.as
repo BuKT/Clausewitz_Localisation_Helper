@@ -1,10 +1,9 @@
 package ru.flashader.clausewitzlocalisationhelper {
 	import flash.display.Stage;
-	import flash.events.Event;
 	import flash.events.EventDispatcher;
-	import flash.events.KeyboardEvent;
 	import flash.geom.Rectangle;
 	import flash.media.StageWebView;
+	import flash.net.URLVariables;
 	import flash.text.TextField;
 	import flash.utils.setTimeout;
 	
@@ -45,9 +44,10 @@ package ru.flashader.clausewitzlocalisationhelper {
 		
 		private static function FillOutputField():void {
 			_callback = null;
-			_outputToFill.text = Instance.location;
+			_outputToFill.text = new URLVariables(Instance.location).text;
+			dispatchEvent(new WebTranslatorEvent(WebTranslatorEvent.TRANSLATION_ENDED));
 		}
-				
+		
 		private static function CreateInstance(stage:Stage):void {
 			Instance = new StageWebView(true, false);
 			Instance.stage = stage;

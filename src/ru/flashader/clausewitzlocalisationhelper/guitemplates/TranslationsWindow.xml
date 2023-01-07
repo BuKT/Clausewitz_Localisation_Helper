@@ -1,0 +1,274 @@
+<AsWingUI name="TranslationsWindow" packageName="ru.flashader.clausewitzlocalisationhelper.guitemplates">
+  <Com name="JPanel" id="TranslationsWindow">
+    <Properties>
+      <Property name="id" type="id">
+        <Value value="TranslationsWindow"/>
+      </Property>
+      <Property name="attr_scope" type="attr_scope">
+        <Value value="private"/>
+      </Property>
+      <Property name="getter_scope" type="getter_scope">
+        <Value value="none"/>
+      </Property>
+      <Property name="Size" type="Size">
+        <Value value="1280,720"/>
+      </Property>
+      <Property name="PreferredSize" type="PreferredSize">
+        <Value value="1280,720"/>
+      </Property>
+      <Property name="Layout" type="Layout">
+        <Value>
+          <Layout name="BorderLayout">
+            <Properties/>
+          </Layout>
+        </Value>
+      </Property>
+    </Properties>
+    <Com name="JPanel" id="TopBlock">
+      <Properties>
+        <Property name="id" type="id">
+          <Value value="TopBlock"/>
+        </Property>
+        <Property name="attr_scope" type="attr_scope">
+          <Value value="private"/>
+        </Property>
+        <Property name="getter_scope" type="getter_scope">
+          <Value value="none"/>
+        </Property>
+        <Property name="Name" type="Name">
+          <Value value="TopBlock"/>
+        </Property>
+        <Property name="Location" type="Location">
+          <Value value="0,0"/>
+        </Property>
+        <Property name="Size" type="Size">
+          <Value value="1280,45"/>
+        </Property>
+        <Property name="Constraints" type="Constraints">
+          <Value value="North"/>
+        </Property>
+        <Property name="Layout" type="Layout">
+          <Value>
+            <Layout name="BoxLayout">
+              <Properties>
+                <Property name="Axis" type="Axis">
+                  <Value value="0"/>
+                </Property>
+              </Properties>
+            </Layout>
+          </Value>
+        </Property>
+      </Properties>
+      <Com name="JPanel" id="LeftButtonCenterer">
+        <Properties>
+          <Property name="id" type="id">
+            <Value value="LeftButtonCenterer"/>
+          </Property>
+          <Property name="attr_scope" type="attr_scope">
+            <Value value="private"/>
+          </Property>
+          <Property name="getter_scope" type="getter_scope">
+            <Value value="none"/>
+          </Property>
+          <Property name="Location" type="Location">
+            <Value value="435,0"/>
+          </Property>
+          <Property name="Size" type="Size">
+            <Value value="426,45"/>
+          </Property>
+          <Property name="Layout" type="Layout">
+            <Value>
+              <Layout name="CenterLayout">
+                <Properties/>
+              </Layout>
+            </Value>
+          </Property>
+        </Properties>
+        <Com name="JButton" id="LoadButton">
+          <Properties>
+            <Property name="id" type="id">
+              <Value value="LoadButton"/>
+            </Property>
+            <Property name="attr_scope" type="attr_scope">
+              <Value value="private"/>
+            </Property>
+            <Property name="getter_scope" type="getter_scope">
+              <Value value="public"/>
+            </Property>
+            <Property name="Location" type="Location">
+              <Value value="138,9"/>
+            </Property>
+            <Property name="Size" type="Size">
+              <Value value="150,26"/>
+            </Property>
+            <Property name="PreferredSize" type="PreferredSize">
+              <Value value="150,26"/>
+            </Property>
+            <Property name="Text" type="Text">
+              <Value value="Load..."/>
+            </Property>
+            <Property name="HorizontalAlignment" type="HorizontalAlignment">
+              <Value value="0"/>
+            </Property>
+            <Property name="VerticalTextPosition" type="VerticalTextPosition">
+              <Value value="0"/>
+            </Property>
+          </Properties>
+        </Com>
+      </Com>
+      <Com name="JPanel" id="FilterBlock">
+        <Properties>
+          <Property name="id" type="id">
+            <Value value="FilterBlock"/>
+          </Property>
+          <Property name="attr_scope" type="attr_scope">
+            <Value value="private"/>
+          </Property>
+          <Property name="getter_scope" type="getter_scope">
+            <Value value="none"/>
+          </Property>
+          <Property name="Location" type="Location">
+            <Value value="370,0"/>
+          </Property>
+          <Property name="Size" type="Size">
+            <Value value="426,41"/>
+          </Property>
+          <Property name="Layout" type="Layout">
+            <Value>
+              <Layout name="BorderLayout">
+                <Properties/>
+              </Layout>
+            </Value>
+          </Property>
+        </Properties>
+        <Com name="JLabel" id="FileNameLabel">
+          <Properties>
+            <Property name="id" type="id">
+              <Value value="FileNameLabel"/>
+            </Property>
+            <Property name="attr_scope" type="attr_scope">
+              <Value value="private"/>
+            </Property>
+            <Property name="getter_scope" type="getter_scope">
+              <Value value="public"/>
+            </Property>
+            <Property name="Location" type="Location">
+              <Value value="627,8"/>
+            </Property>
+            <Property name="Size" type="Size">
+              <Value value="426,19"/>
+            </Property>
+            <Property name="Text" type="Text">
+              <Value value="Flashader"/>
+            </Property>
+          </Properties>
+        </Com>
+        <Com name="JTextField" id="FilterString">
+          <Properties>
+            <Property name="id" type="id">
+              <Value value="FilterString"/>
+            </Property>
+            <Property name="attr_scope" type="attr_scope">
+              <Value value="private"/>
+            </Property>
+            <Property name="getter_scope" type="getter_scope">
+              <Value value="public"/>
+            </Property>
+            <Property name="Location" type="Location">
+              <Value value="0,19"/>
+            </Property>
+            <Property name="Size" type="Size">
+              <Value value="426,22"/>
+            </Property>
+            <Property name="PreferredSize" type="PreferredSize">
+              <Value value="400,22"/>
+            </Property>
+            <Property name="Constraints" type="Constraints">
+              <Value value="South"/>
+            </Property>
+          </Properties>
+        </Com>
+      </Com>
+      <Com name="JPanel" id="RightButtonCenterer">
+        <Properties>
+          <Property name="id" type="id">
+            <Value value="RightButtonCenterer"/>
+          </Property>
+          <Property name="attr_scope" type="attr_scope">
+            <Value value="private"/>
+          </Property>
+          <Property name="getter_scope" type="getter_scope">
+            <Value value="none"/>
+          </Property>
+          <Property name="Location" type="Location">
+            <Value value="852,0"/>
+          </Property>
+          <Property name="Size" type="Size">
+            <Value value="426,45"/>
+          </Property>
+          <Property name="Layout" type="Layout">
+            <Value>
+              <Layout name="CenterLayout">
+                <Properties/>
+              </Layout>
+            </Value>
+          </Property>
+        </Properties>
+        <Com name="JButton" id="SaveButton">
+          <Properties>
+            <Property name="id" type="id">
+              <Value value="SaveButton"/>
+            </Property>
+            <Property name="attr_scope" type="attr_scope">
+              <Value value="private"/>
+            </Property>
+            <Property name="getter_scope" type="getter_scope">
+              <Value value="public"/>
+            </Property>
+            <Property name="Name" type="Name">
+              <Value value="SaveButton"/>
+            </Property>
+            <Property name="Location" type="Location">
+              <Value value="138,7"/>
+            </Property>
+            <Property name="Size" type="Size">
+              <Value value="150,26"/>
+            </Property>
+            <Property name="PreferredSize" type="PreferredSize">
+              <Value value="150,26"/>
+            </Property>
+            <Property name="Text" type="Text">
+              <Value value="Save..."/>
+            </Property>
+          </Properties>
+        </Com>
+      </Com>
+    </Com>
+    <Com name="JPanel" id="ScrollBarPlaceholder">
+      <Properties>
+        <Property name="id" type="id">
+          <Value value="ScrollBarPlaceholder"/>
+        </Property>
+        <Property name="attr_scope" type="attr_scope">
+          <Value value="private"/>
+        </Property>
+        <Property name="getter_scope" type="getter_scope">
+          <Value value="none"/>
+        </Property>
+        <Property name="Location" type="Location">
+          <Value value="0,54"/>
+        </Property>
+        <Property name="Size" type="Size">
+          <Value value="1280,679"/>
+        </Property>
+        <Property name="Layout" type="Layout">
+          <Value>
+            <Layout name="EmptyLayout">
+              <Properties/>
+            </Layout>
+          </Value>
+        </Property>
+      </Properties>
+    </Com>
+  </Com>
+</AsWingUI>

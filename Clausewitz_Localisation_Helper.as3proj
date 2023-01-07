@@ -6,8 +6,8 @@
     <movie input="" />
     <movie path="bin\ClausewitzLocalisationHelper.swf" />
     <movie fps="30" />
-    <movie width="800" />
-    <movie height="600" />
+    <movie width="1280" />
+    <movie height="720" />
     <movie version="26" />
     <movie minorVersion="0" />
     <movie platform="AIR" />
@@ -52,7 +52,7 @@
   </includeLibraries>
   <!-- SWC Libraries -->
   <libraryPaths>
-    <!-- example: <element path="..." /> -->
+    <element path="lib\AsWing.swc" />
   </libraryPaths>
   <!-- External Libraries -->
   <externalLibraryPaths>

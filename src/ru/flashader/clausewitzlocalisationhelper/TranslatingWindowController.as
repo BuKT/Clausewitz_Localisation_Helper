@@ -1,92 +1,72 @@
 package ru.flashader.clausewitzlocalisationhelper {
-	import flash.display.Shape;
-	import flash.display.SimpleButton;
 	import flash.display.Sprite;
 	import flash.events.Event;
-	import flash.events.KeyboardEvent;
-	import flash.events.MouseEvent;
-	import flash.text.TextField;
-	import flash.text.TextFieldType;
-	import flash.text.TextInteractionMode;
+	import org.aswing.*;
+	import org.aswing.AsWingManager;
 	
 	/**
 	* @author Ilja 'flashader' Mickodin
 	*/
 	
 	public class TranslatingWindowController extends Sprite {
-		private var _sourceInput:TextField;
-		private var _overlayButton:SimpleButton;
+		private static const PLEASE_WAIT:String = "Подождите примерно три секунды.";
+		private static const PLEASE_PRESS:String = "Нажмите 'Ctrl'+'Shift'+'S', а потом закройте это окно";
+		private static const PLEASE_WAIT_AGAIN:String = "И ещё три секунды.";
+		private var scrollPane:JScrollPane;
+		private var _mainASWindow:JWindow;
+		private var _currentAlert:JOptionPane;
+		private var _currentTranslatingEntry:TranslateEntry;
+		
 		
 		public function TranslatingWindowController() {
 			super();
+			AsWingManager.setRoot(this);
+			
+			//JOptionPane.showMessageDialog("About", "This is just a menu test demo!\n\n alskdjaldjalsdkj\n\n l;jasdf;ljasdfklj \n\n a;dksfj;ladfj;ladfj").getMsgLabel().setSelectable(true);
+			
 			WebTranslator.addEventListener(WebTranslatorEvent.REQUEST_USER_INPUT, handleUserInputRequest);
-			_sourceInput = new TextField();
-			_sourceInput.text = "Translate me please please please";
-			_sourceInput.width = 400;
-			_sourceInput.height = 200;
-			_sourceInput.border = true;
-			_sourceInput.borderColor = 0x000000;
-			_sourceInput.type = TextFieldType.INPUT;
-			addChild(_sourceInput);
-			var translateButton:SimpleButton = createButton(120, 20);
-			translateButton.addEventListener(MouseEvent.CLICK, initiateTranslate);
-			translateButton.width = 100;
-			translateButton.height = 30;
-			translateButton.y = _sourceInput.x + _sourceInput.height + 10;
-			addChild(translateButton);
+			WebTranslator.addEventListener(WebTranslatorEvent.TRANSLATION_ENDED, endTranslation);
 			
-			_overlayButton = createButton(stage.stageWidth, stage.stageHeight);
+			var entry:TranslateEntry = new TranslateEntry();
+			entry.addTranslateRequestListener(initiateTranslate);
 			
+			
+			_mainASWindow = new JWindow(this);
+			_mainASWindow.setContentPane(entry);
+			_mainASWindow.setSizeWH(stage.stageWidth, stage.stageHeight);
+			_mainASWindow.show();
 		}
 		
-		private function createButton(w:int, h:int):SimpleButton {
-			return new SimpleButton(
-				createButtonDisplayState(0xFFCC00, w, h),
-				createButtonDisplayState(0xCCFF00, w, h),
-				createButtonDisplayState(0xFFCC00, w, h),
-				createButtonDisplayState(0x00CCFF, w, h)
-			);
-		}
-		
-		private function initiateTranslate(e:MouseEvent):void {
-			WebTranslator.TranslateMe(_sourceInput.text, stage);
-		}
-		
-		private function ContinueTranslate(e:MouseEvent):void {
-			e.currentTarget.removeEventListener(e.type, arguments.callee)
-			removeChild(_overlayButton);
-			WebTranslator.ContinueTranslate(_sourceInput);
+		private function initiateTranslate(entry:TranslateEntry):void {
+			if (_currentAlert != null) {
+				_currentAlert.getFrame().dispose();
+			}
+			_currentAlert = JOptionPane.showMessageDialog("Идёт перевод", PLEASE_WAIT, null, null, true, null, 0);
+			_currentAlert.getFrame().getTitleBar().getCloseButton().setVisible(false);
+			_currentTranslatingEntry = entry;
+			WebTranslator.TranslateMe(_currentTranslatingEntry.getSourceTranslation().getText(), stage);
 		}
 		
 		private function handleUserInputRequest(e:Event):void {
-			addChild(_overlayButton);
-			_overlayButton.addEventListener(MouseEvent.CLICK, ContinueTranslate);
+			if (_currentAlert != null) {
+				_currentAlert.getFrame().dispose();
+			}
+			_currentAlert = JOptionPane.showMessageDialog("Нужна помощь", PLEASE_PRESS, continueTranslate, null, true, null, JOptionPane.CLOSE);
 		}
 		
-		private function ProcessUserInput(e:KeyboardEvent):void {
-			if (
-				!e.controlKey ||
-				!e.shiftKey ||
-				!(
-					e.charCode == "S".charCodeAt() ||
-					e.charCode == "s".charCodeAt()
-				)
-			) {
-				trace("nope");
-				return;
+		private function continueTranslate(e:int):void {
+			if (_currentAlert != null) {
+				_currentAlert.getFrame().dispose();
 			}
-			e.currentTarget.remove(e.type, arguments.callee);
-			WebTranslator.ContinueTranslate(_sourceInput);
+			_currentAlert = JOptionPane.showMessageDialog("Спасибо", PLEASE_WAIT_AGAIN, null, null, true, null, 0);
+			_currentAlert.getFrame().getTitleBar().getCloseButton().setVisible(false);
+			WebTranslator.ContinueTranslate(_currentTranslatingEntry.getTargetTranslation().getTextField());
 		}
-
-		private function createButtonDisplayState(bgColor:uint, w:int, h:int):Shape {
-			var toReturn:Shape = new Shape();
-			with (toReturn) {
-				graphics.beginFill(bgColor);
-				graphics.drawRect(0, 0, w, h);
-				graphics.endFill();
+		
+		private function endTranslation(e:Event):void {
+			if (_currentAlert != null) {
+				_currentAlert.getFrame().dispose();
 			}
-			return toReturn;
 		}
 	}
 }
