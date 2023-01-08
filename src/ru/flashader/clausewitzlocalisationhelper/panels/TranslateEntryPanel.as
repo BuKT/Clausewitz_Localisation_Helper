@@ -48,6 +48,7 @@ package ru.flashader.clausewitzlocalisationhelper.panels {
 		
 		private function InitLayout():void {
 			setSize(new IntDimension(1280, 250));
+			
 			var border0:BevelBorder = new BevelBorder();
 			var border1:CaveBorder = new CaveBorder();
 			border1.setBeveled(true);
@@ -74,6 +75,7 @@ package ru.flashader.clausewitzlocalisationhelper.panels {
 			SourceTranslation.setSize(new IntDimension(300, 150));
 			SourceTranslation.setPreferredSize(new IntDimension(300, 150));
 			SourceTranslation.setConstraints("Center");
+			SourceTranslation.setFont(new ASFont("Tahoma", 14));
 			var border4:BevelBorder = new BevelBorder();
 			border4.setBevelType(1);
 			border4.setThickness(3);
@@ -135,6 +137,7 @@ package ru.flashader.clausewitzlocalisationhelper.panels {
 			FieldName.setLocation(new IntPoint(0, 0));
 			FieldName.setSize(new IntDimension(424, 666));
 			FieldName.setPreferredSize(new IntDimension(250, 100));
+			FieldName.setFont(new ASFont("Tahoma", 16));
 			FieldName.setConstraints("Center");
 			var border7:BevelBorder = new BevelBorder();
 			border7.setBevelType(0);
@@ -203,6 +206,7 @@ package ru.flashader.clausewitzlocalisationhelper.panels {
 			
 			TargetTranslation = new JTextArea();
 			TargetTranslation.setName("TargetTranslation");
+			TargetTranslation.setFont(new ASFont("Tahoma", 14));
 			TargetTranslation.setLocation(new IntPoint(710, 20));
 			TargetTranslation.setSize(new IntDimension(300, 150));
 			TargetTranslation.setPreferredSize(new IntDimension(300, 150));

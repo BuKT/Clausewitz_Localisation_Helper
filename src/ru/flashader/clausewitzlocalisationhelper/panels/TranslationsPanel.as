@@ -17,9 +17,12 @@ package ru.flashader.clausewitzlocalisationhelper.panels {
 		private var TopBlock:JPanel;
 		private var LeftButtonCenterer:JPanel;
 		private var LoadButton:JButton;
-		private var FilterBlock:JPanel;
+		private var TitleFilterBorderLayout:JPanel;
+		private var LabelNorthSpacer:JSpacer;
 		private var FileNameLabel:JLabel;
+		private var FilterBorderLayout:JPanel;
 		private var FilterString:JTextField;
+		private var FilterLabel:JLabel;
 		private var RightButtonCenterer:JPanel;
 		private var SaveButton:JButton;
 		private var ScrollPane:JScrollPane;
@@ -57,28 +60,59 @@ package ru.flashader.clausewitzlocalisationhelper.panels {
 			LoadButton.setHorizontalAlignment(AsWingConstants.CENTER);
 			LoadButton.setVerticalTextPosition(AsWingConstants.CENTER);
 			
-			FilterBlock = new JPanel();
-			FilterBlock.setLocation(new IntPoint(370, 0));
-			FilterBlock.setSize(new IntDimension(426, 41));
+			TitleFilterBorderLayout = new JPanel();
+			TitleFilterBorderLayout.setLocation(new IntPoint(370, 0));
+			TitleFilterBorderLayout.setSize(new IntDimension(426, 74));
 			var layout3:BorderLayout = new BorderLayout();
-			FilterBlock.setLayout(layout3);
+			layout3.setHgap(5);
+			layout3.setVgap(10);
+			TitleFilterBorderLayout.setLayout(layout3);
+			
+			LabelNorthSpacer = new JSpacer();
+			LabelNorthSpacer.setSize(new IntDimension(426, 0));
+			LabelNorthSpacer.setConstraints("North");
 			
 			FileNameLabel = new JLabel();
+			FileNameLabel.setFont(new ASFont("Tahoma", 16, true, false, false, false));
+			FileNameLabel.setForeground(new ASColor(0x0, 1));
+			FileNameLabel.setBackground(new ASColor(0xffffff, 1));
 			FileNameLabel.setLocation(new IntPoint(627, 8));
-			FileNameLabel.setSize(new IntDimension(426, 19));
+			FileNameLabel.setSize(new IntDimension(426, 32));
+			FileNameLabel.setPreferredSize(new IntDimension(500, 32));
+			FileNameLabel.setConstraints("Center");
+			var border4:BevelBorder = new BevelBorder();
+			border4.setBevelType(0);
+			border4.setThickness(3);
+			FileNameLabel.setBorder(border4);
 			FileNameLabel.setText("Flashader");
+			FileNameLabel.setSelectable(true);
+			
+			FilterBorderLayout = new JPanel();
+			FilterBorderLayout.setLocation(new IntPoint(0, 19));
+			FilterBorderLayout.setSize(new IntDimension(426, 22));
+			FilterBorderLayout.setConstraints("South");
+			var layout5:BorderLayout = new BorderLayout();
+			layout5.setHgap(10);
+			layout5.setVgap(3);
+			FilterBorderLayout.setLayout(layout5);
 			
 			FilterString = new JTextField();
-			FilterString.setLocation(new IntPoint(0, 19));
-			FilterString.setSize(new IntDimension(426, 22));
+			FilterString.setLocation(new IntPoint(41, 0));
+			FilterString.setSize(new IntDimension(385, 26));
 			FilterString.setPreferredSize(new IntDimension(400, 22));
-			FilterString.setConstraints("South");
+			FilterString.setConstraints("Center");
+			
+			FilterLabel = new JLabel();
+			FilterLabel.setFont(new ASFont("Tahoma", 12, false, false, false, false));
+			FilterLabel.setSize(new IntDimension(51, 22));
+			FilterLabel.setConstraints("West");
+			FilterLabel.setText("Фильтр:");
 			
 			RightButtonCenterer = new JPanel();
 			RightButtonCenterer.setLocation(new IntPoint(852, 0));
 			RightButtonCenterer.setSize(new IntDimension(426, 45));
-			var layout4:CenterLayout = new CenterLayout();
-			RightButtonCenterer.setLayout(layout4);
+			var layout6:CenterLayout = new CenterLayout();
+			RightButtonCenterer.setLayout(layout6);
 			
 			SaveButton = new JButton();
 			SaveButton.setName("SaveButton");
@@ -94,22 +128,26 @@ package ru.flashader.clausewitzlocalisationhelper.panels {
 			ItemsPlaceholder = new JPanel();
 			ItemsPlaceholder.setLocation(new IntPoint(640, 339));
 			ItemsPlaceholder.setSize(new IntDimension(0, 0));
-			var layout5:SoftBoxLayout = new SoftBoxLayout();
-			layout5.setAxis(AsWingConstants.VERTICAL);
-			ItemsPlaceholder.setLayout(layout5);
+			var layout7:SoftBoxLayout = new SoftBoxLayout();
+			layout7.setAxis(AsWingConstants.VERTICAL);
+			ItemsPlaceholder.setLayout(layout7);
 			
 			//component layoution
 			append(TopBlock);
 			append(ScrollPane);
 			
 			TopBlock.append(LeftButtonCenterer);
-			TopBlock.append(FilterBlock);
+			TopBlock.append(TitleFilterBorderLayout);
 			TopBlock.append(RightButtonCenterer);
 			
 			LeftButtonCenterer.append(LoadButton);
 			
-			FilterBlock.append(FileNameLabel);
-			FilterBlock.append(FilterString);
+			TitleFilterBorderLayout.append(LabelNorthSpacer);
+			TitleFilterBorderLayout.append(FileNameLabel);
+			TitleFilterBorderLayout.append(FilterBorderLayout);
+			
+			FilterBorderLayout.append(FilterString);
+			FilterBorderLayout.append(FilterLabel);
 			
 			RightButtonCenterer.append(SaveButton);
 			

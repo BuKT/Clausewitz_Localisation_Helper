@@ -116,10 +116,10 @@
           </Properties>
         </Com>
       </Com>
-      <Com name="JPanel" id="FilterBlock">
+      <Com name="JPanel" id="TitleFilterBorderLayout">
         <Properties>
           <Property name="id" type="id">
-            <Value value="FilterBlock"/>
+            <Value value="TitleFilterBorderLayout"/>
           </Property>
           <Property name="attr_scope" type="attr_scope">
             <Value value="private"/>
@@ -131,16 +131,42 @@
             <Value value="370,0"/>
           </Property>
           <Property name="Size" type="Size">
-            <Value value="426,41"/>
+            <Value value="426,74"/>
           </Property>
           <Property name="Layout" type="Layout">
             <Value>
               <Layout name="BorderLayout">
-                <Properties/>
+                <Properties>
+                  <Property name="Hgap" type="Hgap">
+                    <Value value="5"/>
+                  </Property>
+                  <Property name="Vgap" type="Vgap">
+                    <Value value="10"/>
+                  </Property>
+                </Properties>
               </Layout>
             </Value>
           </Property>
         </Properties>
+        <Com name="JSpacer" id="LabelNorthSpacer">
+          <Properties>
+            <Property name="id" type="id">
+              <Value value="LabelNorthSpacer"/>
+            </Property>
+            <Property name="attr_scope" type="attr_scope">
+              <Value value="private"/>
+            </Property>
+            <Property name="getter_scope" type="getter_scope">
+              <Value value="none"/>
+            </Property>
+            <Property name="Size" type="Size">
+              <Value value="426,0"/>
+            </Property>
+            <Property name="Constraints" type="Constraints">
+              <Value value="North"/>
+            </Property>
+          </Properties>
+        </Com>
         <Com name="JLabel" id="FileNameLabel">
           <Properties>
             <Property name="id" type="id">
@@ -152,27 +178,59 @@
             <Property name="getter_scope" type="getter_scope">
               <Value value="public"/>
             </Property>
+            <Property name="Font" type="Font">
+              <Value name="Tahoma" size="16" bold="true" italic="false" underline="false" embedFonts="false"/>
+            </Property>
+            <Property name="Foreground" type="Foreground">
+              <Value value="0,1"/>
+            </Property>
+            <Property name="Background" type="Background">
+              <Value value="ffffff,1"/>
+            </Property>
             <Property name="Location" type="Location">
               <Value value="627,8"/>
             </Property>
             <Property name="Size" type="Size">
-              <Value value="426,19"/>
+              <Value value="426,32"/>
+            </Property>
+            <Property name="PreferredSize" type="PreferredSize">
+              <Value value="500,32"/>
+            </Property>
+            <Property name="Constraints" type="Constraints">
+              <Value value="Center"/>
+            </Property>
+            <Property name="Border" type="Border">
+              <Value>
+                <Border name="BevelBorder">
+                  <Properties>
+                    <Property name="BevelType" type="BevelType">
+                      <Value value="0"/>
+                    </Property>
+                    <Property name="Thickness" type="Thickness">
+                      <Value value="3"/>
+                    </Property>
+                  </Properties>
+                </Border>
+              </Value>
             </Property>
             <Property name="Text" type="Text">
               <Value value="Flashader"/>
             </Property>
+            <Property name="Selectable" type="Selectable">
+              <Value value="true"/>
+            </Property>
           </Properties>
         </Com>
-        <Com name="JTextField" id="FilterString">
+        <Com name="JPanel" id="FilterBorderLayout">
           <Properties>
             <Property name="id" type="id">
-              <Value value="FilterString"/>
+              <Value value="FilterBorderLayout"/>
             </Property>
             <Property name="attr_scope" type="attr_scope">
               <Value value="private"/>
             </Property>
             <Property name="getter_scope" type="getter_scope">
-              <Value value="public"/>
+              <Value value="none"/>
             </Property>
             <Property name="Location" type="Location">
               <Value value="0,19"/>
@@ -180,13 +238,74 @@
             <Property name="Size" type="Size">
               <Value value="426,22"/>
             </Property>
-            <Property name="PreferredSize" type="PreferredSize">
-              <Value value="400,22"/>
-            </Property>
             <Property name="Constraints" type="Constraints">
               <Value value="South"/>
             </Property>
+            <Property name="Layout" type="Layout">
+              <Value>
+                <Layout name="BorderLayout">
+                  <Properties>
+                    <Property name="Hgap" type="Hgap">
+                      <Value value="10"/>
+                    </Property>
+                    <Property name="Vgap" type="Vgap">
+                      <Value value="3"/>
+                    </Property>
+                  </Properties>
+                </Layout>
+              </Value>
+            </Property>
           </Properties>
+          <Com name="JTextField" id="FilterString">
+            <Properties>
+              <Property name="id" type="id">
+                <Value value="FilterString"/>
+              </Property>
+              <Property name="attr_scope" type="attr_scope">
+                <Value value="private"/>
+              </Property>
+              <Property name="getter_scope" type="getter_scope">
+                <Value value="public"/>
+              </Property>
+              <Property name="Location" type="Location">
+                <Value value="41,0"/>
+              </Property>
+              <Property name="Size" type="Size">
+                <Value value="385,26"/>
+              </Property>
+              <Property name="PreferredSize" type="PreferredSize">
+                <Value value="400,22"/>
+              </Property>
+              <Property name="Constraints" type="Constraints">
+                <Value value="Center"/>
+              </Property>
+            </Properties>
+          </Com>
+          <Com name="JLabel" id="FilterLabel">
+            <Properties>
+              <Property name="id" type="id">
+                <Value value="FilterLabel"/>
+              </Property>
+              <Property name="attr_scope" type="attr_scope">
+                <Value value="private"/>
+              </Property>
+              <Property name="getter_scope" type="getter_scope">
+                <Value value="none"/>
+              </Property>
+              <Property name="Font" type="Font">
+                <Value name="Tahoma" size="12" bold="false" italic="false" underline="false" embedFonts="false"/>
+              </Property>
+              <Property name="Size" type="Size">
+                <Value value="51,22"/>
+              </Property>
+              <Property name="Constraints" type="Constraints">
+                <Value value="West"/>
+              </Property>
+              <Property name="Text" type="Text">
+                <Value value="Фильтр:"/>
+              </Property>
+            </Properties>
+          </Com>
         </Com>
       </Com>
       <Com name="JPanel" id="RightButtonCenterer">
