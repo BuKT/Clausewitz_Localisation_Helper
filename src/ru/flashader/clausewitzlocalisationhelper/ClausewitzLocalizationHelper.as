@@ -151,7 +151,7 @@ package ru.flashader.clausewitzlocalisationhelper {
 			var stream:FileStream = new FileStream();
 			var jsonBytes:ByteArray = new ByteArray();
 			
-			jsonBytes.writeMultiByte(translationResultJSON, "utf-8");
+			jsonBytes.writeMultiByte(translationResultJSON, "utf-8"); //He-he-he: ยง
 			stream.open(tempFile, FileMode.WRITE);
 			stream.writeBytes(jsonBytes);
 			stream.close();
