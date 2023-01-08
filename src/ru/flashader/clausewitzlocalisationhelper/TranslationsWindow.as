@@ -1,4 +1,6 @@
 package ru.flashader.clausewitzlocalisationhelper {
+	import flash.events.Event;
+	import flash.events.TextEvent;
 	import org.aswing.*;
 	import org.aswing.border.*;
 	import org.aswing.geom.*;
@@ -110,6 +112,17 @@ package ru.flashader.clausewitzlocalisationhelper {
 			RightButtonCenterer.append(SaveButton);
 			
 			ScrollPane.append(ItemsPlaceholder);
+			
+			
+			
+			FilterString.getTextField().addEventListener(Event.CHANGE, FilterEntries);
+		}
+		
+		private function FilterEntries(e:Event):void {
+			var filter:String = FilterString.getText().toLowerCase();
+			for each (var entryPanel:TranslateEntryPanel in _entriesPanelList) {
+				entryPanel.setVisible(filter.length == 0 || entryPanel.getKey().toLowerCase().indexOf(filter) > -1);
+			}
 		}
 		
 		public function getLoadButton():JButton {
@@ -132,6 +145,7 @@ package ru.flashader.clausewitzlocalisationhelper {
 		
 		public function FillWithSource(sourceValues:TranslationFileContent, path:String):void {
 			FileNameLabel.setText(path);
+			var filter:String = FilterString.getText().toLowerCase();
 			
 			for each (var entryPanel:TranslateEntryPanel in _entriesPanelList) {
 				//entryPanel.dispose(); //TODO: flashader Да сделай ты уже нормальный пул!
@@ -143,6 +157,7 @@ package ru.flashader.clausewitzlocalisationhelper {
 			for each (var entry:TranslateEntry in sourceValues.TranslateEntriesList) {
 				var entryPanel:TranslateEntryPanel = new TranslateEntryPanel(entry);
 				_entriesPanelList.push(entryPanel);
+				entryPanel.setVisible(filter.length == 0 || entryPanel.getKey().toLowerCase().indexOf(filter) > -1);
 				ItemsPlaceholder.append(entryPanel);
 			}
 		}

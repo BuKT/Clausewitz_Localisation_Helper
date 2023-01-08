@@ -23,12 +23,13 @@ package ru.flashader.clausewitzlocalisationhelper {
 		private var _translateRequestCallback:Function;
 		private var _targetEntry:TranslateEntry;
 		private var _sourceEntry:TranslateEntry;
+		private var _key:String;
 		
 		public function TranslateEntryPanel(sourceEntry:TranslateEntry) {
 			InitLayout();
 			_sourceEntry = sourceEntry;
 			_targetEntry = new TranslateEntry();
-			FieldName.setText(_targetEntry.Key = _sourceEntry.Key);
+			FieldName.setText(_key = _targetEntry.Key = _sourceEntry.Key);
 			SourceTranslation.setText(_sourceEntry.Value);
 		}
 		
@@ -148,6 +149,10 @@ package ru.flashader.clausewitzlocalisationhelper {
 		
 		public function addTranslateRequestListener(callback:Function):void {
 			_translateRequestCallback = callback;
+		}
+		
+		public function getKey():String {
+			return _key;
 		}
 		
 		private function processTranslateRequest(e:AWEvent):void {
