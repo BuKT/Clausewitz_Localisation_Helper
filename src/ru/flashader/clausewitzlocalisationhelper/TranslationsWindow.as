@@ -19,7 +19,10 @@ package ru.flashader.clausewitzlocalisationhelper {
 		private var FilterString:JTextField;
 		private var RightButtonCenterer:JPanel;
 		private var SaveButton:JButton;
-		private var ScrollBarPlaceholder:JPanel;
+		private var ScrollPane:JScrollPane;
+		private var ItemsPlaceholder:JPanel;
+		
+		private var _entriesPanelList:Vector.<TranslateEntryPanel> = new Vector.<TranslateEntryPanel>();
 		
 		public function TranslationsWindow() {
 			setSize(new IntDimension(1280, 720));
@@ -80,15 +83,20 @@ package ru.flashader.clausewitzlocalisationhelper {
 			SaveButton.setPreferredSize(new IntDimension(150, 26));
 			SaveButton.setText("Save...");
 			
-			ScrollBarPlaceholder = new JPanel();
-			ScrollBarPlaceholder.setLocation(new IntPoint(0, 54));
-			ScrollBarPlaceholder.setSize(new IntDimension(1280, 679));
-			var layout5:EmptyLayout = new EmptyLayout();
-			ScrollBarPlaceholder.setLayout(layout5);
+			ScrollPane = new JScrollPane();
+			ScrollPane.setLocation(new IntPoint(0, 41));
+			ScrollPane.setSize(new IntDimension(1280, 0));
+			
+			ItemsPlaceholder = new JPanel();
+			ItemsPlaceholder.setLocation(new IntPoint(640, 339));
+			ItemsPlaceholder.setSize(new IntDimension(0, 0));
+			var layout5:SoftBoxLayout = new SoftBoxLayout();
+			layout5.setAxis(AsWingConstants.VERTICAL);
+			ItemsPlaceholder.setLayout(layout5);
 			
 			//component layoution
 			append(TopBlock);
-			append(ScrollBarPlaceholder);
+			append(ScrollPane);
 			
 			TopBlock.append(LeftButtonCenterer);
 			TopBlock.append(FilterBlock);
@@ -101,6 +109,7 @@ package ru.flashader.clausewitzlocalisationhelper {
 			
 			RightButtonCenterer.append(SaveButton);
 			
+			ScrollPane.append(ItemsPlaceholder);
 		}
 		
 		public function getLoadButton():JButton {
@@ -121,8 +130,21 @@ package ru.flashader.clausewitzlocalisationhelper {
 			return SaveButton;
 		}
 		
-		public function FillWithSource(sourceValues:Object, path:String):void {
+		public function FillWithSource(sourceValues:TranslationFileContent, path:String):void {
+			FileNameLabel.setText(path);
 			
+			for each (var entryPanel:TranslateEntryPanel in _entriesPanelList) {
+				//entryPanel.dispose(); //TODO: flashader Да сделай ты уже нормальный пул!
+				ItemsPlaceholder.remove(entryPanel);
+			}
+			
+			_entriesPanelList.length = 0;
+			
+			for each (var entry:TranslateEntry in sourceValues.TranslateEntriesList) {
+				var entryPanel:TranslateEntryPanel = new TranslateEntryPanel(entry);
+				_entriesPanelList.push(entryPanel);
+				ItemsPlaceholder.append(entryPanel);
+			}
 		}
 	}
 }

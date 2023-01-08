@@ -28,6 +28,7 @@ package ru.flashader.clausewitzlocalisationhelper {
 		private static const yamlFilters:Array = [new FileFilter("Yaml", "*.yml")];
 		private var _sourceValues:Object;
 		private var _doFastCheck:Boolean = true;
+		private var _lastLoadedfilePath:String;
 		
 		public function TranslatingWindowController() {
 			super();
@@ -63,7 +64,7 @@ package ru.flashader.clausewitzlocalisationhelper {
 			var fileData:String = stream.readUTFBytes(stream.bytesAvailable);
 			stream.close();
 			var fullPath:String = file.nativePath;
-			var filePath:String = fullPath.replace(file.parent.nativePath + File.separator, "");
+			_lastLoadedfilePath = fullPath.replace(file.parent.nativePath + File.separator, "");
 			TryParseSource(fileData, fullPath);
 		}
 		
@@ -89,13 +90,13 @@ package ru.flashader.clausewitzlocalisationhelper {
 			);
 		}
 		
-		private function FastParsingCompleteHandler(jsonText:String, fullPath:String):void {
-			EndParsingAndFillViews(new TranslationFileContent(JSON.parse(jsonText)), fullPath);
+		private function FastParsingCompleteHandler(jsonText:String):void {
+			EndParsingAndFillViews(new TranslationFileContent(JSON.parse(jsonText)));
 		}
 		
-		private function EndParsingAndFillViews(content:TranslationFileContent, fullPath:String):void {
+		private function EndParsingAndFillViews(content:TranslationFileContent):void {			
+			_translatingWindow.FillWithSource(content, _lastLoadedfilePath);
 			CloseModal();
-			_translatingWindow.FillWithSource(_sourceValues, fullPath);
 		}
 		
 		private var _externalProcess:NativeProcess;
@@ -119,7 +120,7 @@ package ru.flashader.clausewitzlocalisationhelper {
 					e.currentTarget.removeEventListener(e.type, arguments.callee);
 					switch (e.exitCode) {
 						case 0:
-							successHandler(ReadFileAsText(fullOutPath), fullPath);
+							successHandler(ReadFileAsText(fullOutPath));
 							break;
 						default:
 							errorHandler(ReadFileAsText(fullPath.substring(0, fullPath.lastIndexOf(".")) + ".log"));
@@ -163,6 +164,7 @@ package ru.flashader.clausewitzlocalisationhelper {
 		private function ShowModal(title:String, message:String, closeHandler:Function = null):void {
 			CloseModal();
 			_currentAlert = JOptionPane.showMessageDialog(title, message, closeHandler, null, true, null, closeHandler != null ? JOptionPane.CLOSE : 0);
+			_currentAlert.getMsgLabel().setSelectable(closeHandler != null);
 			_currentAlert.getFrame().getTitleBar().getCloseButton().setVisible(closeHandler != null);
 		}
 		

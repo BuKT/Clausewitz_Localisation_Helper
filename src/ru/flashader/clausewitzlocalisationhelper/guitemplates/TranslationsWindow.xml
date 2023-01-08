@@ -244,10 +244,10 @@
         </Com>
       </Com>
     </Com>
-    <Com name="JPanel" id="ScrollBarPlaceholder">
+    <Com name="JScrollPane" id="ScrollPane">
       <Properties>
         <Property name="id" type="id">
-          <Value value="ScrollBarPlaceholder"/>
+          <Value value="ScrollPane"/>
         </Property>
         <Property name="attr_scope" type="attr_scope">
           <Value value="private"/>
@@ -256,19 +256,42 @@
           <Value value="none"/>
         </Property>
         <Property name="Location" type="Location">
-          <Value value="0,54"/>
+          <Value value="0,41"/>
         </Property>
         <Property name="Size" type="Size">
-          <Value value="1280,679"/>
-        </Property>
-        <Property name="Layout" type="Layout">
-          <Value>
-            <Layout name="EmptyLayout">
-              <Properties/>
-            </Layout>
-          </Value>
+          <Value value="1280,0"/>
         </Property>
       </Properties>
+      <Com name="JPanel" id="ItemsPlaceholder">
+        <Properties>
+          <Property name="id" type="id">
+            <Value value="ItemsPlaceholder"/>
+          </Property>
+          <Property name="attr_scope" type="attr_scope">
+            <Value value="private"/>
+          </Property>
+          <Property name="getter_scope" type="getter_scope">
+            <Value value="none"/>
+          </Property>
+          <Property name="Location" type="Location">
+            <Value value="640,339"/>
+          </Property>
+          <Property name="Size" type="Size">
+            <Value value="0,0"/>
+          </Property>
+          <Property name="Layout" type="Layout">
+            <Value>
+              <Layout name="SoftBoxLayout">
+                <Properties>
+                  <Property name="Axis" type="Axis">
+                    <Value value="1"/>
+                  </Property>
+                </Properties>
+              </Layout>
+            </Value>
+          </Property>
+        </Properties>
+      </Com>
     </Com>
   </Com>
 </AsWingUI>

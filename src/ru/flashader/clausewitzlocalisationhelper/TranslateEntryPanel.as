@@ -19,9 +19,20 @@ package ru.flashader.clausewitzlocalisationhelper {
 		private var MoveTranslationButton:JButton;
 		private var TranslateTranslationButton:JButton;
 		private var TargetTranslation:JTextArea;
-		private var _translateRequestCallback:Function;
 		
-		public function TranslateEntryPanel() {
+		private var _translateRequestCallback:Function;
+		private var _targetEntry:TranslateEntry;
+		private var _sourceEntry:TranslateEntry;
+		
+		public function TranslateEntryPanel(sourceEntry:TranslateEntry) {
+			InitLayout();
+			_sourceEntry = sourceEntry;
+			_targetEntry = new TranslateEntry();
+			FieldName.setText(_targetEntry.Key = _sourceEntry.Key);
+			SourceTranslation.setText(_sourceEntry.Value);
+		}
+		
+		private function InitLayout():void {
 			setSize(new IntDimension(926, 186));
 			var border0:CaveBorder = new CaveBorder();
 			border0.setBeveled(true);
