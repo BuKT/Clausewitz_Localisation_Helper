@@ -12,14 +12,23 @@ package ru.flashader.clausewitzlocalisationhelper {
 	
 	public class TranslateEntryPanel extends JPanel {
 		//members define
+		private var OuterWestBordering:JPanel;
 		private var SourceTranslation:JTextArea;
-		private var OuterVerticalLayoutPanel:JPanel;
+		private var WestSpacer:JSpacer;
+		private var NorthSpacer:JSpacer;
+		private var EastSpacer:JSpacer;
+		private var SouthSpacer:JSpacer;
+		private var OuterCentererToFixedSizePanel:JPanel;
+		private var OuterCenterBordering:JPanel;
 		private var FieldName:JTextField;
+		private var SouthSpacerCenterer:JPanel;
+		private var InnerCentererToFixedSizePanel:JPanel;
 		private var InnerVerticalLayoutPanel:JPanel;
 		private var MoveTranslationButton:JButton;
 		private var TranslateTranslationButton:JButton;
+		private var OuterEastBordering:JPanel;
 		private var TargetTranslation:JTextArea;
-		
+	
 		private var _translateRequestCallback:Function;
 		private var _targetEntry:TranslateEntry;
 		private var _sourceEntry:TranslateEntry;
@@ -31,92 +40,215 @@ package ru.flashader.clausewitzlocalisationhelper {
 			_targetEntry = new TranslateEntry();
 			FieldName.setText(_key = _targetEntry.Key = _sourceEntry.Key);
 			SourceTranslation.setText(_sourceEntry.Value);
+			
+			MoveTranslationButton.addActionListener(JustCopyContent);
+			TranslateTranslationButton.addActionListener(processTranslateRequest);
 		}
 		
 		private function InitLayout():void {
-			setSize(new IntDimension(926, 186));
-			var border0:CaveBorder = new CaveBorder();
-			border0.setBeveled(true);
-			border0.setRound(3);
+			setSize(new IntDimension(1280, 250));
+			var border0:BevelBorder = new BevelBorder();
+			var border1:CaveBorder = new CaveBorder();
+			border1.setBeveled(true);
+			border1.setRound(5);
+			border0.setInterior(border1);
+			border0.setBevelType(1);
+			border0.setThickness(5);
 			setBorder(border0);
-			var layout1:FlowLayout = new FlowLayout();
-			layout1.setAlignment(AsWingConstants.CENTER);
-			layout1.setHgap(30);
-			layout1.setVgap(10);
-			layout1.setMargin(true);
-			setLayout(layout1);
+			var layout2:BoxLayout = new BoxLayout();
+			layout2.setAxis(AsWingConstants.HORIZONTAL);
+			setLayout(layout2);
+			
+			OuterWestBordering = new JPanel();
+			OuterWestBordering.setLocation(new IntPoint(4, 4));
+			OuterWestBordering.setSize(new IntDimension(307, 405));
+			var layout3:BorderLayout = new BorderLayout();
+			layout3.setHgap(15);
+			layout3.setVgap(10);
+			OuterWestBordering.setLayout(layout3);
 			
 			SourceTranslation = new JTextArea();
 			SourceTranslation.setName("SourceTranslation");
 			SourceTranslation.setLocation(new IntPoint(30, 55));
 			SourceTranslation.setSize(new IntDimension(300, 150));
 			SourceTranslation.setPreferredSize(new IntDimension(300, 150));
-			var border2:BevelBorder = new BevelBorder();
-			border2.setBevelType(1);
-			border2.setThickness(3);
-			SourceTranslation.setBorder(border2);
+			SourceTranslation.setConstraints("Center");
+			var border4:BevelBorder = new BevelBorder();
+			border4.setBevelType(1);
+			border4.setThickness(3);
+			SourceTranslation.setBorder(border4);
+			SourceTranslation.setWordWrap(true);
 			
-			OuterVerticalLayoutPanel = new JPanel();
-			OuterVerticalLayoutPanel.setLocation(new IntPoint(560, 74));
-			OuterVerticalLayoutPanel.setSize(new IntDimension(320, 160));
-			OuterVerticalLayoutPanel.setConstraints("Center");
-			var layout3:BoxLayout = new BoxLayout();
-			layout3.setAxis(AsWingConstants.VERTICAL);
-			layout3.setGap(20);
-			OuterVerticalLayoutPanel.setLayout(layout3);
+			WestSpacer = new JSpacer();
+			WestSpacer.setLocation(new IntPoint(0, 10));
+			WestSpacer.setSize(new IntDimension(0, 385));
+			WestSpacer.setConstraints("West");
+			
+			NorthSpacer = new JSpacer();
+			NorthSpacer.setSize(new IntDimension(307, 0));
+			NorthSpacer.setConstraints("North");
+			
+			SouthSpacer = new JSpacer();
+			SouthSpacer.setLocation(new IntPoint(0, 405));
+			SouthSpacer.setSize(new IntDimension(307, 0));
+			SouthSpacer.setConstraints("South");
+			
+			OuterWestBordering.append(WestSpacer);
+			OuterWestBordering.append(NorthSpacer);
+			OuterWestBordering.append(SouthSpacer);
+			
+			OuterCentererToFixedSizePanel = new JPanel();
+			OuterCentererToFixedSizePanel.setLocation(new IntPoint(428, 4));
+			OuterCentererToFixedSizePanel.setSize(new IntDimension(424, 212));
+			var layout5:BoxLayout = new BoxLayout();
+			OuterCentererToFixedSizePanel.setLayout(layout5);
+			
+			OuterCenterBordering = new JPanel();
+			OuterCenterBordering.setLocation(new IntPoint(560, 74));
+			OuterCenterBordering.setSize(new IntDimension(424, 192));
+			OuterCenterBordering.setConstraints("Center");
+			var layout6:BorderLayout = new BorderLayout();
+			layout6.setHgap(10);
+			layout6.setVgap(20);
+			OuterCenterBordering.setLayout(layout6);
+			
+			WestSpacer = new JSpacer();
+			WestSpacer.setSize(new IntDimension(0, 102));
+			WestSpacer.setConstraints("West");
+			
+			NorthSpacer = new JSpacer();
+			NorthSpacer.setLocation(new IntPoint(0, 0));
+			NorthSpacer.setSize(new IntDimension(424, 0));
+			NorthSpacer.setConstraints("North");
+			
+			EastSpacer = new JSpacer();
+			EastSpacer.setLocation(new IntPoint(212, 0));
+			EastSpacer.setSize(new IntDimension(212, 192));
+			EastSpacer.setConstraints("East");
+			
+			OuterCenterBordering.append(WestSpacer);
+			OuterCenterBordering.append(NorthSpacer);
+			OuterCenterBordering.append(EastSpacer);
 			
 			FieldName = new JTextField();
 			FieldName.setLocation(new IntPoint(0, 0));
-			FieldName.setSize(new IntDimension(320, 70));
-			FieldName.setText("фывпфвыаеп ывап ывап ячап явап явап куывп ячап");
+			FieldName.setSize(new IntDimension(424, 666));
+			FieldName.setPreferredSize(new IntDimension(250, 100));
+			FieldName.setConstraints("Center");
+			var border7:BevelBorder = new BevelBorder();
+			border7.setBevelType(0);
+			border7.setThickness(2);
+			FieldName.setBorder(border7);
 			FieldName.setEditable(false);
 			FieldName.setWordWrap(true);
 			
+			SouthSpacerCenterer = new JPanel();
+			SouthSpacerCenterer.setLocation(new IntPoint(0, 143));
+			SouthSpacerCenterer.setSize(new IntDimension(448, 80));
+			SouthSpacerCenterer.setConstraints("South");
+			var layout8:BorderLayout = new BorderLayout();
+			layout8.setVgap(10);
+			SouthSpacerCenterer.setLayout(layout8);
+			
+			InnerCentererToFixedSizePanel = new JPanel();
+			InnerCentererToFixedSizePanel.setLocation(new IntPoint(0, 0));
+			InnerCentererToFixedSizePanel.setSize(new IntDimension(448, 70));
+			InnerCentererToFixedSizePanel.setConstraints("Center");
+			var layout9:CenterLayout = new CenterLayout();
+			InnerCentererToFixedSizePanel.setLayout(layout9);
+			
 			InnerVerticalLayoutPanel = new JPanel();
 			InnerVerticalLayoutPanel.setLocation(new IntPoint(0, 100));
-			InnerVerticalLayoutPanel.setSize(new IntDimension(320, 70));
-			var layout4:BoxLayout = new BoxLayout();
-			layout4.setAxis(AsWingConstants.VERTICAL);
-			layout4.setGap(10);
-			InnerVerticalLayoutPanel.setLayout(layout4);
+			InnerVerticalLayoutPanel.setSize(new IntDimension(105, 70));
+			var layout10:BoxLayout = new BoxLayout();
+			layout10.setAxis(AsWingConstants.VERTICAL);
+			layout10.setGap(10);
+			InnerVerticalLayoutPanel.setLayout(layout10);
 			
 			MoveTranslationButton = new JButton();
 			MoveTranslationButton.setFont(new ASFont("Tahoma", 16, false, false, false, false));
 			MoveTranslationButton.setLocation(new IntPoint(5, 5));
-			MoveTranslationButton.setSize(new IntDimension(200, 145));
+			MoveTranslationButton.setSize(new IntDimension(105, 30));
 			MoveTranslationButton.setText("Скопировать");
 			MoveTranslationButton.setHorizontalAlignment(AsWingConstants.CENTER);
+			MoveTranslationButton.setVerticalAlignment(AsWingConstants.CENTER);
 			MoveTranslationButton.setHorizontalTextPosition(AsWingConstants.CENTER);
+			MoveTranslationButton.setVerticalTextPosition(AsWingConstants.CENTER);
 			
 			TranslateTranslationButton = new JButton();
 			TranslateTranslationButton.setFont(new ASFont("Tahoma", 16, false, false, false, false));
 			TranslateTranslationButton.setLocation(new IntPoint(47, 5));
-			TranslateTranslationButton.setSize(new IntDimension(200, 145));
-			TranslateTranslationButton.setPreferredSize(new IntDimension(200, 30));
+			TranslateTranslationButton.setSize(new IntDimension(105, 30));
 			TranslateTranslationButton.setText("Перевести");
+			TranslateTranslationButton.setHorizontalAlignment(AsWingConstants.CENTER);
+			TranslateTranslationButton.setVerticalAlignment(AsWingConstants.CENTER);
+			TranslateTranslationButton.setHorizontalTextPosition(AsWingConstants.CENTER);
+			TranslateTranslationButton.setVerticalTextPosition(AsWingConstants.CENTER);
+			
+			SouthSpacer = new JSpacer();
+			SouthSpacer.setLocation(new IntPoint(224, 0));
+			SouthSpacer.setSize(new IntDimension(224, 70));
+			SouthSpacer.setConstraints("South");
+			
+			SouthSpacerCenterer.append(SouthSpacer);
+			
+			OuterEastBordering = new JPanel();
+			OuterEastBordering.setLocation(new IntPoint(618, 4));
+			OuterEastBordering.setSize(new IntDimension(307, 405));
+			var layout11:BorderLayout = new BorderLayout();
+			layout11.setHgap(15);
+			layout11.setVgap(10);
+			OuterEastBordering.setLayout(layout11);
 			
 			TargetTranslation = new JTextArea();
+			TargetTranslation.setName("TargetTranslation");
 			TargetTranslation.setLocation(new IntPoint(710, 20));
 			TargetTranslation.setSize(new IntDimension(300, 150));
 			TargetTranslation.setPreferredSize(new IntDimension(300, 150));
 			TargetTranslation.setConstraints("Center");
-			TargetTranslation.setColumns(-3);
-			TargetTranslation.setText("dfgsdfgsdfgsdg");
+			var border12:BevelBorder = new BevelBorder();
+			border12.setBevelType(1);
+			border12.setThickness(3);
+			TargetTranslation.setBorder(border12);
 			TargetTranslation.setWordWrap(true);
 			
-			append(SourceTranslation);
-			append(OuterVerticalLayoutPanel);
-			append(TargetTranslation);
+			NorthSpacer = new JSpacer();
+			NorthSpacer.setSize(new IntDimension(307, 0));
+			NorthSpacer.setConstraints("North");
 			
-			OuterVerticalLayoutPanel.append(FieldName);
-			OuterVerticalLayoutPanel.append(InnerVerticalLayoutPanel);
+			EastSpacer = new JSpacer();
+			EastSpacer.setLocation(new IntPoint(307, 10));
+			EastSpacer.setSize(new IntDimension(0, 395));
+			EastSpacer.setConstraints("East");
+			
+			SouthSpacer = new JSpacer();
+			SouthSpacer.setLocation(new IntPoint(0, 405));
+			SouthSpacer.setSize(new IntDimension(307, 0));
+			SouthSpacer.setConstraints("South");
+			
+			//component layoution
+			append(OuterWestBordering);
+			append(OuterCentererToFixedSizePanel);
+			append(OuterEastBordering);
+			
+			OuterWestBordering.append(SourceTranslation);
+			
+			OuterCentererToFixedSizePanel.append(OuterCenterBordering);
+			
+			OuterCenterBordering.append(FieldName);
+			OuterCenterBordering.append(SouthSpacerCenterer);
+			
+			SouthSpacerCenterer.append(InnerCentererToFixedSizePanel);
+			
+			InnerCentererToFixedSizePanel.append(InnerVerticalLayoutPanel);
 			
 			InnerVerticalLayoutPanel.append(MoveTranslationButton);
 			InnerVerticalLayoutPanel.append(TranslateTranslationButton);
 			
-			
-			MoveTranslationButton.addActionListener(JustCopyContent);
-			TranslateTranslationButton.addActionListener(processTranslateRequest);
+			OuterEastBordering.append(TargetTranslation);
+			OuterEastBordering.append(NorthSpacer);
+			OuterEastBordering.append(EastSpacer);
+			OuterEastBordering.append(SouthSpacer);
 		}
 		
 		private function JustCopyContent(e:AWEvent):void {
