@@ -8,6 +8,7 @@ package ru.flashader.clausewitzlocalisationhelper {
 	import flash.filesystem.FileMode;
 	import flash.filesystem.FileStream;
 	import flash.net.FileFilter;
+	import flash.text.TextField;
 	import flash.utils.ByteArray;
 	import org.aswing.*;
 	import org.aswing.event.AWEvent;
@@ -239,13 +240,14 @@ package ru.flashader.clausewitzlocalisationhelper {
 				_externalProcess = new NativeProcess();
 				_externalProcessInfo = new NativeProcessStartupInfo();
 				_externalProcessInfo.arguments = new Vector.<String>();
-				with(_externalProcessInfo) {
+				with (_externalProcessInfo) {
 					executable = File.applicationDirectory.resolvePath("externals" + File.separator + "YAMLJSONConverter.exe");
-					workingDirectory = File.documentsDirector;
+					workingDirectory = File.documentsDirectory;
 				};
 			}
-			 _externalProcessInfo.arguments[0] = fullPath;
-			
+			var newArguments:Vector.<String> = new Vector.<String>();
+			newArguments.push(fullPath);
+			_externalProcessInfo.arguments = newArguments;
 			_externalProcess.addEventListener(
 				NativeProcessExitEvent.EXIT,
 				function (e:NativeProcessExitEvent):void {
@@ -282,7 +284,7 @@ package ru.flashader.clausewitzlocalisationhelper {
 		* Translation loop
 		*/
 		
-		private var _currentAlert:JOptionPane;
+		private static var _currentAlert:JOptionPane;
 		private var _currentTranslatingEntry:TranslateEntryPanel;
 		
 		private function initiateTranslate(entry:TranslateEntryPanel):void {
@@ -300,7 +302,7 @@ package ru.flashader.clausewitzlocalisationhelper {
 			WebTranslator.ContinueTranslate(_currentTranslatingEntry.getTargetTranslation().getTextField());
 		}
 		
-		private function ShowModal(title:String, message:String, closeHandler:Function = null, buttons:int = 0):void {
+		private static function ShowModal(title:String, message:String, closeHandler:Function = null, buttons:int = 0):void {
 			CloseModal();
 			_currentAlert = JOptionPane.showMessageDialog(title, message, closeHandler, null, true, null, buttons);
 			_currentAlert.getMsgLabel().setSelectable(closeHandler != null);
@@ -311,12 +313,17 @@ package ru.flashader.clausewitzlocalisationhelper {
 			ShowModal("Произошла ошибка", message, EmptyFunction);
 		}
 		
-		private function CloseModal(e:Event = null):void {
+		private static function CloseModal(e:Event = null):void {
 			if (_currentAlert != null) {
 				_currentAlert.getFrame().dispose();
 			}
 		}
 		
 		private function EmptyFunction(...args):void { }
+		
+		private static function EmergencyLog(log:String):void {
+			ShowModal("Хуйня случилась", log);
+			throw new Error("To prevent code completion");
+		}
 	}
 }

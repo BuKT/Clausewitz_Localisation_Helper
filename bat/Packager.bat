@@ -7,12 +7,15 @@ if not exist %CERT_FILE% goto certificate
 
 :: AIR output
 if not exist %AIR_PATH% md %AIR_PATH%
-set OUTPUT=%AIR_PATH%\%AIR_NAME%%AIR_TARGET%.air
+set OUTPUT_BASE=%AIR_PATH%\%AIR_NAME%%AIR_TARGET%
+set OUTPUT=%OUTPUT_BASE%.air
+set OUTPUT_NATIVE=%OUTPUT_BASE%.exe
 
 :: Package
 echo.
 echo Packaging %AIR_NAME%%AIR_TARGET%.air using certificate %CERT_FILE%...
 call adt -package %OPTIONS% %SIGNING_OPTIONS% %OUTPUT% %APP_XML% %FILE_OR_DIR%
+call adt -package -target native %OUTPUT_NATIVE% %OUTPUT%
 if errorlevel 1 goto failed
 goto end
 
