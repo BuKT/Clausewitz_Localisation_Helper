@@ -1,4 +1,4 @@
-package ru.flashader.clausewitzlocalisationhelper {
+package ru.flashader.clausewitzlocalisationhelper.utils {
 	import flash.display.Stage;
 	import flash.events.EventDispatcher;
 	import flash.geom.Rectangle;

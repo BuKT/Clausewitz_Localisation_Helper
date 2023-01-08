@@ -11,26 +11,33 @@ package ru.flashader.clausewitzlocalisationhelper {
 	import org.aswing.*;
 	import org.aswing.AsWingManager;
 	import org.aswing.event.AWEvent;
+	import ru.flashader.clausewitzlocalisationhelper.data.TranslationFileContent;
+	import ru.flashader.clausewitzlocalisationhelper.panels.TranslateEntryPanel;
+	import ru.flashader.clausewitzlocalisationhelper.panels.TranslationsPanel;
+	import ru.flashader.clausewitzlocalisationhelper.utils.WebTranslator;
+	import ru.flashader.clausewitzlocalisationhelper.utils.WebTranslatorEvent;
 	
 	/**
 	* @author Ilja 'flashader' Mickodin
 	*/
 	
-	public class TranslatingWindowController extends Sprite {
+	public class ClausewitzLocalizationHelper extends Sprite {
 		private static const PLEASE_WAIT:String = "Подождите примерно три секунды.";
 		private static const PLEASE_PRESS:String = "Нажмите 'Ctrl'+'Shift'+'S', а потом закройте это окно";
 		private static const PLEASE_WAIT_AGAIN:String = "И ещё три секунды.";
 		private static const FLASHADER_TEMPORARY_TEMPLATE:String = "###OLOLO_FLASHADER_TEMPORARY_TEMPLATE_OLOLO###";
+		private static const CHOOSE_SOURCE_YAML = "Выберите исходный yaml файл";
+		private static const SAY_CHEESE = "Сейчас вылетит птичка";
 		
 		private var scrollPane:JScrollPane;
 		private var _mainASWindow:JWindow;
-		private var _translatingWindow:TranslationsWindow;
+		private var _translatingWindow:TranslationsPanel;
 		private static const yamlFilters:Array = [new FileFilter("Yaml", "*.yml")];
 		private var _sourceValues:Object;
 		private var _doFastCheck:Boolean = true;
 		private var _lastLoadedfilePath:String;
 		
-		public function TranslatingWindowController() {
+		public function ClausewitzLocalizationHelper() {
 			super();
 			AsWingManager.setRoot(this);
 			
@@ -39,7 +46,7 @@ package ru.flashader.clausewitzlocalisationhelper {
 			WebTranslator.addEventListener(WebTranslatorEvent.REQUEST_USER_INPUT, handleUserInputRequest);
 			WebTranslator.addEventListener(WebTranslatorEvent.TRANSLATION_ENDED, CloseModal);
 			
-			_translatingWindow = new TranslationsWindow();
+			_translatingWindow = new TranslationsPanel();
 			_translatingWindow.addTranslateRequestListener(initiateTranslate);
 			_translatingWindow.getLoadButton().addActionListener(OpenLoadDialog);
 			
@@ -52,7 +59,7 @@ package ru.flashader.clausewitzlocalisationhelper {
 		private function OpenLoadDialog(e:AWEvent):void {
 			var file:File = new File();
 			file.addEventListener(Event.SELECT, fileToLoadSelectedListener);
-			file.browseForOpen("Выберите исходный yaml файл", yamlFilters);
+			file.browseForOpen(CHOOSE_SOURCE_YAML, yamlFilters);
 		}
 		
 		private function fileToLoadSelectedListener(e:Event):void {
@@ -70,7 +77,7 @@ package ru.flashader.clausewitzlocalisationhelper {
 		private function TryParseSource(fileContent:String, fullPath:String):void {
 			_sourceValues = new Object();
 			if (_doFastCheck) {
-				ShowModal("Подождите", "Сейчас вылетит птичка");
+				ShowModal("Подождите", SAY_CHEESE);
 				DoFastParsing(fileContent, fullPath);
 			} else {
 				var strings:Array = fileContent.replace("\\n", FLASHADER_TEMPORARY_TEMPLATE).split("\r\n");

@@ -1,4 +1,4 @@
-package ru.flashader.clausewitzlocalisationhelper {
+package ru.flashader.clausewitzlocalisationhelper.utils {
 	import flash.events.Event;
 	
 	/**

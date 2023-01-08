@@ -1,10 +1,11 @@
-package ru.flashader.clausewitzlocalisationhelper {
+package ru.flashader.clausewitzlocalisationhelper.panels {
 	import org.aswing.*;
 	import org.aswing.border.*;
 	import org.aswing.colorchooser.*;
 	import org.aswing.event.AWEvent;
 	import org.aswing.ext.*;
 	import org.aswing.geom.*;
+	import ru.flashader.clausewitzlocalisationhelper.data.TranslateEntry;
 	
 	/**
 	* @author Ilja 'flashader' Mickodin

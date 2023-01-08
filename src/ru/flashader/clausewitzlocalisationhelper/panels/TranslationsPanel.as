@@ -1,16 +1,18 @@
-package ru.flashader.clausewitzlocalisationhelper {
+package ru.flashader.clausewitzlocalisationhelper.panels {
 	import flash.events.Event;
 	import org.aswing.*;
 	import org.aswing.border.*;
 	import org.aswing.colorchooser.*;
 	import org.aswing.ext.*;
 	import org.aswing.geom.*;
+	import ru.flashader.clausewitzlocalisationhelper.data.TranslateEntry;
+	import ru.flashader.clausewitzlocalisationhelper.data.TranslationFileContent;
 
 	/**
 	* @author Ilja 'flashader' Mickodin
 	*/
 	
-	public class TranslationsWindow extends JPanel {
+	public class TranslationsPanel extends JPanel {
 		
 		private var TopBlock:JPanel;
 		private var LeftButtonCenterer:JPanel;
@@ -26,7 +28,7 @@ package ru.flashader.clausewitzlocalisationhelper {
 		private var _entriesPanelList:Vector.<TranslateEntryPanel> = new Vector.<TranslateEntryPanel>();
 		private var _translateRequestCallback:Function;
 		
-		public function TranslationsWindow() {
+		public function TranslationsPanel() {
 			setSize(new IntDimension(1280, 720));
 			setPreferredSize(new IntDimension(1280, 720));
 			var layout0:BorderLayout = new BorderLayout();

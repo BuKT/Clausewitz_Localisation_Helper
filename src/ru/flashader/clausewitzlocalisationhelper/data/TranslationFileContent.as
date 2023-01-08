@@ -1,4 +1,4 @@
-package ru.flashader.clausewitzlocalisationhelper {
+package ru.flashader.clausewitzlocalisationhelper.data {
 	/**
 	* @author Ilja 'flashader' Mickodin
 	*/
