@@ -159,7 +159,6 @@ package ru.flashader.clausewitzlocalisationhelper.panels {
 			
 			for each (var entryPanel:TranslateEntryPanel in _entriesPanelList) {
 				//entryPanel.dispose(); //TODO: flashader Да сделай ты уже нормальный пул!
-
 				ItemsPlaceholder.remove(entryPanel);
 			}
 			
@@ -172,6 +171,18 @@ package ru.flashader.clausewitzlocalisationhelper.panels {
 				entryPanel.addTranslateRequestListener(RecastTranslateRequest);
 				ItemsPlaceholder.append(entryPanel);
 			}
+		}
+		
+		public function CollectTranslations():TranslationFileContent {
+			var toReturn:TranslationFileContent = new TranslationFileContent({});
+			toReturn.LanguagePostfix = "l_russian";
+			for each (var entryPanel:TranslateEntryPanel in _entriesPanelList) {
+				var entry:TranslateEntry = new TranslateEntry();
+				entry.Key = entryPanel.getKey();
+				entry.Value= entryPanel.getTargetTranslation().getText();
+				toReturn.TranslateEntriesList.push(entry);
+			}
+			return toReturn;
 		}
 	}
 }

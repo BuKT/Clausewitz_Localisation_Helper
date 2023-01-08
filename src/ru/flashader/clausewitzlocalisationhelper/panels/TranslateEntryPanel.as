@@ -1,4 +1,4 @@
-package ru.flashader.clausewitzlocalisationhelper.panels {
+package ru.flashader.clausewitzlocalisationhelper.panels {
 	import org.aswing.*;
 	import org.aswing.border.*;
 	import org.aswing.colorchooser.*;

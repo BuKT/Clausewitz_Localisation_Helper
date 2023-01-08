@@ -8,14 +8,12 @@ package ru.flashader.clausewitzlocalisationhelper {
 	import flash.filesystem.FileMode;
 	import flash.filesystem.FileStream;
 	import flash.net.FileFilter;
+	import flash.utils.ByteArray;
 	import org.aswing.*;
-	import org.aswing.AsWingManager;
 	import org.aswing.event.AWEvent;
 	import ru.flashader.clausewitzlocalisationhelper.data.TranslationFileContent;
-	import ru.flashader.clausewitzlocalisationhelper.panels.TranslateEntryPanel;
-	import ru.flashader.clausewitzlocalisationhelper.panels.TranslationsPanel;
-	import ru.flashader.clausewitzlocalisationhelper.utils.WebTranslator;
-	import ru.flashader.clausewitzlocalisationhelper.utils.WebTranslatorEvent;
+	import ru.flashader.clausewitzlocalisationhelper.panels.*;
+	import ru.flashader.clausewitzlocalisationhelper.utils.*;
 	
 	/**
 	* @author Ilja 'flashader' Mickodin
@@ -26,16 +24,20 @@ package ru.flashader.clausewitzlocalisationhelper {
 		private static const PLEASE_PRESS:String = "Нажмите 'Ctrl'+'Shift'+'S', а потом закройте это окно";
 		private static const PLEASE_WAIT_AGAIN:String = "И ещё три секунды.";
 		private static const FLASHADER_TEMPORARY_TEMPLATE:String = "###OLOLO_FLASHADER_TEMPORARY_TEMPLATE_OLOLO###";
-		private static const CHOOSE_SOURCE_YAML = "Выберите исходный yaml файл";
-		private static const SAY_CHEESE = "Сейчас вылетит птичка";
+		private static const CHOOSE_SOURCE_YAML:String = "Выберите исходный yaml файл";
+		private static const SAY_CHEESE:String = "Сейчас вылетит птичка";
 		
 		private var scrollPane:JScrollPane;
 		private var _mainASWindow:JWindow;
 		private var _translatingWindow:TranslationsPanel;
 		private static const yamlFilters:Array = [new FileFilter("Yaml", "*.yml")];
+		static public const RUSSIAN_RUSSIAN_RUSSIAN:String = "Вы загрузили файл с русской локализацией. И пытаетесь сохранить в него же" +
+			"\nВы абсолютно точно уверены, что знаете, что делаете?" +
+			"\n\n(В итоговый файл не будут записаны строки слева" +
+			"\n только те, что справа (даже если они пустые)";
 		private var _sourceValues:Object;
 		private var _doFastCheck:Boolean = true;
-		private var _lastLoadedfilePath:String;
+		private var _lastLoadedfile:File = null;
 		
 		public function ClausewitzLocalizationHelper() {
 			super();
@@ -49,11 +51,123 @@ package ru.flashader.clausewitzlocalisationhelper {
 			_translatingWindow = new TranslationsPanel();
 			_translatingWindow.addTranslateRequestListener(initiateTranslate);
 			_translatingWindow.getLoadButton().addActionListener(OpenLoadDialog);
+			_translatingWindow.getSaveButton().addActionListener(SaveTranslateEntries);
 			
 			_mainASWindow = new JWindow(this);
 			_mainASWindow.setContentPane(_translatingWindow);
 			_mainASWindow.setSizeWH(stage.stageWidth, stage.stageHeight);
 			_mainASWindow.show();
+		}
+		
+		private function SaveTranslateEntries(e:AWEvent):void {
+			if (_lastLoadedfile == null) {
+				return;
+			}
+			var resultFilePath:String = _lastLoadedfile.nativePath.substring(0, _lastLoadedfile.nativePath.lastIndexOf("l_english.")) + "l_russian.json";
+			var resultOutputFilePath:String = resultFilePath.substring(0, resultFilePath.lastIndexOf(".")) + ".yml";
+			
+			if (
+				resultFilePath == "l_russian.json"
+			) {
+				ShowModal(
+					"Русский русскому русский",
+					RUSSIAN_RUSSIAN_RUSSIAN,
+					function(
+						userChoice:int
+					):void {
+						if (
+							(
+								userChoice &
+								JOptionPane.YES
+							) > 0
+						) {
+							ShowModal(
+								"Ну, как хотите",
+								"На этом мои полномочия всё",
+								function(
+									secondUserChoice:int
+								):void {
+									if (
+										(
+											secondUserChoice &
+											JOptionPane.OK
+										) > 0
+									) {
+										resultFilePath = _lastLoadedfile.nativePath.substring(
+											0,
+											_lastLoadedfile.nativePath.lastIndexOf(
+												"."
+											)
+										) + ".json";
+										resultOutputFilePath = resultFilePath.substring(
+											0,
+											resultFilePath.lastIndexOf(
+												"."
+											)
+										) + ".yml";
+										WriteResultAndCallToParseIt(
+											resultFilePath,
+											resultFilePath.substring(
+												0,
+												resultFilePath.lastIndexOf(
+													"." //Не смотри на на код такими глазами - в подобном стиле я могу писать бесконечно. И что ты мне сделаешь? Я в другом моде!
+												)
+											) + ".yml"
+										);
+									}
+								},
+								JOptionPane.OK
+							)
+						}
+					},
+					JOptionPane.YES | JOptionPane.NO
+				);
+				return;
+			}
+			
+			var resultOutputFile:File = new File(resultOutputFilePath);
+			if (resultOutputFile.exists) {
+				ShowModal(
+					"Файл существует",
+					"Найден уже существующий файл:\n" + resultOutputFile.nativePath + "\n Перезаписываю?",
+					function(userChoice:int):void {
+						if ((userChoice & JOptionPane.YES) > 0) {
+							WriteResultAndCallToParseIt(resultFilePath, resultOutputFilePath);
+						}
+					},
+					JOptionPane.YES | JOptionPane.NO
+				);
+			} else {
+				WriteResultAndCallToParseIt(resultFilePath, resultOutputFilePath);
+			}
+		}
+		
+		private function WriteResultAndCallToParseIt(resultFilePath:String, resultOutputFilePath:String):void {
+			var translationResult:TranslationFileContent = _translatingWindow.CollectTranslations();
+			var translationResultJSON:String = JSON.stringify(translationResult);
+			
+			var tempFile:File = File.createTempFile();
+			var stream:FileStream = new FileStream();
+			var jsonBytes:ByteArray = new ByteArray();
+			
+			jsonBytes.writeMultiByte(translationResultJSON, "utf-8");
+			stream.open(tempFile, FileMode.WRITE);
+			stream.writeBytes(jsonBytes);
+			stream.close();
+			
+			var resultFile:File = new File(resultFilePath);
+			
+			tempFile.moveTo(resultFile, true);
+			
+			CallExternalParser(
+				resultFilePath,
+				resultOutputFilePath,
+				function(some:String):void {
+					RemoveFileAtPath(resultFilePath);
+					ShowModal("Поздравляю!", "Ещё один файл переведён!", EmptyFunction, JOptionPane.OK);
+				},
+				ShowErrorMessage
+			);
 		}
 		
 		private function OpenLoadDialog(e:AWEvent):void {
@@ -70,14 +184,13 @@ package ru.flashader.clausewitzlocalisationhelper {
 			var fileData:String = stream.readUTFBytes(stream.bytesAvailable);
 			stream.close();
 			var fullPath:String = file.nativePath;
-			_lastLoadedfilePath = fullPath.replace(file.parent.nativePath + File.separator, "");
+			_lastLoadedfile = file;
 			TryParseSource(fileData, fullPath);
 		}
 		
 		private function TryParseSource(fileContent:String, fullPath:String):void {
 			_sourceValues = new Object();
 			if (_doFastCheck) {
-				ShowModal("Подождите", SAY_CHEESE);
 				DoFastParsing(fileContent, fullPath);
 			} else {
 				var strings:Array = fileContent.replace("\\n", FLASHADER_TEMPORARY_TEMPLATE).split("\r\n");
@@ -92,8 +205,14 @@ package ru.flashader.clausewitzlocalisationhelper {
 				fullPath,
 				fullPath.substring(0, fullPath.lastIndexOf(".")) + ".json",
 				FastParsingCompleteHandler,
-				ShowErrorMessage
+				CancelLoadingAndShowErrorMessage,
+				true
 			);
+		}
+		
+		private function CancelLoadingAndShowErrorMessage(message:String):void {
+			_lastLoadedfile = null;
+			ShowErrorMessage(message);
 		}
 		
 		private function FastParsingCompleteHandler(jsonText:String):void {
@@ -101,14 +220,21 @@ package ru.flashader.clausewitzlocalisationhelper {
 		}
 		
 		private function EndParsingAndFillViews(content:TranslationFileContent):void {			
-			_translatingWindow.FillWithSource(content, _lastLoadedfilePath);
+			_translatingWindow.FillWithSource(content, _lastLoadedfile.nativePath.replace(_lastLoadedfile.parent.nativePath + File.separator, ""));
 			CloseModal();
 		}
 		
 		private var _externalProcess:NativeProcess;
 		private var _externalProcessInfo:NativeProcessStartupInfo;
 		
-		private function CallExternalParser(fullPath:String, fullOutPath:String, successHandler:Function, errorHandler:Function):void {
+		private function CallExternalParser(
+			fullPath:String,
+			fullOutPath:String,
+			successHandler:Function,
+			errorHandler:Function,
+			doRemoveOutputFileAfterReading:Boolean = false
+		):void {
+			ShowModal("Подождите", SAY_CHEESE);
 			if (_externalProcessInfo == null) {
 				_externalProcess = new NativeProcess();
 				_externalProcessInfo = new NativeProcessStartupInfo();
@@ -127,14 +253,21 @@ package ru.flashader.clausewitzlocalisationhelper {
 					switch (e.exitCode) {
 						case 0:
 							successHandler(ReadFileAsText(fullOutPath));
+							doRemoveOutputFileAfterReading && RemoveFileAtPath(fullOutPath);
 							break;
 						default:
-							errorHandler(ReadFileAsText(fullPath.substring(0, fullPath.lastIndexOf(".")) + ".log"));
+							var logPath:String = fullPath.substring(0, fullPath.lastIndexOf(".")) + ".log";
+							errorHandler(ReadFileAsText(logPath));
+							RemoveFileAtPath(logPath);
 							break;
 					}
 				}
 			);
 			_externalProcess.start(_externalProcessInfo);
+		}
+		
+		private function RemoveFileAtPath(pathToRemove:String):void {
+			new File(pathToRemove).deleteFile();
 		}
 		
 		private function ReadFileAsText(path:String):String {
@@ -167,9 +300,9 @@ package ru.flashader.clausewitzlocalisationhelper {
 			WebTranslator.ContinueTranslate(_currentTranslatingEntry.getTargetTranslation().getTextField());
 		}
 		
-		private function ShowModal(title:String, message:String, closeHandler:Function = null):void {
+		private function ShowModal(title:String, message:String, closeHandler:Function = null, buttons:int = 0):void {
 			CloseModal();
-			_currentAlert = JOptionPane.showMessageDialog(title, message, closeHandler, null, true, null, closeHandler != null ? JOptionPane.CLOSE : 0);
+			_currentAlert = JOptionPane.showMessageDialog(title, message, closeHandler, null, true, null, buttons);
 			_currentAlert.getMsgLabel().setSelectable(closeHandler != null);
 			_currentAlert.getFrame().getTitleBar().getCloseButton().setVisible(closeHandler != null);
 		}
