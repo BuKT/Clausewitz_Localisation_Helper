@@ -4,6 +4,7 @@
   <versionNumber>1.0</versionNumber>
   <filename>ClausewitzLocalisationHelper</filename>
   <name>Clausewitz_Localisation_Helper</name>
+	<supportedProfiles>extendedDesktop</supportedProfiles>
   <initialWindow>
     <title>Clausewitz_Localisation_Helper</title>
     <content>ClausewitzLocalisationHelper.swf</content>
