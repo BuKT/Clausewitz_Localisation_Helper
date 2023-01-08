@@ -40,8 +40,7 @@ package ru.flashader.clausewitzlocalisationhelper {
 			WebTranslator.addEventListener(WebTranslatorEvent.TRANSLATION_ENDED, CloseModal);
 			
 			_translatingWindow = new TranslationsWindow();
-			//entry.addTranslateRequestListener(initiateTranslate);
-			
+			_translatingWindow.addTranslateRequestListener(initiateTranslate);
 			_translatingWindow.getLoadButton().addActionListener(OpenLoadDialog);
 			
 			_mainASWindow = new JWindow(this);

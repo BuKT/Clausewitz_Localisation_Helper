@@ -1,11 +1,10 @@
 package ru.flashader.clausewitzlocalisationhelper {
 	import flash.events.Event;
-	import flash.events.TextEvent;
 	import org.aswing.*;
 	import org.aswing.border.*;
-	import org.aswing.geom.*;
 	import org.aswing.colorchooser.*;
 	import org.aswing.ext.*;
+	import org.aswing.geom.*;
 
 	/**
 	* @author Ilja 'flashader' Mickodin
@@ -25,6 +24,7 @@ package ru.flashader.clausewitzlocalisationhelper {
 		private var ItemsPlaceholder:JPanel;
 		
 		private var _entriesPanelList:Vector.<TranslateEntryPanel> = new Vector.<TranslateEntryPanel>();
+		private var _translateRequestCallback:Function;
 		
 		public function TranslationsWindow() {
 			setSize(new IntDimension(1280, 720));
@@ -143,12 +143,21 @@ package ru.flashader.clausewitzlocalisationhelper {
 			return SaveButton;
 		}
 		
+		public function addTranslateRequestListener(callback:Function):void {
+			_translateRequestCallback = callback;
+		}
+		
+		private function RecastTranslateRequest(entry:TranslateEntryPanel):void {
+			_translateRequestCallback != null && _translateRequestCallback(entry);
+		}
+		
 		public function FillWithSource(sourceValues:TranslationFileContent, path:String):void {
 			FileNameLabel.setText(path);
 			var filter:String = FilterString.getText().toLowerCase();
 			
 			for each (var entryPanel:TranslateEntryPanel in _entriesPanelList) {
 				//entryPanel.dispose(); //TODO: flashader Да сделай ты уже нормальный пул!
+
 				ItemsPlaceholder.remove(entryPanel);
 			}
 			
@@ -158,6 +167,7 @@ package ru.flashader.clausewitzlocalisationhelper {
 				var entryPanel:TranslateEntryPanel = new TranslateEntryPanel(entry);
 				_entriesPanelList.push(entryPanel);
 				entryPanel.setVisible(filter.length == 0 || entryPanel.getKey().toLowerCase().indexOf(filter) > -1);
+				entryPanel.addTranslateRequestListener(RecastTranslateRequest);
 				ItemsPlaceholder.append(entryPanel);
 			}
 		}
