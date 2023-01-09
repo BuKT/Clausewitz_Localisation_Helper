@@ -260,26 +260,6 @@ package ru.flashader.clausewitzlocalisationhelper.panels {
 			TargetTranslation.setText(SourceTranslation.getText());
 		}
 		
-		//_________getters_________
-		
-		public function getSourceTranslation():JTextArea {
-			return SourceTranslation;
-		}
-		
-		
-		public function getFieldName():JTextField {
-			return FieldName;
-		}
-		
-		
-		public function getMoveTranslationButton():JButton {
-			return MoveTranslationButton;
-		}
-		
-		public function getTranslateTranslationButton():JButton {
-			return TranslateTranslationButton;
-		}
-		
 		public function getTargetTranslation():JTextArea {
 			return TargetTranslation;
 		}
@@ -293,7 +273,11 @@ package ru.flashader.clausewitzlocalisationhelper.panels {
 		}
 		
 		private function processTranslateRequest(e:AWEvent):void {
-			_translateRequestCallback != null && _translateRequestCallback(this);
+			_translateRequestCallback != null && _translateRequestCallback(SetTranslatedText, SourceTranslation.getText());
+		}
+		
+		private function SetTranslatedText(translatedText:String):void {
+			TargetTranslation.setText(translatedText);
 		}
 	}
 }

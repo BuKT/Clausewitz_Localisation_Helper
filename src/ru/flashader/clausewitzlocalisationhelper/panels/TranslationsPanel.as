@@ -25,11 +25,14 @@ package ru.flashader.clausewitzlocalisationhelper.panels {
 		private var FilterLabel:JLabel;
 		private var RightButtonCenterer:JPanel;
 		private var SaveButton:JButton;
+		private var TabbingContainer:JTabbedPane;
 		private var ScrollPane:JScrollPane;
+		private var ChinesedListPlaceholder:JPanel;
 		private var ItemsPlaceholder:JPanel;
 		
 		private var _entriesPanelList:Vector.<TranslateEntryPanel> = new Vector.<TranslateEntryPanel>();
 		private var _translateRequestCallback:Function;
+		private var _chinesedList:ChinesedTranslatesList;
 		
 		public function TranslationsPanel() {
 			setSize(new IntDimension(1280, 720));
@@ -121,7 +124,12 @@ package ru.flashader.clausewitzlocalisationhelper.panels {
 			SaveButton.setPreferredSize(new IntDimension(150, 26));
 			SaveButton.setText("Save...");
 			
+			TabbingContainer = new JTabbedPane();
+			TabbingContainer.setLocation(new IntPoint(0, 74));
+			TabbingContainer.setSize(new IntDimension(1280, 646));
+			
 			ScrollPane = new JScrollPane();
+			ScrollPane.setName("Длинный список");
 			ScrollPane.setLocation(new IntPoint(0, 41));
 			ScrollPane.setSize(new IntDimension(1280, 0));
 			
@@ -132,9 +140,21 @@ package ru.flashader.clausewitzlocalisationhelper.panels {
 			layout7.setAxis(AsWingConstants.VERTICAL);
 			ItemsPlaceholder.setLayout(layout7);
 			
+			
+			
+			ChinesedListPlaceholder = new JPanel();
+			with (ChinesedListPlaceholder) {
+				setName("Табличка");
+				setLocation(new IntPoint(0, 74));
+				setSize(new IntDimension(1280, 646));
+				var layout8:BoxLayout = new BoxLayout();
+				layout8.setAxis(AsWingConstants.VERTICAL);
+				setLayout(layout8);
+			}
+			
 			//component layoution
 			append(TopBlock);
-			append(ScrollPane);
+			append(TabbingContainer);
 			
 			TopBlock.append(LeftButtonCenterer);
 			TopBlock.append(TitleFilterBorderLayout);
@@ -151,9 +171,14 @@ package ru.flashader.clausewitzlocalisationhelper.panels {
 			
 			RightButtonCenterer.append(SaveButton);
 			
+			TabbingContainer.append(ScrollPane);
+			TabbingContainer.append(ChinesedListPlaceholder);
+			
 			ScrollPane.append(ItemsPlaceholder);
 			
 			
+			_chinesedList = new ChinesedTranslatesList();
+			ChinesedListPlaceholder.append(_chinesedList);
 			
 			FilterString.getTextField().addEventListener(Event.CHANGE, FilterEntries);
 		}
@@ -163,6 +188,7 @@ package ru.flashader.clausewitzlocalisationhelper.panels {
 			for each (var entryPanel:TranslateEntryPanel in _entriesPanelList) {
 				entryPanel.setVisible(filter.length == 0 || entryPanel.getKey().toLowerCase().indexOf(filter) > -1);
 			}
+			_chinesedList.FilterData(filter);
 		}
 		
 		public function getLoadButton():JButton {
@@ -187,8 +213,8 @@ package ru.flashader.clausewitzlocalisationhelper.panels {
 			_translateRequestCallback = callback;
 		}
 		
-		private function RecastTranslateRequest(entry:TranslateEntryPanel):void {
-			_translateRequestCallback != null && _translateRequestCallback(entry);
+		private function RecastTranslateRequest(callback:Function, textToTranslate:String):void {
+			_translateRequestCallback != null && _translateRequestCallback(callback, textToTranslate);
 		}
 		
 		public function FillWithSource(sourceValues:TranslationFileContent, path:String):void {
@@ -209,18 +235,29 @@ package ru.flashader.clausewitzlocalisationhelper.panels {
 				entryPanel.addTranslateRequestListener(RecastTranslateRequest);
 				ItemsPlaceholder.append(entryPanel);
 			}
+			
+			_chinesedList.FillWithSource(sourceValues, filter);
+			_chinesedList.addTranslateRequestListener(RecastTranslateRequest);
 		}
 		
 		public function CollectTranslations():TranslationFileContent {
 			var toReturn:TranslationFileContent = new TranslationFileContent({});
 			toReturn.LanguagePostfix = "l_russian";
-			for each (var entryPanel:TranslateEntryPanel in _entriesPanelList) {
-				var entry:TranslateEntry = new TranslateEntry();
-				entry.Key = entryPanel.getKey();
-				entry.Value= entryPanel.getTargetTranslation().getText();
-				toReturn.TranslateEntriesList.push(entry);
+			switch (TabbingContainer.getSelectedIndex()) {
+				case 0:
+					for each (var entryPanel:TranslateEntryPanel in _entriesPanelList) {
+						var entry:TranslateEntry = new TranslateEntry();
+						entry.Key = entryPanel.getKey();
+						entry.Value = entryPanel.getTargetTranslation().getText();
+						toReturn.TranslateEntriesList.push(entry);
+					};
+					break;
+				case 1:
+					toReturn.TranslateEntriesList = _chinesedList.CollectData();
+					break;
 			}
 			return toReturn;
+			
 		}
 	}
 }

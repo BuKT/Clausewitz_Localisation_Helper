@@ -22,7 +22,7 @@ package ru.flashader.clausewitzlocalisationhelper {
 	
 	public class ClausewitzLocalizationHelper extends Sprite {
 		private static const PLEASE_WAIT:String = "Подождите примерно три секунды.";
-		private static const PLEASE_PRESS:String = "Нажмите 'Ctrl'+'Shift'+'S', а потом закройте это окно";
+		private static const PLEASE_PRESS:String = "Нажмите 'Ctrl'+'Shift'+'S', а потом закройте это окно\n\nИмейте в виду, функционал перевода нестабилен и зависит не от меня\nЕсли не перевелось - попробуйте ещё раз";
 		private static const PLEASE_WAIT_AGAIN:String = "И ещё три секунды.";
 		private static const FLASHADER_TEMPORARY_TEMPLATE:String = "###OLOLO_FLASHADER_TEMPORARY_TEMPLATE_OLOLO###";
 		private static const CHOOSE_SOURCE_YAML:String = "Выберите исходный yaml файл";
@@ -285,12 +285,12 @@ package ru.flashader.clausewitzlocalisationhelper {
 		*/
 		
 		private static var _currentAlert:JOptionPane;
-		private var _currentTranslatingEntry:TranslateEntryPanel;
+		private var _currentTranslatingCallback:Function;
 		
-		private function initiateTranslate(entry:TranslateEntryPanel):void {
+		private function initiateTranslate(callback:Function, textToTranslate:String):void {
 			ShowModal("Идёт перевод", PLEASE_WAIT);
-			_currentTranslatingEntry = entry;
-			WebTranslator.TranslateMe(_currentTranslatingEntry.getSourceTranslation().getText(), stage);
+			_currentTranslatingCallback = callback;
+			WebTranslator.TranslateMe(textToTranslate, stage);
 		}
 		
 		private function handleUserInputRequest(e:Event):void {
@@ -299,7 +299,7 @@ package ru.flashader.clausewitzlocalisationhelper {
 		
 		private function continueTranslate(e:int):void {
 			ShowModal("Спасибо", PLEASE_WAIT_AGAIN);
-			WebTranslator.ContinueTranslate(_currentTranslatingEntry.getTargetTranslation().getTextField());
+			WebTranslator.ContinueTranslate(_currentTranslatingCallback);
 		}
 		
 		private static function ShowModal(title:String, message:String, closeHandler:Function = null, buttons:int = 0):void {

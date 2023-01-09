@@ -1,0 +1,511 @@
+<AsWingUI name="ChinesedTranslatesList" packageName="ru.flashader.clausewitzlocalisationhelper.guitemplates">
+  <Com name="JPanel" id="ChinesedTranslatesList">
+    <Properties>
+      <Property name="id" type="id">
+        <Value value="ChinesedTranslatesList"/>
+      </Property>
+      <Property name="attr_scope" type="attr_scope">
+        <Value value="private"/>
+      </Property>
+      <Property name="getter_scope" type="getter_scope">
+        <Value value="none"/>
+      </Property>
+      <Property name="Size" type="Size">
+        <Value value="729,703"/>
+      </Property>
+      <Property name="Layout" type="Layout">
+        <Value>
+          <Layout name="BorderLayout">
+            <Properties>
+              <Property name="Hgap" type="Hgap">
+                <Value value="10"/>
+              </Property>
+              <Property name="Vgap" type="Vgap">
+                <Value value="10"/>
+              </Property>
+            </Properties>
+          </Layout>
+        </Value>
+      </Property>
+    </Properties>
+    <Com name="JPanel" id="GappingContainer">
+      <Properties>
+        <Property name="id" type="id">
+          <Value value="GappingContainer"/>
+        </Property>
+        <Property name="attr_scope" type="attr_scope">
+          <Value value="private"/>
+        </Property>
+        <Property name="getter_scope" type="getter_scope">
+          <Value value="none"/>
+        </Property>
+        <Property name="Size" type="Size">
+          <Value value="729,703"/>
+        </Property>
+        <Property name="Constraints" type="Constraints">
+          <Value value="Center"/>
+        </Property>
+        <Property name="Layout" type="Layout">
+          <Value>
+            <Layout name="BorderLayout">
+              <Properties/>
+            </Layout>
+          </Value>
+        </Property>
+      </Properties>
+      <Com name="JScrollPane" id="TableContainer">
+        <Properties>
+          <Property name="id" type="id">
+            <Value value="TableContainer"/>
+          </Property>
+          <Property name="attr_scope" type="attr_scope">
+            <Value value="private"/>
+          </Property>
+          <Property name="getter_scope" type="getter_scope">
+            <Value value="none"/>
+          </Property>
+          <Property name="Size" type="Size">
+            <Value value="729,651"/>
+          </Property>
+        </Properties>
+        <Com name="JTable" id="EntriesTable">
+          <Properties>
+            <Property name="id" type="id">
+              <Value value="EntriesTable"/>
+            </Property>
+            <Property name="attr_scope" type="attr_scope">
+              <Value value="private"/>
+            </Property>
+            <Property name="getter_scope" type="getter_scope">
+              <Value value="none"/>
+            </Property>
+            <Property name="Size" type="Size">
+              <Value value="729,651"/>
+            </Property>
+            <Property name="SelectionMode" type="SelectionMode">
+              <Value value="0"/>
+            </Property>
+            <Property name="AutoResizeMode" type="AutoResizeMode">
+              <Value value="4"/>
+            </Property>
+            <Property name="RowHeight" type="RowHeight">
+              <Value value="24"/>
+            </Property>
+            <Property name="ShowHorizontalLines" type="ShowHorizontalLines">
+              <Value value="true"/>
+            </Property>
+            <Property name="ShowVerticalLines" type="ShowVerticalLines">
+              <Value value="true"/>
+            </Property>
+            <Property name="ShowGrid" type="ShowGrid">
+              <Value value="true"/>
+            </Property>
+          </Properties>
+        </Com>
+      </Com>
+      <Com name="JPanel" id="FooterContainer">
+        <Properties>
+          <Property name="id" type="id">
+            <Value value="FooterContainer"/>
+          </Property>
+          <Property name="attr_scope" type="attr_scope">
+            <Value value="private"/>
+          </Property>
+          <Property name="getter_scope" type="getter_scope">
+            <Value value="none"/>
+          </Property>
+          <Property name="Location" type="Location">
+            <Value value="0,703"/>
+          </Property>
+          <Property name="Size" type="Size">
+            <Value value="729,52"/>
+          </Property>
+          <Property name="Constraints" type="Constraints">
+            <Value value="South"/>
+          </Property>
+          <Property name="Layout" type="Layout">
+            <Value>
+              <Layout name="BorderLayout">
+                <Properties>
+                  <Property name="Hgap" type="Hgap">
+                    <Value value="10"/>
+                  </Property>
+                  <Property name="Vgap" type="Vgap">
+                    <Value value="10"/>
+                  </Property>
+                </Properties>
+              </Layout>
+            </Value>
+          </Property>
+        </Properties>
+        <Com name="JPanel" id="TextsBlock">
+          <Properties>
+            <Property name="id" type="id">
+              <Value value="TextsBlock"/>
+            </Property>
+            <Property name="attr_scope" type="attr_scope">
+              <Value value="private"/>
+            </Property>
+            <Property name="getter_scope" type="getter_scope">
+              <Value value="none"/>
+            </Property>
+            <Property name="Size" type="Size">
+              <Value value="692,78"/>
+            </Property>
+            <Property name="Layout" type="Layout">
+              <Value>
+                <Layout name="BoxLayout">
+                  <Properties>
+                    <Property name="Axis" type="Axis">
+                      <Value value="1"/>
+                    </Property>
+                  </Properties>
+                </Layout>
+              </Value>
+            </Property>
+          </Properties>
+          <Com name="JPanel" id="SourceContainer">
+            <Properties>
+              <Property name="id" type="id">
+                <Value value="SourceContainer"/>
+              </Property>
+              <Property name="attr_scope" type="attr_scope">
+                <Value value="private"/>
+              </Property>
+              <Property name="getter_scope" type="getter_scope">
+                <Value value="none"/>
+              </Property>
+              <Property name="Location" type="Location">
+                <Value value="5,5"/>
+              </Property>
+              <Property name="Size" type="Size">
+                <Value value="10,10"/>
+              </Property>
+              <Property name="Layout" type="Layout">
+                <Value>
+                  <Layout name="BoxLayout">
+                    <Properties>
+                      <Property name="Axis" type="Axis">
+                        <Value value="0"/>
+                      </Property>
+                    </Properties>
+                  </Layout>
+                </Value>
+              </Property>
+            </Properties>
+            <Com name="JScrollPane" id="SourceScroll">
+              <Properties>
+                <Property name="id" type="id">
+                  <Value value="SourceScroll"/>
+                </Property>
+                <Property name="attr_scope" type="attr_scope">
+                  <Value value="private"/>
+                </Property>
+                <Property name="getter_scope" type="getter_scope">
+                  <Value value="none"/>
+                </Property>
+                <Property name="Location" type="Location">
+                  <Value value="5,5"/>
+                </Property>
+              </Properties>
+              <Com name="JTextArea" id="SourceTextField">
+                <Properties>
+                  <Property name="id" type="id">
+                    <Value value="SourceTextField"/>
+                  </Property>
+                  <Property name="attr_scope" type="attr_scope">
+                    <Value value="private"/>
+                  </Property>
+                  <Property name="getter_scope" type="getter_scope">
+                    <Value value="public"/>
+                  </Property>
+                  <Property name="WordWrap" type="WordWrap">
+                    <Value value="true"/>
+                  </Property>
+                </Properties>
+              </Com>
+            </Com>
+          </Com>
+          <Com name="JPanel" id="TargetContainer">
+            <Properties>
+              <Property name="id" type="id">
+                <Value value="TargetContainer"/>
+              </Property>
+              <Property name="attr_scope" type="attr_scope">
+                <Value value="private"/>
+              </Property>
+              <Property name="getter_scope" type="getter_scope">
+                <Value value="none"/>
+              </Property>
+              <Property name="Location" type="Location">
+                <Value value="20,5"/>
+              </Property>
+              <Property name="Size" type="Size">
+                <Value value="692,39"/>
+              </Property>
+              <Property name="Layout" type="Layout">
+                <Value>
+                  <Layout name="BoxLayout">
+                    <Properties>
+                      <Property name="Axis" type="Axis">
+                        <Value value="0"/>
+                      </Property>
+                    </Properties>
+                  </Layout>
+                </Value>
+              </Property>
+            </Properties>
+            <Com name="JScrollPane" id="TargetScroll">
+              <Properties>
+                <Property name="id" type="id">
+                  <Value value="TargetScroll"/>
+                </Property>
+                <Property name="attr_scope" type="attr_scope">
+                  <Value value="private"/>
+                </Property>
+                <Property name="getter_scope" type="getter_scope">
+                  <Value value="none"/>
+                </Property>
+                <Property name="Location" type="Location">
+                  <Value value="5,5"/>
+                </Property>
+              </Properties>
+              <Com name="JTextArea" id="TargetTextField">
+                <Properties>
+                  <Property name="id" type="id">
+                    <Value value="TargetTextField"/>
+                  </Property>
+                  <Property name="attr_scope" type="attr_scope">
+                    <Value value="private"/>
+                  </Property>
+                  <Property name="getter_scope" type="getter_scope">
+                    <Value value="public"/>
+                  </Property>
+                  <Property name="WordWrap" type="WordWrap">
+                    <Value value="true"/>
+                  </Property>
+                </Properties>
+              </Com>
+            </Com>
+          </Com>
+        </Com>
+        <Com name="JPanel" id="ButtonsBlock">
+          <Properties>
+            <Property name="id" type="id">
+              <Value value="ButtonsBlock"/>
+            </Property>
+            <Property name="attr_scope" type="attr_scope">
+              <Value value="private"/>
+            </Property>
+            <Property name="getter_scope" type="getter_scope">
+              <Value value="none"/>
+            </Property>
+            <Property name="Location" type="Location">
+              <Value value="692,0"/>
+            </Property>
+            <Property name="Size" type="Size">
+              <Value value="37,52"/>
+            </Property>
+            <Property name="Constraints" type="Constraints">
+              <Value value="East"/>
+            </Property>
+            <Property name="Layout" type="Layout">
+              <Value>
+                <Layout name="BoxLayout">
+                  <Properties>
+                    <Property name="Axis" type="Axis">
+                      <Value value="1"/>
+                    </Property>
+                  </Properties>
+                </Layout>
+              </Value>
+            </Property>
+          </Properties>
+          <Com name="JSpacer" id="JustAFirstSpacerForButtons">
+            <Properties>
+              <Property name="id" type="id">
+                <Value value="JustAFirstSpacerForButtons"/>
+              </Property>
+              <Property name="attr_scope" type="attr_scope">
+                <Value value="private"/>
+              </Property>
+              <Property name="getter_scope" type="getter_scope">
+                <Value value="none"/>
+              </Property>
+              <Property name="Location" type="Location">
+                <Value value="0,0"/>
+              </Property>
+              <Property name="Size" type="Size">
+                <Value value="37,26"/>
+              </Property>
+            </Properties>
+          </Com>
+          <Com name="JButton" id="MoveTranslationButton">
+            <Properties>
+              <Property name="id" type="id">
+                <Value value="MoveTranslationButton"/>
+              </Property>
+              <Property name="attr_scope" type="attr_scope">
+                <Value value="private"/>
+              </Property>
+              <Property name="getter_scope" type="getter_scope">
+                <Value value="public"/>
+              </Property>
+              <Property name="Location" type="Location">
+                <Value value="5,5"/>
+              </Property>
+              <Property name="Size" type="Size">
+                <Value value="85,26"/>
+              </Property>
+              <Property name="Text" type="Text">
+                <Value value="Скопировать"/>
+              </Property>
+            </Properties>
+          </Com>
+          <Com name="JSpacer" id="JustASecondSpacerForButtons">
+            <Properties>
+              <Property name="id" type="id">
+                <Value value="JustASecondSpacerForButtons"/>
+              </Property>
+              <Property name="attr_scope" type="attr_scope">
+                <Value value="private"/>
+              </Property>
+              <Property name="getter_scope" type="getter_scope">
+                <Value value="none"/>
+              </Property>
+              <Property name="Location" type="Location">
+                <Value value="0,52"/>
+              </Property>
+              <Property name="Size" type="Size">
+                <Value value="37,26"/>
+              </Property>
+            </Properties>
+          </Com>
+          <Com name="JButton" id="TranslateTranslationButton">
+            <Properties>
+              <Property name="id" type="id">
+                <Value value="TranslateTranslationButton"/>
+              </Property>
+              <Property name="attr_scope" type="attr_scope">
+                <Value value="private"/>
+              </Property>
+              <Property name="getter_scope" type="getter_scope">
+                <Value value="public"/>
+              </Property>
+              <Property name="Location" type="Location">
+                <Value value="47,5"/>
+              </Property>
+              <Property name="Size" type="Size">
+                <Value value="71,26"/>
+              </Property>
+              <Property name="Text" type="Text">
+                <Value value="Перевести"/>
+              </Property>
+            </Properties>
+          </Com>
+          <Com name="JSpacer" id="JustAThirdSpacerForButtons">
+            <Properties>
+              <Property name="id" type="id">
+                <Value value="JustAThirdSpacerForButtons"/>
+              </Property>
+              <Property name="attr_scope" type="attr_scope">
+                <Value value="private"/>
+              </Property>
+              <Property name="getter_scope" type="getter_scope">
+                <Value value="none"/>
+              </Property>
+              <Property name="Location" type="Location">
+                <Value value="0,78"/>
+              </Property>
+              <Property name="Size" type="Size">
+                <Value value="37,26"/>
+              </Property>
+            </Properties>
+          </Com>
+        </Com>
+      </Com>
+    </Com>
+    <Com name="JSpacer" id="WestSpacer">
+      <Properties>
+        <Property name="id" type="id">
+          <Value value="WestSpacer"/>
+        </Property>
+        <Property name="attr_scope" type="attr_scope">
+          <Value value="private"/>
+        </Property>
+        <Property name="getter_scope" type="getter_scope">
+          <Value value="none"/>
+        </Property>
+        <Property name="Size" type="Size">
+          <Value value="0,703"/>
+        </Property>
+        <Property name="Constraints" type="Constraints">
+          <Value value="West"/>
+        </Property>
+      </Properties>
+    </Com>
+    <Com name="JSpacer" id="NorthSpacer">
+      <Properties>
+        <Property name="id" type="id">
+          <Value value="NorthSpacer"/>
+        </Property>
+        <Property name="attr_scope" type="attr_scope">
+          <Value value="private"/>
+        </Property>
+        <Property name="getter_scope" type="getter_scope">
+          <Value value="none"/>
+        </Property>
+        <Property name="Size" type="Size">
+          <Value value="729,0"/>
+        </Property>
+        <Property name="Constraints" type="Constraints">
+          <Value value="North"/>
+        </Property>
+      </Properties>
+    </Com>
+    <Com name="JSpacer" id="EastSpacer">
+      <Properties>
+        <Property name="id" type="id">
+          <Value value="EastSpacer"/>
+        </Property>
+        <Property name="attr_scope" type="attr_scope">
+          <Value value="private"/>
+        </Property>
+        <Property name="getter_scope" type="getter_scope">
+          <Value value="none"/>
+        </Property>
+        <Property name="Location" type="Location">
+          <Value value="729,10"/>
+        </Property>
+        <Property name="Size" type="Size">
+          <Value value="0,693"/>
+        </Property>
+        <Property name="Constraints" type="Constraints">
+          <Value value="East"/>
+        </Property>
+      </Properties>
+    </Com>
+    <Com name="JSpacer" id="SouthSpacer">
+      <Properties>
+        <Property name="id" type="id">
+          <Value value="SouthSpacer"/>
+        </Property>
+        <Property name="attr_scope" type="attr_scope">
+          <Value value="private"/>
+        </Property>
+        <Property name="getter_scope" type="getter_scope">
+          <Value value="none"/>
+        </Property>
+        <Property name="Location" type="Location">
+          <Value value="0,703"/>
+        </Property>
+        <Property name="Size" type="Size">
+          <Value value="729,0"/>
+        </Property>
+        <Property name="Constraints" type="Constraints">
+          <Value value="South"/>
+        </Property>
+      </Properties>
+    </Com>
+  </Com>
+</AsWingUI>

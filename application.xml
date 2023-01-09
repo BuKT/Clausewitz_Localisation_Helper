@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <application xmlns="http://ns.adobe.com/air/application/26.0">
   <id>ru.flashader.clausewitzlocalisationhelper.ClausewitzLocalisationHelper</id>
-  <versionNumber>1.0</versionNumber>
+  <versionNumber>0.9.5</versionNumber>
   <filename>ClausewitzLocalisationHelper</filename>
   <name>Clausewitz_Localisation_Helper</name>
   <initialWindow>
@@ -22,4 +22,5 @@
   <android>
     <manifestAdditions><![CDATA[<manifest android:installLocation="auto" xmlns:android="http://schemas.android.com/apk/res/android" />]]></manifestAdditions>
   </android>
+  <supportedLanguages>ru</supportedLanguages>
 </application>

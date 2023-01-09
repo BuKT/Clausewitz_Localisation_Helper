@@ -18,7 +18,7 @@ package ru.flashader.clausewitzlocalisationhelper.utils {
 		private static const URLToLoad:String = "https://translate.google.com/?sl=en&tl=ru&text=" + TEMPLATE_TO_CHANGE + "&op=translate";
 		private static var _secondsLeft:int;
 		private static var _callback:Function;
-		private static var _outputToFill:TextField;
+		private static var _outputCallback:Function;
 		private static var _inputToTranslate:String;
 		
 		public static function TranslateMe(input:String, stage:Stage):void {
@@ -36,15 +36,15 @@ package ru.flashader.clausewitzlocalisationhelper.utils {
 			dispatchEvent(new WebTranslatorEvent(WebTranslatorEvent.REQUEST_USER_INPUT));
 		}
 		
-		public static function ContinueTranslate(outputField:TextField):void {
-			_outputToFill = outputField;
+		public static function ContinueTranslate(outputCallback:Function):void {
+			_outputCallback = outputCallback;
 			_callback = FillOutputField;
 			_secondsLeft = 3;
 		}
 		
 		private static function FillOutputField():void {
 			_callback = null;
-			_outputToFill.text = new URLVariables(Instance.location).text;
+			_outputCallback != null && _outputCallback(new URLVariables(Instance.location).text);
 			dispatchEvent(new WebTranslatorEvent(WebTranslatorEvent.TRANSLATION_ENDED));
 		}
 		
