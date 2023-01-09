@@ -1,4 +1,5 @@
 package ru.flashader.clausewitzlocalisationhelper.panels {
+	import flash.events.Event;
 	import org.aswing.*;
 	import org.aswing.border.*;
 	import org.aswing.geom.*;
@@ -212,6 +213,9 @@ package ru.flashader.clausewitzlocalisationhelper.panels {
 			ButtonsBlock.append(TranslateTranslationButton);
 			ButtonsBlock.append(JustAThirdSpacerForButtons);
 			
+			SourceTextField.addEventListener(Event.CHANGE, SourceChangedHandler);
+			TargetTextField.addEventListener(Event.CHANGE, TargetChangedHandler);
+			
 		}
 		
 		public function getSourceTextField():JTextArea{
@@ -294,6 +298,15 @@ package ru.flashader.clausewitzlocalisationhelper.panels {
 		private function JustCopyContent(e:AWEvent):void {
 			TargetTextField.setText(SourceTextField.getText());
 			EntriesTable.getModel().setValueAt(TargetTextField.getText(), _lastSelectedIndex, 2);
+		}
+		
+		
+		private function TargetChangedHandler(e:Event):void {
+			EntriesTable.getModel().setValueAt(TargetTextField.getText(), _lastSelectedIndex, 2);
+		}
+		
+		private function SourceChangedHandler(e:Event):void {
+			EntriesTable.getModel().setValueAt(SourceTextField.getText(), _lastSelectedIndex, 1);
 		}
 		
 		public function addTranslateRequestListener(callback:Function):void {
