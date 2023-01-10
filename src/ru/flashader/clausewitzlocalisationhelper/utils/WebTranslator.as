@@ -13,25 +13,39 @@ package ru.flashader.clausewitzlocalisationhelper.utils {
 	
 	public class WebTranslator {
 		private static var Dispatcher:EventDispatcher = new EventDispatcher();
-		private static var Instance:StageWebView;
+		private static var Instances:Vector.<StageWebView> = new Vector.<StageWebView>();
 		private static const TEMPLATE_TO_CHANGE:String = "###TEMPLATETOCHAGE###";
-		private static const URLToLoad:String = "https://translate.google.com/?sl=en&tl=ru&text=" + TEMPLATE_TO_CHANGE + "&op=translate";
+		private static const URLToLoad:String = "https://translate.google.com/?sl=auto&tl=ru&text=" + TEMPLATE_TO_CHANGE + "&op=translate";
 		private static var _secondsLeft:int;
 		private static var _callback:Function;
 		private static var _outputCallback:Function;
-		private static var _inputToTranslate:String;
+		private static var _tickerSetted:Boolean;
+		private static var _splittedInput:SplittedInput;
+		private static var _lastTranslatedInput:Number;
+		private static var _currentInputToTranslate:String;
 		
 		public static function TranslateMe(input:String, stage:Stage):void {
-			if (Instance == null) {
-				CreateInstance(stage);
-			}
-			_inputToTranslate = input;
 			_callback = RequestUserInput;
 			_secondsLeft = 3;
-			Instance.loadURL(URLToLoad.replace(TEMPLATE_TO_CHANGE, input));
+			_splittedInput = new SplittedInput(input);
+			
+			CreateInstances(stage);
+			if (!_tickerSetted) {
+				_tickerSetted = true;
+				setTimeout(SecondsTicker, 1000);
+			}
+			
+			_lastTranslatedInput = 0;
+			var instanceIDX:int = 0;
+			while ((_currentInputToTranslate = _splittedInput.GetNextSplittedInput()) != null) {
+				Instances[instanceIDX].loadURL(URLToLoad.replace(TEMPLATE_TO_CHANGE, _currentInputToTranslate));
+				instanceIDX++;
+			}
+			_splittedInput.ResetCounter();
 		}
 		
 		private static function RequestUserInput():void {
+			Instances[_lastTranslatedInput].assignFocus();
 			_callback = null;
 			dispatchEvent(new WebTranslatorEvent(WebTranslatorEvent.REQUEST_USER_INPUT));
 		}
@@ -44,17 +58,25 @@ package ru.flashader.clausewitzlocalisationhelper.utils {
 		
 		private static function FillOutputField():void {
 			_callback = null;
-			_outputCallback != null && _outputCallback(new URLVariables(Instance.location).text);
-			dispatchEvent(new WebTranslatorEvent(WebTranslatorEvent.TRANSLATION_ENDED));
+			_splittedInput.SetCurrentTranslate(new URLVariables(Instances[_lastTranslatedInput].location).text);
+			_lastTranslatedInput++;
+			if ((_currentInputToTranslate = _splittedInput.GetNextSplittedInput()) == null) {
+				_outputCallback != null && _outputCallback(_splittedInput.CollectString());
+				dispatchEvent(new WebTranslatorEvent(WebTranslatorEvent.TRANSLATION_ENDED));
+				return;
+			}
+			RequestUserInput();
 		}
 		
-		private static function CreateInstance(stage:Stage):void {
-			Instance = new StageWebView(true, false);
-			Instance.stage = stage;
-			var w:int = stage.stageWidth;
-			var h:int = stage.stageHeight;
-			Instance.viewPort = new Rectangle( - w / 2, - h / 2, w / 2, h / 2);
-			setTimeout(SecondsTicker, 1000);
+		private static function CreateInstances(stage:Stage):void {
+			while (Instances.length < _splittedInput.GetTranslatorsNeeded()) {
+				var Instance:StageWebView = new StageWebView(true, false);
+				Instance.stage = stage;
+				var w:int = stage.stageWidth;
+				var h:int = stage.stageHeight;
+				Instance.viewPort = new Rectangle( -w / 2, -h / 2, w / 2, h / 2);
+				Instances.push(Instance);
+			}
 		}
 		
 		private static function SecondsTicker():void {
@@ -69,6 +91,10 @@ package ru.flashader.clausewitzlocalisationhelper.utils {
 		
 		public static function addEventListener(type:String, callback:Function):void {
 			Dispatcher.addEventListener(type, callback);
+		}
+		
+		public static function GetTranslatesLeft():int {
+			return _splittedInput.GetTranslatorsNeeded() - _lastTranslatedInput - 1;
 		}
 	}
 }

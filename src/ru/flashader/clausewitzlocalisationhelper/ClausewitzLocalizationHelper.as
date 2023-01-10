@@ -26,6 +26,9 @@ package ru.flashader.clausewitzlocalisationhelper {
 		private static const PLEASE_WAIT_AGAIN:String = "И ещё три секунды.";
 		private static const CHOOSE_SOURCE_YAML:String = "Выберите исходный yaml файл";
 		private static const SAY_CHEESE:String = "Сейчас вылетит птичка";
+		private static const TOO_LONG_STRING:String = "\n\nСтрока для перевода очень длинная.\nПоэтому это окно появится ещё " + TRANSLATES_LEFT_PLACEHOLDER + " раз";
+		private static const TRANSLATES_LEFT_PLACEHOLDER:String = "###TEMPLATETOCHAGE###";
+		
 		
 		private var scrollPane:JScrollPane;
 		private var _mainASWindow:JWindow;
@@ -56,6 +59,8 @@ package ru.flashader.clausewitzlocalisationhelper {
 			_mainASWindow.setContentPane(_translatingWindow);
 			_mainASWindow.setSizeWH(stage.stageWidth, stage.stageHeight);
 			_mainASWindow.show();
+			
+			//WebTranslator.TranslateMe("We can now choose another interaction in the Federal Assembly.We can now choose another interaction in the Federal Assembly.We can now choose another interaction in the Federal Assembly.We can now choose another interaction in the Federal Assembly.We can now choose another interaction in the Federal Assembly.We can now choose another interaction in the Federal Assembly.ASDFWe can now choose another interaction in the Federal Assembly.QWERWe can now choose another interaction in the Federal Assembly.", stage);
 		}
 		
 		private function SaveTranslateEntries(e:AWEvent):void {
@@ -292,7 +297,12 @@ package ru.flashader.clausewitzlocalisationhelper {
 		}
 		
 		private function handleUserInputRequest(e:Event):void {
-			ShowModal("Нужна помощь", PLEASE_PRESS, continueTranslate);
+			var message:String = PLEASE_PRESS;
+			var translatesLeft:int = WebTranslator.GetTranslatesLeft();
+			if (translatesLeft > 0) {
+				message = message.concat(TOO_LONG_STRING.replace(TRANSLATES_LEFT_PLACEHOLDER, translatesLeft));
+			}
+			ShowModal("Нужна помощь", message, continueTranslate);
 		}
 		
 		private function continueTranslate(e:int):void {
