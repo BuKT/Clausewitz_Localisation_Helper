@@ -5,6 +5,7 @@ package ru.flashader.clausewitzlocalisationhelper.panels {
 	import org.aswing.colorchooser.*;
 	import org.aswing.ext.*;
 	import org.aswing.geom.*;
+	import ru.flashader.clausewitzlocalisationhelper.data.LineContent;
 	import ru.flashader.clausewitzlocalisationhelper.data.TranslateEntry;
 	import ru.flashader.clausewitzlocalisationhelper.data.TranslationFileContent;
 
@@ -229,6 +230,9 @@ package ru.flashader.clausewitzlocalisationhelper.panels {
 			_entriesPanelList.length = 0;
 			
 			for each (var entry:TranslateEntry in sourceValues.TranslateEntriesList) {
+				if (entry is LineContent) {
+					if ((entry as LineContent).isEmpty) { continue; }
+				}
 				var entryPanel:TranslateEntryPanel = new TranslateEntryPanel(entry);
 				_entriesPanelList.push(entryPanel);
 				entryPanel.setVisible(filter.length == 0 || entryPanel.getKey().toLowerCase().indexOf(filter) > -1);

@@ -24,7 +24,6 @@ package ru.flashader.clausewitzlocalisationhelper {
 		private static const PLEASE_WAIT:String = "Подождите примерно три секунды.";
 		private static const PLEASE_PRESS:String = "Нажмите 'Ctrl'+'Shift'+'S', а потом закройте это окно\n\nИмейте в виду, функционал перевода нестабилен и зависит не от меня\nЕсли не перевелось - попробуйте ещё раз";
 		private static const PLEASE_WAIT_AGAIN:String = "И ещё три секунды.";
-		private static const FLASHADER_TEMPORARY_TEMPLATE:String = "###OLOLO_FLASHADER_TEMPORARY_TEMPLATE_OLOLO###";
 		private static const CHOOSE_SOURCE_YAML:String = "Выберите исходный yaml файл";
 		private static const SAY_CHEESE:String = "Сейчас вылетит птичка";
 		
@@ -42,9 +41,8 @@ package ru.flashader.clausewitzlocalisationhelper {
 		
 		public function ClausewitzLocalizationHelper() {
 			super();
-			AsWingManager.setRoot(this);
 			
-			//JOptionPane.showMessageDialog("About", "This is just a menu test demo!\n\n alskdjaldjalsdkj\n\n l;jasdf;ljasdfklj \n\n a;dksfj;ladfj;ladfj").getMsgLabel().setSelectable(true);
+			AsWingManager.setRoot(this);
 			
 			WebTranslator.addEventListener(WebTranslatorEvent.REQUEST_USER_INPUT, handleUserInputRequest);
 			WebTranslator.addEventListener(WebTranslatorEvent.TRANSLATION_ENDED, CloseModal);
@@ -181,7 +179,6 @@ package ru.flashader.clausewitzlocalisationhelper {
 			var file:File = e.currentTarget as File;
 			var stream:FileStream = new FileStream();
 			stream.open(file, FileMode.READ);
-			
 			var fileData:String = stream.readUTFBytes(stream.bytesAvailable);
 			stream.close();
 			var fullPath:String = file.nativePath;
@@ -191,13 +188,14 @@ package ru.flashader.clausewitzlocalisationhelper {
 		
 		private function TryParseSource(fileContent:String, fullPath:String):void {
 			_sourceValues = new Object();
-			if (_doFastCheck) {
+			if (false && _doFastCheck) {
 				DoFastParsing(fileContent, fullPath);
 			} else {
-				var strings:Array = fileContent.replace("\\n", FLASHADER_TEMPORARY_TEMPLATE).split("\r\n");
-				for each (var str:String in strings) {
+				EndParsingAndFillViews(Utilities.DoManualParsing(fileContent, fullPath));
+				//var strings:Array = fileContent.replace("\\n", FLASHADER_TEMPORARY_TEMPLATE).split("\r\n");
+				//for each (var str:String in strings) {
 					//DoManualStringParsing(str.replace(FLASHADER_TEMPORARY_TEMPLATE, "\\n")); //TODO: flashader Скоро
-				}
+				//}
 			}
 		}
 		

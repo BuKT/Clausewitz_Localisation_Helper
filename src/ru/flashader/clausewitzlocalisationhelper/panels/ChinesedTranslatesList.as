@@ -11,6 +11,7 @@ package ru.flashader.clausewitzlocalisationhelper.panels {
 	import org.aswing.event.TableModelListener;
 	import org.aswing.table.DefaultTableModel;
 	import org.aswing.table.sorter.TableSorter;
+	import ru.flashader.clausewitzlocalisationhelper.data.LineContent;
 	import ru.flashader.clausewitzlocalisationhelper.data.TranslateEntry;
 	import ru.flashader.clausewitzlocalisationhelper.data.TranslationFileContent;
 	
@@ -241,6 +242,9 @@ package ru.flashader.clausewitzlocalisationhelper.panels {
 			_filteredTableData = new Array();
 			
 			for each (var entry:TranslateEntry in _sourceEntries.TranslateEntriesList) {
+				if (entry is LineContent) {
+					if ((entry as LineContent).isEmpty) { continue; }
+				}
 				var entryContent:Array = new Array();
 				entryContent.push(entry.Key);
 				entryContent.push(entry.Value);
