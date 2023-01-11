@@ -376,6 +376,9 @@ package ru.flashader.clausewitzlocalisationhelper.panels {
 				var entry:TranslateEntry = new TranslateEntry();
 				entry.Key = row[0];
 				entry.Value = row[2];
+				while (entry.Value.indexOf("\\n") > -1) {
+					entry.Value = entry.Value.replace("\\n", "\n");
+				}
 				toReturn.push(entry);
 			}
 			return toReturn;
