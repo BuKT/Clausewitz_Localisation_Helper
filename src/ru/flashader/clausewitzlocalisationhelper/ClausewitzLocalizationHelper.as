@@ -114,7 +114,7 @@ package ru.flashader.clausewitzlocalisationhelper {
 											resultFilePath.substring(
 												0,
 												resultFilePath.lastIndexOf(
-													"." //Не смотри на на код такими глазами - в подобном стиле я могу писать бесконечно. И что ты мне сделаешь? Я в другом моде!
+													"." //Не смотри на код такими глазами - в подобном стиле я могу писать бесконечно. И что ты мне сделаешь? Я в другом моде!
 												)
 											) + ".yml"
 										);
@@ -197,10 +197,6 @@ package ru.flashader.clausewitzlocalisationhelper {
 				DoFastParsing(fileContent, fullPath);
 			} else {
 				EndParsingAndFillViews(Utilities.DoManualParsing(fileContent, fullPath));
-				//var strings:Array = fileContent.replace("\\n", FLASHADER_TEMPORARY_TEMPLATE).split("\r\n");
-				//for each (var str:String in strings) {
-					//DoManualStringParsing(str.replace(FLASHADER_TEMPORARY_TEMPLATE, "\\n")); //TODO: flashader Скоро
-				//}
 			}
 		}
 		
@@ -288,12 +284,10 @@ package ru.flashader.clausewitzlocalisationhelper {
 		*/
 		
 		private static var _currentAlert:JOptionPane;
-		private var _currentTranslatingCallback:Function;
 		
 		private function initiateTranslate(callback:Function, textToTranslate:String):void {
 			ShowModal("Идёт перевод", PLEASE_WAIT);
-			_currentTranslatingCallback = callback;
-			WebTranslator.TranslateMe(textToTranslate, stage);
+			WebTranslator.TranslateMe(textToTranslate, stage, callback);
 		}
 		
 		private function handleUserInputRequest(e:Event):void {
@@ -307,7 +301,7 @@ package ru.flashader.clausewitzlocalisationhelper {
 		
 		private function continueTranslate(e:int):void {
 			ShowModal("Спасибо", PLEASE_WAIT_AGAIN);
-			WebTranslator.ContinueTranslate(_currentTranslatingCallback);
+			WebTranslator.ContinueTranslate();
 		}
 		
 		private static function ShowModal(title:String, message:String, closeHandler:Function = null, buttons:int = 0):void {

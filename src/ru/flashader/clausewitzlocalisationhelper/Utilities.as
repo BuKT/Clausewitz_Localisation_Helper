@@ -156,7 +156,7 @@ package ru.flashader.clausewitzlocalisationhelper {
 				}
 			}
 			lineContent.Value = line.substring(QuoteCharsIndex[0] + 1, QuoteCharsIndex[QuoteCharsIndex.length - 1]);
-			//TODO: flashader Тут можно почистить от лишних эскейпов, разбить на всякие допстрочки и предложения (для упрощения перевода). 
+			//TODO: flashader Тут можно почистить от лишних эскейпов.
 			//Да ещё и проверки всяких раскрасок проодить. Но влом пока.
 			//И Файнд коммент ещё снизу заюзать! Чтобы после кавычки тоже схавала конец строки
 			
