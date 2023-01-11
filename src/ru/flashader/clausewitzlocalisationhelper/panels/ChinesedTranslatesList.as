@@ -11,6 +11,7 @@ package ru.flashader.clausewitzlocalisationhelper.panels {
 	import org.aswing.event.TableModelListener;
 	import org.aswing.table.DefaultTableModel;
 	import org.aswing.table.sorter.TableSorter;
+	import ru.flashader.clausewitzlocalisationhelper.Utilities;
 	import ru.flashader.clausewitzlocalisationhelper.data.LineContent;
 	import ru.flashader.clausewitzlocalisationhelper.data.TranslateEntry;
 	import ru.flashader.clausewitzlocalisationhelper.data.TranslationFileContent;
@@ -265,7 +266,7 @@ package ru.flashader.clausewitzlocalisationhelper.panels {
 				}
 				var entryContent:Array = new Array();
 				entryContent.push(entry.Key);
-				entryContent.push(entry.Value);
+				entryContent.push(Utilities.ConvertStringToR(entry.Value));
 				entryContent.push("");
 				_fullTableData.push(entryContent);
 			};
@@ -315,11 +316,6 @@ package ru.flashader.clausewitzlocalisationhelper.panels {
 			TranslateAllButton.setEnabled(_fullTableData != null && _fullTableData.length > 0);
 		}
 		
-		private function SetTranslateFromAPI(translate:String):void {
-			EntriesTable.getModel().setValueAt(translate, _lastSelectedIndex, 2);
-			if (_massTranslateIDXes.length > 0) { ContinueMassTranslate(); }
-		}
-		
 		private function JustCopyContent(e:AWEvent):void {
 			TargetTextField.setText(SourceTextField.getText());
 			EntriesTable.getModel().setValueAt(TargetTextField.getText(), _lastSelectedIndex, 2);
@@ -339,7 +335,12 @@ package ru.flashader.clausewitzlocalisationhelper.panels {
 		}
 		
 		private function processTranslateRequest(e:AWEvent):void {
-			_translateRequestCallback != null && _translateRequestCallback(SetTranslateFromAPI, SourceTextField.getText(), _massTranslateIDXes.length);
+			_translateRequestCallback != null && _translateRequestCallback(SetTranslateFromAPI, Utilities.ConvertStringToN(SourceTextField.getText()), _massTranslateIDXes.length);
+		}
+		
+		private function SetTranslateFromAPI(translate:String):void {
+			EntriesTable.getModel().setValueAt(Utilities.ConvertStringToR(translate), _lastSelectedIndex, 2);
+			if (_massTranslateIDXes.length > 0) { ContinueMassTranslate(); }
 		}
 		
 		private function processTranslateAllrequest(e:AWEvent):void {
@@ -375,10 +376,7 @@ package ru.flashader.clausewitzlocalisationhelper.panels {
 			for each (var row:Array in _fullTableData) {
 				var entry:TranslateEntry = new TranslateEntry();
 				entry.Key = row[0];
-				entry.Value = row[2];
-				while (entry.Value.indexOf("\\n") > -1) {
-					entry.Value = entry.Value.replace("\\n", "\n");
-				}
+				entry.Value = Utilities.ConvertStringToShortN(row[2]);
 				toReturn.push(entry);
 			}
 			return toReturn;

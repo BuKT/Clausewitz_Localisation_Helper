@@ -198,5 +198,31 @@ package ru.flashader.clausewitzlocalisationhelper {
 			}
 			return toTrim;
 		}
+		
+		
+		
+		public static function ConvertStringToN(toConvert:String):String {
+			while (toConvert.indexOf("\r") > -1) {
+				toConvert = toConvert.replace("\r", "\\n");
+			}
+			return toConvert;
+		}
+		
+		public static function ConvertStringToShortN(toConvert:String):String {
+			while (toConvert.indexOf("\r") > -1) {
+				toConvert = toConvert.replace("\r", "\n");
+			}
+			return toConvert;
+		}
+		
+		public static function ConvertStringToR(toConvert:String):String {
+			while (toConvert.indexOf("\\n") > -1) {
+				toConvert = toConvert.replace("\\n", "\r");
+			}
+			while (toConvert.indexOf("\n") > -1) {
+				toConvert = toConvert.replace("\n", "\r");
+			}
+			return toConvert;
+		}
 	}
 }

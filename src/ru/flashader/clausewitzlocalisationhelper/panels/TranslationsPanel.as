@@ -252,10 +252,7 @@ package ru.flashader.clausewitzlocalisationhelper.panels {
 					for each (var entryPanel:TranslateEntryPanel in _entriesPanelList) {
 						var entry:TranslateEntry = new TranslateEntry();
 						entry.Key = entryPanel.getKey();
-						entry.Value = entryPanel.getTargetTranslation().getText();
-						while (entry.Value.indexOf("\\n") > -1) {
-							entry.Value = entry.Value.replace("\\n", "\n");
-						}
+						entry.Value = entryPanel.GetValue();
 						toReturn.TranslateEntriesList.push(entry);
 					};
 					break;

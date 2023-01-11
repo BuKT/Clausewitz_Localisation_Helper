@@ -5,6 +5,7 @@ package ru.flashader.clausewitzlocalisationhelper.panels {
 	import org.aswing.event.AWEvent;
 	import org.aswing.ext.*;
 	import org.aswing.geom.*;
+	import ru.flashader.clausewitzlocalisationhelper.Utilities;
 	import ru.flashader.clausewitzlocalisationhelper.data.TranslateEntry;
 	
 	/**
@@ -40,7 +41,7 @@ package ru.flashader.clausewitzlocalisationhelper.panels {
 			_sourceEntry = sourceEntry;
 			_targetEntry = new TranslateEntry();
 			FieldName.setText(_key = _targetEntry.Key = _sourceEntry.Key);
-			SourceTranslation.setText(_sourceEntry.Value);
+			SourceTranslation.setText(Utilities.ConvertStringToR(_sourceEntry.Value));
 			
 			MoveTranslationButton.addActionListener(JustCopyContent);
 			TranslateTranslationButton.addActionListener(processTranslateRequest);
@@ -272,12 +273,16 @@ package ru.flashader.clausewitzlocalisationhelper.panels {
 			return _key;
 		}
 		
+		public function GetValue():String {
+			return Utilities.ConvertStringToShortN(getTargetTranslation().getText());
+		}
+		
 		private function processTranslateRequest(e:AWEvent):void {
-			_translateRequestCallback != null && _translateRequestCallback(SetTranslatedText, SourceTranslation.getText());
+			_translateRequestCallback != null && _translateRequestCallback(SetTranslatedText, Utilities.ConvertStringToN(SourceTranslation.getText()));
 		}
 		
 		private function SetTranslatedText(translatedText:String):void {
-			TargetTranslation.setText(translatedText);
+			TargetTranslation.setText(Utilities.ConvertStringToR(translatedText));
 		}
 	}
 }
