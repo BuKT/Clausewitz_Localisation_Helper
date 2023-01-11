@@ -172,8 +172,8 @@ package ru.flashader.clausewitzlocalisationhelper.panels {
 			
 			RightButtonCenterer.append(SaveButton);
 			
-			TabbingContainer.append(ScrollPane);
 			TabbingContainer.append(ChinesedListPlaceholder);
+			TabbingContainer.append(ScrollPane);
 			
 			ScrollPane.append(ItemsPlaceholder);
 			
@@ -214,8 +214,8 @@ package ru.flashader.clausewitzlocalisationhelper.panels {
 			_translateRequestCallback = callback;
 		}
 		
-		private function RecastTranslateRequest(callback:Function, textToTranslate:String):void {
-			_translateRequestCallback != null && _translateRequestCallback(callback, textToTranslate);
+		private function RecastTranslateRequest(callback:Function, textToTranslate:String, translatesLeft:int = 0):void {
+			_translateRequestCallback != null && _translateRequestCallback(callback, textToTranslate, translatesLeft);
 		}
 		
 		public function FillWithSource(sourceValues:TranslationFileContent, path:String):void {
@@ -248,7 +248,7 @@ package ru.flashader.clausewitzlocalisationhelper.panels {
 			var toReturn:TranslationFileContent = new TranslationFileContent({});
 			toReturn.LanguagePostfix = "l_russian";
 			switch (TabbingContainer.getSelectedIndex()) {
-				case 0:
+				case 1:
 					for each (var entryPanel:TranslateEntryPanel in _entriesPanelList) {
 						var entry:TranslateEntry = new TranslateEntry();
 						entry.Key = entryPanel.getKey();
@@ -256,7 +256,7 @@ package ru.flashader.clausewitzlocalisationhelper.panels {
 						toReturn.TranslateEntriesList.push(entry);
 					};
 					break;
-				case 1:
+				case 0:
 					toReturn.TranslateEntriesList = _chinesedList.CollectData();
 					break;
 			}

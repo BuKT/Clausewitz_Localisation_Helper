@@ -52,8 +52,8 @@ package ru.flashader.clausewitzlocalisationhelper.utils {
 			var startTranslationIDX:int = html.indexOf(CLI_TRANSLATION_START_MARKER) + CLI_TRANSLATION_START_MARKER.length;
 			var endTranslationIDX:int = html.indexOf(CLI_TRANSLATION_END_MARKER);
 			var translate:String = html.substring(startTranslationIDX, endTranslationIDX);
-			_outputCallback != null && _outputCallback(translate);
 			dispatchEvent(new WebTranslatorEvent(WebTranslatorEvent.TRANSLATION_ENDED));
+			_outputCallback != null && _outputCallback(translate);
 		}
 		
 		private static function TranslateWithGUIAPI(input:String, stage:Stage):void {

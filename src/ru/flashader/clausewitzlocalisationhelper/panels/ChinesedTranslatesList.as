@@ -37,6 +37,8 @@ package ru.flashader.clausewitzlocalisationhelper.panels {
 		private var JustASecondSpacerForButtons:JSpacer;
 		private var TranslateTranslationButton:JButton;
 		private var JustAThirdSpacerForButtons:JSpacer;
+		private var TranslateAllButton:JButton;
+		private var JustAFourthSpacerForButtons:JSpacer;
 		private var WestSpacer:JSpacer;
 		private var NorthSpacer:JSpacer;
 		private var EastSpacer:JSpacer;
@@ -49,12 +51,16 @@ package ru.flashader.clausewitzlocalisationhelper.panels {
 		private var _lastSelectedIndex:int = -1;
 		private var _selectedEntry:Array;
 		private var _translateRequestCallback:Function;
+		private var _massTranslateIDXes:Array = [];
+		private var _filterString:String;
+		private var _massTranslationsCachedFilterString:String;
 		
 		public function ChinesedTranslatesList() {
 			InitLayout();
 			
 			MoveTranslationButton.addActionListener(JustCopyContent);
 			TranslateTranslationButton.addActionListener(processTranslateRequest);
+			TranslateAllButton.addActionListener(processTranslateAllrequest);
 			
 			var columnsArray:Array = ["Ключ строки", "Оригинал", "Перевод"];
 			
@@ -164,6 +170,16 @@ package ru.flashader.clausewitzlocalisationhelper.panels {
 			JustAThirdSpacerForButtons.setLocation(new IntPoint(0, 78));
 			JustAThirdSpacerForButtons.setSize(new IntDimension(37, 26));
 			
+			TranslateAllButton = new JButton();
+			TranslateAllButton.setName("TranslateAllButton");
+			TranslateAllButton.setLocation(new IntPoint(0, 130));
+			TranslateAllButton.setSize(new IntDimension(93, 26));
+			TranslateAllButton.setText("Перевести всё");
+			
+			JustAFourthSpacerForButtons = new JSpacer();
+			JustAFourthSpacerForButtons.setLocation(new IntPoint(0, 156));
+			JustAFourthSpacerForButtons.setSize(new IntDimension(93, 26));
+			
 			WestSpacer = new JSpacer();
 			WestSpacer.setSize(new IntDimension(0, 703));
 			WestSpacer.setConstraints("West");
@@ -213,6 +229,8 @@ package ru.flashader.clausewitzlocalisationhelper.panels {
 			ButtonsBlock.append(JustASecondSpacerForButtons);
 			ButtonsBlock.append(TranslateTranslationButton);
 			ButtonsBlock.append(JustAThirdSpacerForButtons);
+			ButtonsBlock.append(TranslateAllButton);
+			ButtonsBlock.append(JustAFourthSpacerForButtons);
 			
 			SourceTextField.addEventListener(Event.CHANGE, SourceChangedHandler);
 			TargetTextField.addEventListener(Event.CHANGE, TargetChangedHandler);
@@ -250,23 +268,23 @@ package ru.flashader.clausewitzlocalisationhelper.panels {
 				entryContent.push(entry.Value);
 				entryContent.push("");
 				_fullTableData.push(entryContent);
-				_filteredTableData.push(entryContent);
 			};
 			
 			FilterData(filter);
 		}
 		
 		public function FilterData(filter:String):void {
+			_filterString = filter;
 			_filteredTableData = new Array();
 			for each (var row:Array in _fullTableData) {
 				if (filter.length == 0 || row[0].toLowerCase().indexOf(filter) > -1) {
 					_filteredTableData.push(row);
 				}
 			}
-			(EntriesTable.getModel() as DefaultTableModel).setData(_filteredTableData);
 			_lastSelectedIndex = -1;
 			_selectedEntry = null;
-			RefreshTextAreas();
+			(EntriesTable.getModel() as DefaultTableModel).setData(_filteredTableData);
+			EntriesTable.changeSelection(-1, -1, false, false);
 		}
 		
 		private function selectionChangedHandler(e:SelectionEvent):void {
@@ -276,6 +294,7 @@ package ru.flashader.clausewitzlocalisationhelper.panels {
 			} else {
 				_selectedEntry = null;
 			}
+			
 			RefreshTextAreas();
 		}
 		
@@ -293,10 +312,12 @@ package ru.flashader.clausewitzlocalisationhelper.panels {
 				MoveTranslationButton.setEnabled(false);
 				TranslateTranslationButton.setEnabled(false);
 			}
+			TranslateAllButton.setEnabled(_fullTableData != null && _fullTableData.length > 0);
 		}
 		
 		private function SetTranslateFromAPI(translate:String):void {
 			EntriesTable.getModel().setValueAt(translate, _lastSelectedIndex, 2);
+			if (_massTranslateIDXes.length > 0) { ContinueMassTranslate(); }
 		}
 		
 		private function JustCopyContent(e:AWEvent):void {
@@ -318,7 +339,31 @@ package ru.flashader.clausewitzlocalisationhelper.panels {
 		}
 		
 		private function processTranslateRequest(e:AWEvent):void {
-			_translateRequestCallback != null && _translateRequestCallback(SetTranslateFromAPI, SourceTextField.getText());
+			_translateRequestCallback != null && _translateRequestCallback(SetTranslateFromAPI, SourceTextField.getText(), _massTranslateIDXes.length);
+		}
+		
+		private function processTranslateAllrequest(e:AWEvent):void {
+			_massTranslationsCachedFilterString = _filterString;
+			FilterData("");
+			_massTranslateIDXes.length = 0;
+			for (var idx:int = 0; idx < _fullTableData.length; idx++) {
+				if (_fullTableData[idx][2].length == 0) {
+					_massTranslateIDXes.push(idx);
+				}
+			}
+			_massTranslateIDXes.reverse();
+			ContinueMassTranslate();
+			
+		}
+		
+		private function ContinueMassTranslate():void {
+			if (_massTranslateIDXes.length == 0) {
+				FilterData(_filterString);
+				return;
+			}
+			var nextIDXToTranslate:int = _massTranslateIDXes.pop();
+			EntriesTable.changeSelection(nextIDXToTranslate, nextIDXToTranslate, false, false);
+			processTranslateRequest(null);
 		}
 		
 		public function tableChanged(e:TableModelEvent):void {

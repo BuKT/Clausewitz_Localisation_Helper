@@ -422,6 +422,50 @@
               </Property>
             </Properties>
           </Com>
+          <Com name="JButton" id="TranslateAllButton">
+            <Properties>
+              <Property name="id" type="id">
+                <Value value="TranslateAllButton"/>
+              </Property>
+              <Property name="attr_scope" type="attr_scope">
+                <Value value="private"/>
+              </Property>
+              <Property name="getter_scope" type="getter_scope">
+                <Value value="public"/>
+              </Property>
+              <Property name="Name" type="Name">
+                <Value value="TranslateAllButton"/>
+              </Property>
+              <Property name="Location" type="Location">
+                <Value value="0,130"/>
+              </Property>
+              <Property name="Size" type="Size">
+                <Value value="93,26"/>
+              </Property>
+              <Property name="Text" type="Text">
+                <Value value="Перевести всё"/>
+              </Property>
+            </Properties>
+          </Com>
+          <Com name="JSpacer" id="JustAFourthSpacerForButtons">
+            <Properties>
+              <Property name="id" type="id">
+                <Value value="JustAFourthSpacerForButtons"/>
+              </Property>
+              <Property name="attr_scope" type="attr_scope">
+                <Value value="private"/>
+              </Property>
+              <Property name="getter_scope" type="getter_scope">
+                <Value value="none"/>
+              </Property>
+              <Property name="Location" type="Location">
+                <Value value="0,156"/>
+              </Property>
+              <Property name="Size" type="Size">
+                <Value value="93,26"/>
+              </Property>
+            </Properties>
+          </Com>
         </Com>
       </Com>
     </Com>

@@ -21,11 +21,13 @@ package ru.flashader.clausewitzlocalisationhelper {
 	*/
 	
 	public class ClausewitzLocalizationHelper extends Sprite {
-		private static const PLEASE_WAIT:String = "Подождите примерно три секунды.";
+		private static const PLEASE_WAIT:String = "Подождите немного.";
 		private static const PLEASE_PRESS:String = "Нажмите 'Ctrl'+'Shift'+'S', а потом закройте это окно\n\nИмейте в виду, функционал перевода нестабилен и зависит не от меня\nЕсли не перевелось - попробуйте ещё раз";
 		private static const PLEASE_WAIT_AGAIN:String = "И ещё три секунды.";
 		private static const CHOOSE_SOURCE_YAML:String = "Выберите исходный yaml файл";
 		private static const SAY_CHEESE:String = "Сейчас вылетит птичка";
+		private static const TRYING_TO_PARSE:String = "Пытаемся распарсить ваше файло";
+		private static const TOO_MANY_STRINGS:String = "\n\nСтрок для перевода много.\nПоэтому это окно появится ещё " + TRANSLATES_LEFT_PLACEHOLDER + " раз";
 		private static const TOO_LONG_STRING:String = "\n\nСтрока для перевода очень длинная.\nПоэтому это окно появится ещё " + TRANSLATES_LEFT_PLACEHOLDER + " раз";
 		private static const TRANSLATES_LEFT_PLACEHOLDER:String = "###TEMPLATETOCHAGE###";
 		
@@ -34,7 +36,8 @@ package ru.flashader.clausewitzlocalisationhelper {
 		private var _mainASWindow:JWindow;
 		private var _translatingWindow:TranslationsPanel;
 		private static const yamlFilters:Array = [new FileFilter("Yaml", "*.yml")];
-		static public const RUSSIAN_RUSSIAN_RUSSIAN:String = "Вы загрузили файл с русской локализацией. И пытаетесь сохранить в него же" +
+		private static const RUSSIAN_RUSSIAN_RUSSIAN:String = "Вы загрузили файл с русской локализацией. И пытаетесь сохранить в него же" +
+		
 			"\nВы абсолютно точно уверены, что знаете, что делаете?" +
 			"\n\n(В итоговый файл не будут записаны строки слева" +
 			"\n только те, что справа (даже если они пустые)";
@@ -192,6 +195,7 @@ package ru.flashader.clausewitzlocalisationhelper {
 		}
 		
 		private function TryParseSource(fileContent:String, fullPath:String):void {
+			ShowModal("Подождите", TRYING_TO_PARSE);
 			_sourceValues = new Object();
 			if (false && _doFastCheck) {
 				DoFastParsing(fileContent, fullPath);
@@ -285,8 +289,8 @@ package ru.flashader.clausewitzlocalisationhelper {
 		
 		private static var _currentAlert:JOptionPane;
 		
-		private function initiateTranslate(callback:Function, textToTranslate:String):void {
-			ShowModal("Идёт перевод", PLEASE_WAIT);
+		private function initiateTranslate(callback:Function, textToTranslate:String, translatesLeft:int = 0):void {
+			ShowModal("Идёт перевод", PLEASE_WAIT.concat(translatesLeft > 0 ? TOO_MANY_STRINGS.replace(TRANSLATES_LEFT_PLACEHOLDER, translatesLeft) : ""));
 			WebTranslator.TranslateMe(textToTranslate, stage, callback);
 		}
 		
