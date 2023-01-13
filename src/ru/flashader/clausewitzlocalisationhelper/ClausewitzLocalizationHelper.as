@@ -70,11 +70,9 @@ package ru.flashader.clausewitzlocalisationhelper {
 			if (_lastLoadedfile == null) {
 				return;
 			}
-			var resultFilePath:String = _lastLoadedfile.nativePath.substring(0, _lastLoadedfile.nativePath.lastIndexOf("l_english.")) + "l_russian.json";
-			var resultOutputFilePath:String = resultFilePath.substring(0, resultFilePath.lastIndexOf(".")) + ".yml";
-			
+			var resultOutputFilePath:String = _lastLoadedfile.nativePath.substring(0, _lastLoadedfile.nativePath.lastIndexOf("l_english.")) + "l_russian.yml";
 			if (
-				resultFilePath == "l_russian.json"
+				resultOutputFilePath == "l_russian.yml"
 			) {
 				ShowModal(
 					"Русский русскому русский",
@@ -100,26 +98,8 @@ package ru.flashader.clausewitzlocalisationhelper {
 											JOptionPane.OK
 										) > 0
 									) {
-										resultFilePath = _lastLoadedfile.nativePath.substring(
-											0,
-											_lastLoadedfile.nativePath.lastIndexOf(
-												"."
-											)
-										) + ".json";
-										resultOutputFilePath = resultFilePath.substring(
-											0,
-											resultFilePath.lastIndexOf(
-												"."
-											)
-										) + ".yml";
 										WriteResultAndCallToParseIt(
-											resultFilePath,
-											resultFilePath.substring(
-												0,
-												resultFilePath.lastIndexOf(
-													"." //Не смотри на код такими глазами - в подобном стиле я могу писать бесконечно. И что ты мне сделаешь? Я в другом моде!
-												)
-											) + ".yml"
+											_lastLoadedfile.nativePath //Не смотри на код такими глазами - в подобном стиле я могу писать бесконечно. И что ты мне сделаешь? Я в другом моде!
 										);
 									}
 								},
@@ -139,17 +119,17 @@ package ru.flashader.clausewitzlocalisationhelper {
 					"Найден уже существующий файл:\n" + resultOutputFile.nativePath + "\n Перезаписываю?",
 					function(userChoice:int):void {
 						if ((userChoice & JOptionPane.YES) > 0) {
-							WriteResultAndCallToParseIt(resultFilePath, resultOutputFilePath);
+							WriteResultAndCallToParseIt(resultOutputFilePath);
 						}
 					},
 					JOptionPane.YES | JOptionPane.NO
 				);
 			} else {
-				WriteResultAndCallToParseIt(resultFilePath, resultOutputFilePath);
+				WriteResultAndCallToParseIt(resultOutputFilePath);
 			}
 		}
 		
-		private function WriteResultAndCallToParseIt(resultFilePath:String, resultOutputFilePath:String):void {
+		private function WriteResultAndCallToParseIt(resultOutputFilePath:String):void {
 			var translationResult:TranslationFileContent = _translatingWindow.CollectTranslations();
 			
 			var tempFile:File = File.createTempFile();
@@ -161,9 +141,9 @@ package ru.flashader.clausewitzlocalisationhelper {
 			stream.writeBytes(jsonBytes);
 			stream.close();
 			
-			var resultFile:File = new File(resultFilePath);
+			var resultOutFile:File = new File(resultOutputFilePath);
 			
-			tempFile.moveTo(resultFile, true);
+			tempFile.moveTo(resultOutFile, true);
 			
 			ShowModal("Поздравляю!", "Ещё один файл переведён!", EmptyFunction, JOptionPane.OK);
 		}
