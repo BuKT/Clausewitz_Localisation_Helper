@@ -18,5 +18,13 @@ package ru.flashader.clausewitzlocalisationhelper.data {
 			}
 			
 		}
+		
+		public function ToYAML():String {
+			var toReturnArray:Array = [ LanguagePostfix.concat(":") ];
+			for each (var entry:TranslateEntry in TranslateEntriesList) {
+				toReturnArray.push(entry.ToString());
+			}
+			return toReturnArray.join("\n");
+		}
 	}
 }

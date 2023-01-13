@@ -6,7 +6,6 @@ cd %~dp0 & cd ..
 set PAUSE_ERRORS=1
 
 mkdir bin\externals
-copy lib\externals\ bin\externals\
 call bat\SetupSDK.bat
 call bat\SetupApp.bat
 

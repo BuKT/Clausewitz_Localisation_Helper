@@ -156,11 +156,18 @@ package ru.flashader.clausewitzlocalisationhelper {
 				}
 			}
 			lineContent.Value = line.substring(QuoteCharsIndex[0] + 1, QuoteCharsIndex[QuoteCharsIndex.length - 1]);
+			
+			ParseTags(lineContent);
+			
 			//TODO: flashader Тут можно почистить от лишних эскейпов.
 			//Да ещё и проверки всяких раскрасок проодить. Но влом пока.
 			//И Файнд коммент ещё снизу заюзать! Чтобы после кавычки тоже схавала конец строки
 			
 			return lineContent;
+		}
+		
+		private static function ParseTags(lineContent:LineContent):void {
+			//TODO: flashader Нутыпонел. Жопа полная.
 		}
 		
 		private static function FindComment(toCheck:String):int {
@@ -221,6 +228,30 @@ package ru.flashader.clausewitzlocalisationhelper {
 			}
 			while (toConvert.indexOf("\n") > -1) {
 				toConvert = toConvert.replace("\n", "\r");
+			}
+			return toConvert;
+		}
+		
+		public static function RemoveSharps(toConvert:String):String {
+			while (toConvert.indexOf("#") > -1) {
+				toConvert = toConvert.replace("#", "%23");
+			}
+			return toConvert;
+		}
+		
+		public static function RestoreSharps(toConvert:String):String {
+			while (toConvert.indexOf("%23") > -1) {
+				toConvert = toConvert.replace("%23", "#");
+			}
+			return toConvert;
+		}
+		
+		public static function RestoreQuotation(toConvert:String):String {
+			while (toConvert.indexOf("&quot;") > -1) {
+				toConvert = toConvert.replace("&quot;", '"');
+			}
+			while (toConvert.indexOf("&#39;") > -1) {
+				toConvert = toConvert.replace("&#39;", "'");
 			}
 			return toConvert;
 		}

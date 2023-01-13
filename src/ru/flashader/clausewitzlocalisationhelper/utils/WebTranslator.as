@@ -9,6 +9,7 @@ package ru.flashader.clausewitzlocalisationhelper.utils {
 	import flash.net.URLVariables;
 	import flash.text.TextField;
 	import flash.utils.setTimeout;
+	import ru.flashader.clausewitzlocalisationhelper.Utilities;
 	
 	/**
 	* @author Ilja 'flashader' Mickodin
@@ -35,6 +36,7 @@ package ru.flashader.clausewitzlocalisationhelper.utils {
 		
 		public static function TranslateMe(input:String, stage:Stage, outputCallback:Function, useGUIAPI:Boolean = false):void {
 			_outputCallback = outputCallback;
+			input = Utilities.RemoveSharps(input);
 			if (useGUIAPI) {
 				TranslateWithGUIAPI(input, stage);
 			} else {
@@ -51,7 +53,7 @@ package ru.flashader.clausewitzlocalisationhelper.utils {
 			var html:String = _cliLoader.data.toString();
 			var startTranslationIDX:int = html.indexOf(CLI_TRANSLATION_START_MARKER) + CLI_TRANSLATION_START_MARKER.length;
 			var endTranslationIDX:int = html.indexOf(CLI_TRANSLATION_END_MARKER);
-			var translate:String = html.substring(startTranslationIDX, endTranslationIDX);
+			var translate:String = Utilities.RestoreQuotation(Utilities.RestoreSharps(html.substring(startTranslationIDX, endTranslationIDX)));
 			dispatchEvent(new WebTranslatorEvent(WebTranslatorEvent.TRANSLATION_ENDED));
 			_outputCallback != null && _outputCallback(translate);
 		}

@@ -11,5 +11,9 @@ package ru.flashader.clausewitzlocalisationhelper.data {
 		public var Raw:String;
 		public var Errors:Vector.<YMLStringError> = new Vector.<YMLStringError>();
 		public var isEmpty:Boolean;
+		
+		override public function ToString():String {
+			return " ".concat(Key, ":", isNaN(Version) ? " " : Version + ' "', Value, '"');
+		}
 	}
 }

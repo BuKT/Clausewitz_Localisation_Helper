@@ -151,13 +151,12 @@ package ru.flashader.clausewitzlocalisationhelper {
 		
 		private function WriteResultAndCallToParseIt(resultFilePath:String, resultOutputFilePath:String):void {
 			var translationResult:TranslationFileContent = _translatingWindow.CollectTranslations();
-			var translationResultJSON:String = JSON.stringify(translationResult);
 			
 			var tempFile:File = File.createTempFile();
 			var stream:FileStream = new FileStream();
 			var jsonBytes:ByteArray = new ByteArray();
 			
-			jsonBytes.writeMultiByte(translationResultJSON, "utf-8"); //He-he-he: ยง
+			jsonBytes.writeMultiByte(translationResult.ToYAML(), "utf-8"); //He-he-he: ยง
 			stream.open(tempFile, FileMode.WRITE);
 			stream.writeBytes(jsonBytes);
 			stream.close();
@@ -166,15 +165,7 @@ package ru.flashader.clausewitzlocalisationhelper {
 			
 			tempFile.moveTo(resultFile, true);
 			
-			CallExternalParser(
-				resultFilePath,
-				resultOutputFilePath,
-				function(some:String):void {
-					RemoveFileAtPath(resultFilePath);
-					ShowModal("Поздравляю!", "Ещё один файл переведён!", EmptyFunction, JOptionPane.OK);
-				},
-				ShowErrorMessage
-			);
+			ShowModal("Поздравляю!", "Ещё один файл переведён!", EmptyFunction, JOptionPane.OK);
 		}
 		
 		private function OpenLoadDialog(e:AWEvent):void {

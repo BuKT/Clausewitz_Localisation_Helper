@@ -274,7 +274,7 @@ package ru.flashader.clausewitzlocalisationhelper.panels {
 		}
 		
 		public function GetValue():String {
-			return Utilities.ConvertStringToShortN(getTargetTranslation().getText());
+			return Utilities.ConvertStringToN(getTargetTranslation().getText());
 		}
 		
 		private function processTranslateRequest(e:AWEvent):void {

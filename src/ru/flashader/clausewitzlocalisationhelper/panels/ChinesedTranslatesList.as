@@ -376,7 +376,7 @@ package ru.flashader.clausewitzlocalisationhelper.panels {
 			for each (var row:Array in _fullTableData) {
 				var entry:TranslateEntry = new TranslateEntry();
 				entry.Key = row[0];
-				entry.Value = Utilities.ConvertStringToShortN(row[2]);
+				entry.Value = Utilities.ConvertStringToN(row[2]);
 				toReturn.push(entry);
 			}
 			return toReturn;
