@@ -8,6 +8,8 @@ package ru.flashader.clausewitzlocalisationhelper {
 	import flash.filesystem.FileMode;
 	import flash.filesystem.FileStream;
 	import flash.net.FileFilter;
+	import flash.net.URLRequest;
+	import flash.net.navigateToURL;
 	import flash.text.TextField;
 	import flash.utils.ByteArray;
 	import org.aswing.*;
@@ -145,6 +147,7 @@ package ru.flashader.clausewitzlocalisationhelper {
 			tempFile.moveTo(resultOutFile, true);
 			
 			ShowModal("Поздравляю!", "Ещё один файл переведён!", EmptyFunction, JOptionPane.OK);
+			navigateToURL(new URLRequest(resultOutFile.nativePath));
 		}
 		
 		private function OpenLoadDialog(e:AWEvent):void {
