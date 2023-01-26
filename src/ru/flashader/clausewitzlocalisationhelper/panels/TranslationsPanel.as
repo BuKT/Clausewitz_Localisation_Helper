@@ -5,8 +5,8 @@ package ru.flashader.clausewitzlocalisationhelper.panels {
 	import org.aswing.colorchooser.*;
 	import org.aswing.ext.*;
 	import org.aswing.geom.*;
-	import ru.flashader.clausewitzlocalisationhelper.data.LineContent;
-	import ru.flashader.clausewitzlocalisationhelper.data.TranslateEntry;
+	import ru.flashader.clausewitzlocalisationhelper.data.BaseSeparateTranslationEntry;
+	import ru.flashader.clausewitzlocalisationhelper.data.RichSeparateTranslationEntry;
 	import ru.flashader.clausewitzlocalisationhelper.data.TranslationFileContent;
 
 	/**
@@ -222,18 +222,20 @@ package ru.flashader.clausewitzlocalisationhelper.panels {
 			FileNameLabel.setText(path);
 			var filter:String = FilterString.getText().toLowerCase();
 			
-			for each (var entryPanel:TranslateEntryPanel in _entriesPanelList) {
+			var entryPanel:TranslateEntryPanel;
+			
+			for each (entryPanel in _entriesPanelList) {
 				//entryPanel.dispose(); //TODO: flashader Да сделай ты уже нормальный пул!
 				ItemsPlaceholder.remove(entryPanel);
 			}
 			
 			_entriesPanelList.length = 0;
 			
-			for each (var entry:TranslateEntry in sourceValues.TranslateEntriesList) {
-				if (entry is LineContent) {
-					if ((entry as LineContent).isEmpty) { continue; }
+			for each (var entry:BaseSeparateTranslationEntry in sourceValues.TranslateEntriesList) {
+				if (entry is RichSeparateTranslationEntry) {
+					if ((entry as RichSeparateTranslationEntry).isEmpty) { continue; }
 				}
-				var entryPanel:TranslateEntryPanel = new TranslateEntryPanel(entry);
+				entryPanel = new TranslateEntryPanel(entry);
 				_entriesPanelList.push(entryPanel);
 				entryPanel.setVisible(filter.length == 0 || entryPanel.getKey().toLowerCase().indexOf(filter) > -1);
 				entryPanel.addTranslateRequestListener(RecastTranslateRequest);
@@ -245,14 +247,14 @@ package ru.flashader.clausewitzlocalisationhelper.panels {
 		}
 		
 		public function CollectTranslations():TranslationFileContent {
-			var toReturn:TranslationFileContent = new TranslationFileContent({});
+			var toReturn:TranslationFileContent = new TranslationFileContent();
 			toReturn.LanguagePostfix = "l_russian";
 			switch (TabbingContainer.getSelectedIndex()) {
 				case 1:
 					for each (var entryPanel:TranslateEntryPanel in _entriesPanelList) {
-						var entry:TranslateEntry = new TranslateEntry();
+						var entry:BaseSeparateTranslationEntry = new BaseSeparateTranslationEntry();
 						entry.Key = entryPanel.getKey();
-						entry.Value = entryPanel.GetValue();
+						entry.TargetValue = entryPanel.GetValue();
 						toReturn.TranslateEntriesList.push(entry);
 					};
 					break;

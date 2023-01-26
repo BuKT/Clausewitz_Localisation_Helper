@@ -9,7 +9,6 @@ package ru.flashader.clausewitzlocalisationhelper.utils {
 	import flash.net.URLVariables;
 	import flash.text.TextField;
 	import flash.utils.setTimeout;
-	import ru.flashader.clausewitzlocalisationhelper.Utilities;
 	
 	/**
 	* @author Ilja 'flashader' Mickodin

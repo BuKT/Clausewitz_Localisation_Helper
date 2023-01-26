@@ -1,15 +1,14 @@
-package ru.flashader.clausewitzlocalisationhelper {
-	import ru.flashader.clausewitzlocalisationhelper.data.LineContent;
+package ru.flashader.clausewitzlocalisationhelper.utils {
+	import ru.flashader.clausewitzlocalisationhelper.utils.Utilities;
+	import ru.flashader.clausewitzlocalisationhelper.data.RichSeparateTranslationEntry;
 	import ru.flashader.clausewitzlocalisationhelper.data.TranslationFileContent;
-	import ru.flashader.clausewitzlocalisationhelper.data.errors.ForbiddenCharacterError;
-	import ru.flashader.clausewitzlocalisationhelper.data.errors.ValueCorruptedError;
-	import ru.flashader.clausewitzlocalisationhelper.data.errors.VersionError;
-
+	import ru.flashader.clausewitzlocalisationhelper.data.errors.*;
+	
 	/**
 	* @author Ilja 'flashader' Mickodin
 	*/
 	
-	public class Utilities {
+	public class Parsers {
 		private static const FLASHADER_TEMPORARY_TEMPLATE:String = "###OLOLO_FLASHADER_TEMPORARY_TEMPLATE_OLOLO###";
 		
 		private static const COLON_CHAR:String = ":";
@@ -38,17 +37,17 @@ package ru.flashader.clausewitzlocalisationhelper {
 		private static const CORRECT_NAME_REG:RegExp = new RegExp("[^a-zA-Z0-9_.-]");
 		private static const CORRECT_VERSION_REG:RegExp = new RegExp("[^0-9]"); //Ever dots not allowed
 		
-		public static function DoManualParsing(fileContent:String, fullPath:String):TranslationFileContent {
+		public static function DoParse(fileContent:String, fullPath:String):TranslationFileContent {
 			var escapedContent:String = fileContent.replace("\\n", FLASHADER_TEMPORARY_TEMPLATE);
 			var lines:Array = escapedContent.split("\r\n");
 			if (lines.length <= 1) {
 				lines = escapedContent.split("\n");
 				trace("Single linebreak");
 			}
-			var toReturn:TranslationFileContent = new TranslationFileContent({});
+			var toReturn:TranslationFileContent = new TranslationFileContent();
 			for each (var line:String in lines) {
 				line = line
-				var lineContent:LineContent = ParseSingleLine(
+				var lineContent:RichSeparateTranslationEntry = ParseSingleLine(
 					line.replace(
 						FLASHADER_TEMPORARY_TEMPLATE,
 						"\\n"
@@ -74,14 +73,14 @@ package ru.flashader.clausewitzlocalisationhelper {
 		}
 		
 		//https://hoi4.paradoxwikis.com/Localisation#Special_characters
-		private static function ParseSingleLine(line:String):LineContent {
-			var lineContent:LineContent = new LineContent();
-			lineContent.Raw = line;
+		private static function ParseSingleLine(line:String):RichSeparateTranslationEntry {
+			var lineEntry:RichSeparateTranslationEntry = new RichSeparateTranslationEntry();
+			lineEntry.Raw = line;
 			
 			var compressedLine:String = line.replace(" ", "").replace("\t", "");
 			if (compressedLine.length == 0) {
-				lineContent.isEmpty = true;
-				return lineContent;
+				lineEntry.isEmpty = true;
+				return lineEntry;
 			}
 			
 			var firstColonIndex:int = line.indexOf(COLON_CHAR);
@@ -94,79 +93,79 @@ package ru.flashader.clausewitzlocalisationhelper {
 			OpenBracketCharsIndex.length = 0;
 			CloseBracketCharsIndex.length = 0;
 			
-			FindAll(SHARP_CHAR, line, SharpCharsIndex);
-			FindAll(PARAGRAPH_CHAR, line, ParagraphCharsIndex);
-			FindAll(BUCKS_CHAR, line, BucksCharsIndex);
-			FindAll(OPEN_BRACKET_CHAR, line, OpenBracketCharsIndex);
-			FindAll(CLOSE_BRACKET_CHAR, line, CloseBracketCharsIndex);
+			Utilities.FindAll(SHARP_CHAR, line, SharpCharsIndex);
+			Utilities.FindAll(PARAGRAPH_CHAR, line, ParagraphCharsIndex);
+			Utilities.FindAll(BUCKS_CHAR, line, BucksCharsIndex);
+			Utilities.FindAll(OPEN_BRACKET_CHAR, line, OpenBracketCharsIndex);
+			Utilities.FindAll(CLOSE_BRACKET_CHAR, line, CloseBracketCharsIndex);
 			
-			FindAll(QUOTE_CHAR, line, QuoteCharsIndex);
-			FindAll(ESCAPE_CHAR, line, EscapeCharsIndex);
+			Utilities.FindAll(QUOTE_CHAR, line, QuoteCharsIndex);
+			Utilities.FindAll(ESCAPE_CHAR, line, EscapeCharsIndex);
 			
 			
 			if (firstColonIndex < 0) { //Строка без ключа
-				lineContent.isEmpty = true;
+				lineEntry.isEmpty = true;
 				for (var i:int = 0; i < line.length; i++) {
 					var char:String = line.charAt(i);
 					if (char == SHARP_CHAR) {
-						lineContent.Comment = line.substring(i, line.length);
+						lineEntry.Comment = line.substring(i, line.length);
 						break;
 					}
 					if (char != " " && char != "\t") {
-						lineContent.Errors.push(new ForbiddenCharacterError(char, i));
+						lineEntry.Errors.push(new ForbiddenCharacterError(char, i));
 					}
 				}
-				return lineContent;
+				return lineEntry;
 			}
 			var keyZone:String = line.substr(0, firstColonIndex); //Тут бы ещё проверку на количество пробелов до и после делать.
 			var commentStartIndex:int = FindComment(keyZone);
 			if (commentStartIndex > -1) {
-				lineContent.Comment = line.substring(commentStartIndex, line.length);
-				lineContent.isEmpty = true;
-				return lineContent;
+				lineEntry.Comment = line.substring(commentStartIndex, line.length);
+				lineEntry.isEmpty = true;
+				return lineEntry;
 			}
-			var forbiddenLines:Array = trimLeft(keyZone).match(CORRECT_NAME_REG);
+			var forbiddenLines:Array = Utilities.trimLeft(keyZone).match(CORRECT_NAME_REG);
 			if (forbiddenLines != null && forbiddenLines.length > 0) {
-				lineContent.Errors.push(new ForbiddenCharacterError(char, line.indexOf(forbiddenLines[0])));
-				lineContent.isEmpty = true;
-				return lineContent;
+				lineEntry.Errors.push(new ForbiddenCharacterError(char, line.indexOf(forbiddenLines[0])));
+				lineEntry.isEmpty = true;
+				return lineEntry;
 			}
-			lineContent.Key = trimLeft(keyZone);
+			lineEntry.Key = Utilities.trimLeft(keyZone);
 			
 			if (QuoteCharsIndex.length < 2) {
-				lineContent.Errors.push(new ValueCorruptedError());
-				lineContent.isEmpty = true;
-				return lineContent;
+				lineEntry.Errors.push(new ValueCorruptedError());
+				lineEntry.isEmpty = true;
+				return lineEntry;
 			}
 			var versionZone:String = line.substring(firstColonIndex + 1, QuoteCharsIndex[0]);
 			if (versionZone.length > 0) {
-				var versionString:String = trimRight(versionZone);
+				var versionString:String = Utilities.trimRight(versionZone);
 				if (versionString.length > 0) { //Что-то, кроме кучи пробелов
 					if (versionString.charAt(0) == " ") { //Но начинается тоже с пробела - а так уже нельзя
-						lineContent.Errors.push(new VersionError());//Первый случай некритичной ошибки - можно исправить самостоятельно. Удалим и всё 
+						lineEntry.Errors.push(new VersionError());//Первый случай некритичной ошибки - можно исправить самостоятельно. Удалим и всё 
 					} else { //Слева пробелов нет, справа убрали. А вдруг и правда число?
 						var forbiddenVersion:Array = versionString.match(CORRECT_VERSION_REG);
 						if (forbiddenVersion != null && forbiddenVersion.length > 0) {
-							lineContent.Errors.push(new ForbiddenCharacterError(char, line.indexOf(forbiddenVersion[0])));
+							lineEntry.Errors.push(new ForbiddenCharacterError(char, line.indexOf(forbiddenVersion[0])));
 						} else {
-							lineContent.Version = parseInt(versionString);
+							lineEntry.Version = parseInt(versionString);
 						}
 						
 					}
 				}
 			}
-			lineContent.Value = line.substring(QuoteCharsIndex[0] + 1, QuoteCharsIndex[QuoteCharsIndex.length - 1]);
+			lineEntry.SourceValue = line.substring(QuoteCharsIndex[0] + 1, QuoteCharsIndex[QuoteCharsIndex.length - 1]);
 			
-			ParseTags(lineContent);
+			ParseTags(lineEntry);
 			
 			//TODO: flashader Тут можно почистить от лишних эскейпов.
 			//Да ещё и проверки всяких раскрасок проодить. Но влом пока.
 			//И Файнд коммент ещё снизу заюзать! Чтобы после кавычки тоже схавала конец строки
 			
-			return lineContent;
+			return lineEntry;
 		}
 		
-		private static function ParseTags(lineContent:LineContent):void {
+		private static function ParseTags(lineEntry:RichSeparateTranslationEntry):void {
 			//TODO: flashader Нутыпонел. Жопа полная.
 		}
 		
@@ -181,79 +180,6 @@ package ru.flashader.clausewitzlocalisationhelper {
 				}
 			}
 			return -1;
-		}
-		
-		private static function FindAll(charToFind:String, where:String, whereTo:Vector.<int>):void {
-			var idx:int = where.indexOf(charToFind);
-			while (idx > -1) {
-				whereTo.push(idx);
-				idx++;
-				idx = where.indexOf(charToFind, idx);
-			}
-		}
-		
-		private static function trimLeft(toTrim:String, char:String = " "):String {
-			if (toTrim.charAt(0) == char.charAt(0)) {
-				toTrim = trimLeft(toTrim.substring(1), char);
-			}
-			return toTrim;
-		}
-		
-		private static function trimRight(toTrim:String, char:String = " "):String {
-			if (toTrim.charAt(toTrim.length - 1) == char.charAt(0)) {
-				toTrim = trimRight(toTrim.substring(0, toTrim.length - 2), char);
-			}
-			return toTrim;
-		}
-		
-		
-		
-		public static function ConvertStringToN(toConvert:String):String {
-			while (toConvert.indexOf("\r") > -1) {
-				toConvert = toConvert.replace("\r", "\\n");
-			}
-			return toConvert;
-		}
-		
-		public static function ConvertStringToShortN(toConvert:String):String {
-			while (toConvert.indexOf("\r") > -1) {
-				toConvert = toConvert.replace("\r", "\n");
-			}
-			return toConvert;
-		}
-		
-		public static function ConvertStringToR(toConvert:String):String {
-			while (toConvert.indexOf("\\n") > -1) {
-				toConvert = toConvert.replace("\\n", "\r");
-			}
-			while (toConvert.indexOf("\n") > -1) {
-				toConvert = toConvert.replace("\n", "\r");
-			}
-			return toConvert;
-		}
-		
-		public static function RemoveSharps(toConvert:String):String {
-			while (toConvert.indexOf("#") > -1) {
-				toConvert = toConvert.replace("#", "%23");
-			}
-			return toConvert;
-		}
-		
-		public static function RestoreSharps(toConvert:String):String {
-			while (toConvert.indexOf("%23") > -1) {
-				toConvert = toConvert.replace("%23", "#");
-			}
-			return toConvert;
-		}
-		
-		public static function RestoreQuotation(toConvert:String):String {
-			while (toConvert.indexOf("&quot;") > -1) {
-				toConvert = toConvert.replace("&quot;", '"');
-			}
-			while (toConvert.indexOf("&#39;") > -1) {
-				toConvert = toConvert.replace("&#39;", "'");
-			}
-			return toConvert;
 		}
 	}
 }

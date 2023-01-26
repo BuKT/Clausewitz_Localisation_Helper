@@ -5,8 +5,8 @@ package ru.flashader.clausewitzlocalisationhelper.panels {
 	import org.aswing.event.AWEvent;
 	import org.aswing.ext.*;
 	import org.aswing.geom.*;
-	import ru.flashader.clausewitzlocalisationhelper.Utilities;
-	import ru.flashader.clausewitzlocalisationhelper.data.TranslateEntry;
+	import ru.flashader.clausewitzlocalisationhelper.utils.Utilities;
+	import ru.flashader.clausewitzlocalisationhelper.data.BaseSeparateTranslationEntry;
 	
 	/**
 	* @author Ilja 'flashader' Mickodin
@@ -32,16 +32,14 @@ package ru.flashader.clausewitzlocalisationhelper.panels {
 		private var TargetTranslation:JTextArea;
 	
 		private var _translateRequestCallback:Function;
-		private var _targetEntry:TranslateEntry;
-		private var _sourceEntry:TranslateEntry;
+		private var _entry:BaseSeparateTranslationEntry;
 		private var _key:String;
 		
-		public function TranslateEntryPanel(sourceEntry:TranslateEntry) {
+		public function TranslateEntryPanel(entry:BaseSeparateTranslationEntry) {
 			InitLayout();
-			_sourceEntry = sourceEntry;
-			_targetEntry = new TranslateEntry();
-			FieldName.setText(_key = _targetEntry.Key = _sourceEntry.Key);
-			SourceTranslation.setText(Utilities.ConvertStringToR(_sourceEntry.Value));
+			_entry = entry;
+			FieldName.setText(_key = _entry.Key);
+			SourceTranslation.setText(Utilities.ConvertStringToR(_entry.SourceValue));
 			
 			MoveTranslationButton.addActionListener(JustCopyContent);
 			TranslateTranslationButton.addActionListener(processTranslateRequest);

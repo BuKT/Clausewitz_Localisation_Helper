@@ -11,9 +11,9 @@ package ru.flashader.clausewitzlocalisationhelper.panels {
 	import org.aswing.event.TableModelListener;
 	import org.aswing.table.DefaultTableModel;
 	import org.aswing.table.sorter.TableSorter;
-	import ru.flashader.clausewitzlocalisationhelper.Utilities;
-	import ru.flashader.clausewitzlocalisationhelper.data.LineContent;
-	import ru.flashader.clausewitzlocalisationhelper.data.TranslateEntry;
+	import ru.flashader.clausewitzlocalisationhelper.utils.Utilities;
+	import ru.flashader.clausewitzlocalisationhelper.data.BaseSeparateTranslationEntry;
+	import ru.flashader.clausewitzlocalisationhelper.data.RichSeparateTranslationEntry;
 	import ru.flashader.clausewitzlocalisationhelper.data.TranslationFileContent;
 	
 	/**
@@ -260,14 +260,14 @@ package ru.flashader.clausewitzlocalisationhelper.panels {
 			_fullTableData = new Array();
 			_filteredTableData = new Array();
 			
-			for each (var entry:TranslateEntry in _sourceEntries.TranslateEntriesList) {
-				if (entry is LineContent) {
-					if ((entry as LineContent).isEmpty) { continue; }
+			for each (var entry:BaseSeparateTranslationEntry in _sourceEntries.TranslateEntriesList) {
+				if (entry is RichSeparateTranslationEntry) {
+					if ((entry as RichSeparateTranslationEntry).isEmpty) { continue; }
 				}
 				var entryContent:Array = new Array();
 				entryContent.push(entry.Key);
-				entryContent.push(Utilities.ConvertStringToR(entry.Value));
-				entryContent.push("");
+				entryContent.push(Utilities.ConvertStringToR(entry.SourceValue));
+				entryContent.push(Utilities.ConvertStringToR(entry.TargetValue));
 				_fullTableData.push(entryContent);
 			};
 			
@@ -371,12 +371,12 @@ package ru.flashader.clausewitzlocalisationhelper.panels {
 			RefreshTextAreas();
 		}
 		
-		public function CollectData():Vector.<TranslateEntry> {
-			var toReturn:Vector.<TranslateEntry> = new Vector.<TranslateEntry>();
+		public function CollectData():Vector.<BaseSeparateTranslationEntry> {
+			var toReturn:Vector.<BaseSeparateTranslationEntry> = new Vector.<BaseSeparateTranslationEntry>();
 			for each (var row:Array in _fullTableData) {
-				var entry:TranslateEntry = new TranslateEntry();
+				var entry:BaseSeparateTranslationEntry = new BaseSeparateTranslationEntry();
 				entry.Key = row[0];
-				entry.Value = Utilities.ConvertStringToN(row[2]);
+				entry.TargetValue = Utilities.ConvertStringToN(row[2]);
 				toReturn.push(entry);
 			}
 			return toReturn;

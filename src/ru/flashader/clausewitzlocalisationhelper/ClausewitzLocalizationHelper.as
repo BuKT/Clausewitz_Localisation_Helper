@@ -41,7 +41,6 @@ package ru.flashader.clausewitzlocalisationhelper {
 			"\nВы абсолютно точно уверены, что знаете, что делаете?" +
 			"\n\n(В итоговый файл не будут записаны строки слева" +
 			"\n только те, что справа (даже если они пустые)";
-		private var _sourceValues:Object;
 		private var _doFastCheck:Boolean = true;
 		private var _lastLoadedfile:File = null;
 		
@@ -167,31 +166,7 @@ package ru.flashader.clausewitzlocalisationhelper {
 		
 		private function TryParseSource(fileContent:String, fullPath:String):void {
 			ShowModal("Подождите", TRYING_TO_PARSE);
-			_sourceValues = new Object();
-			if (false && _doFastCheck) {
-				DoFastParsing(fileContent, fullPath);
-			} else {
-				EndParsingAndFillViews(Utilities.DoManualParsing(fileContent, fullPath));
-			}
-		}
-		
-		private function DoFastParsing(fullFileTextToPrecheck:String, fullPath:String):void {
-			CallExternalParser(
-				fullPath,
-				fullPath.substring(0, fullPath.lastIndexOf(".")) + ".json",
-				FastParsingCompleteHandler,
-				CancelLoadingAndShowErrorMessage,
-				true
-			);
-		}
-		
-		private function CancelLoadingAndShowErrorMessage(message:String):void {
-			_lastLoadedfile = null;
-			ShowErrorMessage(message);
-		}
-		
-		private function FastParsingCompleteHandler(jsonText:String):void {
-			EndParsingAndFillViews(new TranslationFileContent(JSON.parse(jsonText)));
+			EndParsingAndFillViews(Parsers.DoParse(fileContent, fullPath));
 		}
 		
 		private function EndParsingAndFillViews(content:TranslationFileContent):void {			
