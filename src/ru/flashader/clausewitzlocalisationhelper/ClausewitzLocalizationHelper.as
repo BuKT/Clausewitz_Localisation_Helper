@@ -146,8 +146,16 @@ package ru.flashader.clausewitzlocalisationhelper {
 			
 			tempFile.moveTo(resultOutFile, true);
 			
-			ShowModal("Поздравляю!", "Ещё один файл переведён!", EmptyFunction, JOptionPane.OK);
-			navigateToURL(new URLRequest(resultOutFile.nativePath));
+			ShowModal(
+				"Поздравляю!",
+				"Ещё один файл переведён!\n\nХотите открыть его?",
+				function(userChoice:int):void {
+					if ((userChoice & JOptionPane.YES) > 0) {
+						navigateToURL(new URLRequest(resultOutFile.nativePath));
+					}
+				},
+				JOptionPane.YES | JOptionPane.NO
+			);
 		}
 		
 		private function OpenSourceLoadDialog(e:AWEvent):void {
