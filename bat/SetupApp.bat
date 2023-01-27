@@ -28,7 +28,7 @@ set APP_ID=%APP_ID: =%
 
 :: Output
 set AIR_PATH=air
-set AIR_NAME=ClausewitzLocalisationHelper
+set AIR_NAME=CELTH
 
 :validation
 findstr /C:"<id>%APP_ID%</id>" "%APP_XML%" > NUL

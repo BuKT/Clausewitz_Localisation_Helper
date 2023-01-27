@@ -4,7 +4,7 @@
   <output>
     <movie outputType="Application" />
     <movie input="" />
-    <movie path="bin\ClausewitzLocalisationHelper.swf" />
+    <movie path="bin\ОПЛCE.swf" />
     <movie fps="100" />
     <movie width="1280" />
     <movie height="720" />
