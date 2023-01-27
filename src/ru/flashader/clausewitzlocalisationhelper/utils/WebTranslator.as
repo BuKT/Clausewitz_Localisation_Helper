@@ -8,6 +8,7 @@ package ru.flashader.clausewitzlocalisationhelper.utils {
 	import flash.net.URLRequest;
 	import flash.net.URLVariables;
 	import flash.text.TextField;
+	import flash.utils.Dictionary;
 	import flash.utils.setTimeout;
 	
 	/**
@@ -27,7 +28,8 @@ package ru.flashader.clausewitzlocalisationhelper.utils {
 		private static var _splittedInput:SplittedInput;
 		private static var _lastTranslatedInput:Number;
 		private static var _currentInputToTranslate:String;
-		private static var _cliLoader:URLLoader;
+		private static var _freeLoaders:Vector.<URLLoader> = new Vector.<URLLoader>();
+		private static var _loaderToCallbackDictionary:Dictionary = new Dictionary(true);
 		
 		
 		private static const CLI_TRANSLATION_START_MARKER:String = '<div class="result-container">'
@@ -39,22 +41,33 @@ package ru.flashader.clausewitzlocalisationhelper.utils {
 			if (useGUIAPI) {
 				TranslateWithGUIAPI(input, stage);
 			} else {
-				if (_cliLoader == null) {
-					_cliLoader = new URLLoader();
-					_cliLoader.addEventListener(Event.COMPLETE, completeTranslate);
-				}
+				var cliLoader:URLLoader = GetNextFreeCLILoader();
+				cliLoader.addEventListener(Event.COMPLETE, completeTranslate);
+				_loaderToCallbackDictionary[cliLoader] = _outputCallback;
 				var requestString:String = CLIURLToLoad.replace(TEMPLATE_TO_CHANGE, input);
-				_cliLoader.load(new URLRequest(requestString));
+				cliLoader.load(new URLRequest(requestString));
 			}
 		}
 		
+		private static function GetNextFreeCLILoader():URLLoader {
+			return _freeLoaders.length == 0 ? new URLLoader() : _freeLoaders.pop();
+		}
+		
+		private static function FreeCLILoader(loader:URLLoader):void {
+			_loaderToCallbackDictionary[loader] = null;
+			loader.removeEventListener(Event.COMPLETE, completeTranslate);
+			_freeLoaders.push(loader);
+		}
+		
 		private static function completeTranslate(e:Event):void {
-			var html:String = _cliLoader.data.toString();
+			var loader:URLLoader = e.currentTarget as URLLoader;
+			var html:String = loader.data.toString();
 			var startTranslationIDX:int = html.indexOf(CLI_TRANSLATION_START_MARKER) + CLI_TRANSLATION_START_MARKER.length;
 			var endTranslationIDX:int = html.indexOf(CLI_TRANSLATION_END_MARKER);
 			var translate:String = Utilities.RestoreQuotation(Utilities.RestoreSharps(html.substring(startTranslationIDX, endTranslationIDX)));
 			dispatchEvent(new WebTranslatorEvent(WebTranslatorEvent.TRANSLATION_ENDED));
-			_outputCallback != null && _outputCallback(translate);
+			_loaderToCallbackDictionary[loader] != null && _loaderToCallbackDictionary[loader](translate);
+			FreeCLILoader(loader);
 		}
 		
 		private static function TranslateWithGUIAPI(input:String, stage:Stage):void {
