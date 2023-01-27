@@ -1,5 +1,6 @@
 package ru.flashader.clausewitzlocalisationhelper.panels {
 	import flash.events.Event;
+	import flash.utils.Dictionary;
 	import org.aswing.*;
 	import org.aswing.border.*;
 	import org.aswing.geom.*;
@@ -11,6 +12,7 @@ package ru.flashader.clausewitzlocalisationhelper.panels {
 	import org.aswing.event.TableModelListener;
 	import org.aswing.table.DefaultTableModel;
 	import org.aswing.table.sorter.TableSorter;
+	import ru.flashader.clausewitzlocalisationhelper.utils.EntryToTextfieldsBinderMediator;
 	import ru.flashader.clausewitzlocalisationhelper.utils.Utilities;
 	import ru.flashader.clausewitzlocalisationhelper.data.BaseSeparateTranslationEntry;
 	import ru.flashader.clausewitzlocalisationhelper.data.RichSeparateTranslationEntry;
@@ -46,15 +48,14 @@ package ru.flashader.clausewitzlocalisationhelper.panels {
 		private var SouthSpacer:JSpacer;
 		
 		
-		private var _sourceEntries:TranslationFileContent;
 		private var _fullTableData:Array;
 		private var _filteredTableData:Array;
 		private var _lastSelectedIndex:int = -1;
-		private var _selectedEntry:Array;
-		private var _translateRequestCallback:Function;
+		private var _selectedRow:Array;
 		private var _massTranslateIDXes:Array = [];
 		private var _filterString:String;
 		private var _massTranslationsCachedFilterString:String;
+		private var _rowsToEntryTranslator:Dictionary = new Dictionary(true);
 		
 		public function ChinesedTranslatesList() {
 			InitLayout();
@@ -232,10 +233,6 @@ package ru.flashader.clausewitzlocalisationhelper.panels {
 			ButtonsBlock.append(JustAThirdSpacerForButtons);
 			ButtonsBlock.append(TranslateAllButton);
 			ButtonsBlock.append(JustAFourthSpacerForButtons);
-			
-			SourceTextField.addEventListener(Event.CHANGE, SourceChangedHandler);
-			TargetTextField.addEventListener(Event.CHANGE, TargetChangedHandler);
-			
 		}
 		
 		public function getSourceTextField():JTextArea{
@@ -254,21 +251,22 @@ package ru.flashader.clausewitzlocalisationhelper.panels {
 			return TranslateTranslationButton;
 		}
 		
-		public function FillWithSource(sourceEntries:TranslationFileContent, filter:String):void {
-			_sourceEntries = sourceEntries;
-			
+		public function FillWithTranslations(translationFileContent:TranslationFileContent, filter:String):void {
+			var row:Array;
+			for each (row in _fullTableData) {
+				EntryToTextfieldsBinderMediator.UnbindTableRowArray(row, EntriesTable.doLayout);
+			}
 			_fullTableData = new Array();
 			_filteredTableData = new Array();
-			
-			for each (var entry:BaseSeparateTranslationEntry in _sourceEntries.TranslateEntriesList) {
+			_rowsToEntryTranslator = new Dictionary(true);
+			for each (var entry:BaseSeparateTranslationEntry in translationFileContent.GetEntriesList()) {
 				if (entry is RichSeparateTranslationEntry) {
 					if ((entry as RichSeparateTranslationEntry).isEmpty) { continue; }
 				}
-				var entryContent:Array = new Array();
-				entryContent.push(entry.Key);
-				entryContent.push(Utilities.ConvertStringToR(entry.SourceValue));
-				entryContent.push(Utilities.ConvertStringToR(entry.TargetValue));
-				_fullTableData.push(entryContent);
+				row = entry.ToTableArray();
+				_fullTableData.push(row);
+				_rowsToEntryTranslator[row] = entry;
+				EntryToTextfieldsBinderMediator.BindTableRowArray(entry, row, EntriesTable.doLayout);
 			};
 			
 			FilterData(filter);
@@ -283,7 +281,7 @@ package ru.flashader.clausewitzlocalisationhelper.panels {
 				}
 			}
 			_lastSelectedIndex = -1;
-			_selectedEntry = null;
+			_selectedRow = null;
 			(EntriesTable.getModel() as DefaultTableModel).setData(_filteredTableData);
 			EntriesTable.changeSelection(-1, -1, false, false);
 		}
@@ -291,56 +289,47 @@ package ru.flashader.clausewitzlocalisationhelper.panels {
 		private function selectionChangedHandler(e:SelectionEvent):void {
 			_lastSelectedIndex = e.getFirstIndex();
 			if (_lastSelectedIndex > -1) {
-				_selectedEntry = _filteredTableData[_lastSelectedIndex];
+				_selectedRow = _filteredTableData[_lastSelectedIndex];
 			} else {
-				_selectedEntry = null;
+				_selectedRow = null;
 			}
 			
 			RefreshTextAreas();
 		}
 		
-		private function RefreshTextAreas():void {
-			if (_selectedEntry != null) {
-				SourceTextField.setText(_selectedEntry[1]);
-				TargetTextField.setText(_selectedEntry[2]);
+		private function RefreshTextAreas():void { 
+			EntryToTextfieldsBinderMediator.UnbindFields(SourceTextField, TargetTextField);
+			TargetTextField.setEnabled(false);
+			SourceTextField.setEnabled(false);
+			MoveTranslationButton.setEnabled(false);
+			TranslateTranslationButton.setEnabled(false);
+			if (_selectedRow != null) { //TODO: flashader Вот тут ещё может случиться изменение эррэя
+				var entry:BaseSeparateTranslationEntry = _rowsToEntryTranslator[_selectedRow];
+				SourceTextField.setText(entry.GetTextFieldReadyValue(true));
+				TargetTextField.setText(entry.GetTextFieldReadyValue(false));
 				TargetTextField.setEnabled(true);
 				SourceTextField.setEnabled(true);
 				MoveTranslationButton.setEnabled(true);
 				TranslateTranslationButton.setEnabled(true);
-			} else {
-				TargetTextField.setEnabled(false);
-				SourceTextField.setEnabled(false);
-				MoveTranslationButton.setEnabled(false);
-				TranslateTranslationButton.setEnabled(false);
+				EntryToTextfieldsBinderMediator.BindFields(entry, SourceTextField, TargetTextField);
 			}
 			TranslateAllButton.setEnabled(_fullTableData != null && _fullTableData.length > 0);
 		}
 		
 		private function JustCopyContent(e:AWEvent):void {
-			TargetTextField.setText(SourceTextField.getText());
-			EntriesTable.getModel().setValueAt(TargetTextField.getText(), _lastSelectedIndex, 2);
+			(_rowsToEntryTranslator[_selectedRow] as BaseSeparateTranslationEntry).JustCopy();
 		}
 		
-		
 		private function TargetChangedHandler(e:Event):void {
-			EntriesTable.getModel().setValueAt(TargetTextField.getText(), _lastSelectedIndex, 2);
+			(_rowsToEntryTranslator[_selectedRow] as BaseSeparateTranslationEntry).SetValueFromField(TargetTextField.getText(), false);
 		}
 		
 		private function SourceChangedHandler(e:Event):void {
-			EntriesTable.getModel().setValueAt(SourceTextField.getText(), _lastSelectedIndex, 1);
-		}
-		
-		public function addTranslateRequestListener(callback:Function):void {
-			_translateRequestCallback = callback;
+			(_rowsToEntryTranslator[_selectedRow] as BaseSeparateTranslationEntry).SetValueFromField(SourceTextField.getText(), true);
 		}
 		
 		private function processTranslateRequest(e:AWEvent):void {
-			_translateRequestCallback != null && _translateRequestCallback(SetTranslateFromAPI, Utilities.ConvertStringToN(SourceTextField.getText()), _massTranslateIDXes.length);
-		}
-		
-		private function SetTranslateFromAPI(translate:String):void {
-			EntriesTable.getModel().setValueAt(Utilities.ConvertStringToR(translate), _lastSelectedIndex, 2);
-			if (_massTranslateIDXes.length > 0) { ContinueMassTranslate(); }
+			(_rowsToEntryTranslator[_selectedRow] as BaseSeparateTranslationEntry).SomeoneRequestToTranslateYou();
 		}
 		
 		private function processTranslateAllrequest(e:AWEvent):void {
@@ -354,32 +343,21 @@ package ru.flashader.clausewitzlocalisationhelper.panels {
 			}
 			_massTranslateIDXes.reverse();
 			ContinueMassTranslate();
-			
 		}
 		
 		private function ContinueMassTranslate():void {
 			if (_massTranslateIDXes.length == 0) {
-				FilterData(_filterString);
+				FilterData(_massTranslationsCachedFilterString);
 				return;
 			}
 			var nextIDXToTranslate:int = _massTranslateIDXes.pop();
 			EntriesTable.changeSelection(nextIDXToTranslate, nextIDXToTranslate, false, false);
 			processTranslateRequest(null);
+			ContinueMassTranslate();
 		}
 		
 		public function tableChanged(e:TableModelEvent):void {
 			RefreshTextAreas();
-		}
-		
-		public function CollectData():Vector.<BaseSeparateTranslationEntry> {
-			var toReturn:Vector.<BaseSeparateTranslationEntry> = new Vector.<BaseSeparateTranslationEntry>();
-			for each (var row:Array in _fullTableData) {
-				var entry:BaseSeparateTranslationEntry = new BaseSeparateTranslationEntry();
-				entry.Key = row[0];
-				entry.TargetValue = Utilities.ConvertStringToN(row[2]);
-				toReturn.push(entry);
-			}
-			return toReturn;
 		}
 	}
 }

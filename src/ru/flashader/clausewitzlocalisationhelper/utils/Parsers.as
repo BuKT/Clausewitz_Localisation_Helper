@@ -1,7 +1,6 @@
 package ru.flashader.clausewitzlocalisationhelper.utils {
 	import ru.flashader.clausewitzlocalisationhelper.utils.Utilities;
-	import ru.flashader.clausewitzlocalisationhelper.data.RichSeparateTranslationEntry;
-	import ru.flashader.clausewitzlocalisationhelper.data.TranslationFileContent;
+	import ru.flashader.clausewitzlocalisationhelper.data.*;
 	import ru.flashader.clausewitzlocalisationhelper.data.errors.*;
 	
 	/**
@@ -37,16 +36,14 @@ package ru.flashader.clausewitzlocalisationhelper.utils {
 		private static const CORRECT_NAME_REG:RegExp = new RegExp("[^a-zA-Z0-9_.-]");
 		private static const CORRECT_VERSION_REG:RegExp = new RegExp("[^0-9]"); //Ever dots not allowed
 		
-		public static function DoParse(fileContent:String, fullPath:String):TranslationFileContent {
+		public static function DoParseAndFill(fileContent:String, fullPath:String, targetTranslationContainer:TranslationFileContent, isSource:Boolean):void {
 			var escapedContent:String = fileContent.replace("\\n", FLASHADER_TEMPORARY_TEMPLATE);
 			var lines:Array = escapedContent.split("\r\n");
 			if (lines.length <= 1) {
 				lines = escapedContent.split("\n");
 				trace("Single linebreak");
 			}
-			var toReturn:TranslationFileContent = new TranslationFileContent();
 			for each (var line:String in lines) {
-				line = line
 				var lineContent:RichSeparateTranslationEntry = ParseSingleLine(
 					line.replace(
 						FLASHADER_TEMPORARY_TEMPLATE,
@@ -54,26 +51,27 @@ package ru.flashader.clausewitzlocalisationhelper.utils {
 					).replace (
 						'\\"',
 						'"'
-					)
+					),
+					true
 				);
+				var postfixToCheck:String = isSource ? targetTranslationContainer.LanguageSourcePostfix : targetTranslationContainer.LanguageTargetPostfix;
 				if (
 					(
-						toReturn.LanguagePostfix == null ||
-						toReturn.LanguagePostfix.length == 0
+						postfixToCheck == null ||
+						postfixToCheck.length == 0
 					) &&
-					lineContent.Errors.length == 1 &&
-					lineContent.Errors[0] is ValueCorruptedError
+					lineContent.GetErrorsLength(isSource) == 1 &&
+					lineContent.GetErrors(isSource)[0] is ValueCorruptedError
 				) {
-					toReturn.LanguagePostfix = lineContent.Key;
+					targetTranslationContainer.SetPostfix(lineContent.GetKey(), isSource);
 				} else {
-					toReturn.TranslateEntriesList.push(lineContent);
+					targetTranslationContainer.AddTranslateEntry(lineContent);
 				}
 			}
-			return toReturn;
 		}
 		
 		//https://hoi4.paradoxwikis.com/Localisation#Special_characters
-		private static function ParseSingleLine(line:String):RichSeparateTranslationEntry {
+		private static function ParseSingleLine(line:String, isSource:Boolean):RichSeparateTranslationEntry {
 			var lineEntry:RichSeparateTranslationEntry = new RichSeparateTranslationEntry();
 			lineEntry.Raw = line;
 			
@@ -112,7 +110,7 @@ package ru.flashader.clausewitzlocalisationhelper.utils {
 						break;
 					}
 					if (char != " " && char != "\t") {
-						lineEntry.Errors.push(new ForbiddenCharacterError(char, i));
+						lineEntry.AddError(new ForbiddenCharacterError(char, i), isSource);
 					}
 				}
 				return lineEntry;
@@ -126,14 +124,14 @@ package ru.flashader.clausewitzlocalisationhelper.utils {
 			}
 			var forbiddenLines:Array = Utilities.trimLeft(keyZone).match(CORRECT_NAME_REG);
 			if (forbiddenLines != null && forbiddenLines.length > 0) {
-				lineEntry.Errors.push(new ForbiddenCharacterError(char, line.indexOf(forbiddenLines[0])));
+				lineEntry.AddError(new ForbiddenCharacterError(char, line.indexOf(forbiddenLines[0])), isSource);
 				lineEntry.isEmpty = true;
 				return lineEntry;
 			}
-			lineEntry.Key = Utilities.trimLeft(keyZone);
+			lineEntry.SetKey(Utilities.trimLeft(keyZone));
 			
 			if (QuoteCharsIndex.length < 2) {
-				lineEntry.Errors.push(new ValueCorruptedError());
+				lineEntry.AddError(new ValueCorruptedError(), isSource);
 				lineEntry.isEmpty = true;
 				return lineEntry;
 			}
@@ -142,11 +140,11 @@ package ru.flashader.clausewitzlocalisationhelper.utils {
 				var versionString:String = Utilities.trimRight(versionZone);
 				if (versionString.length > 0) { //Что-то, кроме кучи пробелов
 					if (versionString.charAt(0) == " ") { //Но начинается тоже с пробела - а так уже нельзя
-						lineEntry.Errors.push(new VersionError());//Первый случай некритичной ошибки - можно исправить самостоятельно. Удалим и всё 
+						lineEntry.AddError(new VersionError(), isSource);//Первый случай некритичной ошибки - можно исправить самостоятельно. Удалим и всё 
 					} else { //Слева пробелов нет, справа убрали. А вдруг и правда число?
 						var forbiddenVersion:Array = versionString.match(CORRECT_VERSION_REG);
 						if (forbiddenVersion != null && forbiddenVersion.length > 0) {
-							lineEntry.Errors.push(new ForbiddenCharacterError(char, line.indexOf(forbiddenVersion[0])));
+							lineEntry.AddError(new ForbiddenCharacterError(char, line.indexOf(forbiddenVersion[0])), isSource);
 						} else {
 							lineEntry.Version = parseInt(versionString);
 						}
@@ -154,7 +152,7 @@ package ru.flashader.clausewitzlocalisationhelper.utils {
 					}
 				}
 			}
-			lineEntry.SourceValue = line.substring(QuoteCharsIndex[0] + 1, QuoteCharsIndex[QuoteCharsIndex.length - 1]);
+			lineEntry.SetRawValue(line.substring(QuoteCharsIndex[0] + 1, QuoteCharsIndex[QuoteCharsIndex.length - 1]), isSource);
 			
 			ParseTags(lineEntry);
 			

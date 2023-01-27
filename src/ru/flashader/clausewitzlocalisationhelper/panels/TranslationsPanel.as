@@ -32,7 +32,6 @@ package ru.flashader.clausewitzlocalisationhelper.panels {
 		private var ItemsPlaceholder:JPanel;
 		
 		private var _entriesPanelList:Vector.<TranslateEntryPanel> = new Vector.<TranslateEntryPanel>();
-		private var _translateRequestCallback:Function;
 		private var _chinesedList:ChinesedTranslatesList;
 		
 		public function TranslationsPanel() {
@@ -210,15 +209,7 @@ package ru.flashader.clausewitzlocalisationhelper.panels {
 			return SaveButton;
 		}
 		
-		public function addTranslateRequestListener(callback:Function):void {
-			_translateRequestCallback = callback;
-		}
-		
-		private function RecastTranslateRequest(callback:Function, textToTranslate:String, translatesLeft:int = 0):void {
-			_translateRequestCallback != null && _translateRequestCallback(callback, textToTranslate, translatesLeft);
-		}
-		
-		public function FillWithSource(sourceValues:TranslationFileContent, path:String):void {
+		public function FillWithTranslations(translationFileContent:TranslationFileContent, path:String):void {
 			FileNameLabel.setText(path);
 			var filter:String = FilterString.getText().toLowerCase();
 			
@@ -231,39 +222,17 @@ package ru.flashader.clausewitzlocalisationhelper.panels {
 			
 			_entriesPanelList.length = 0;
 			
-			for each (var entry:BaseSeparateTranslationEntry in sourceValues.TranslateEntriesList) {
+			for each (var entry:BaseSeparateTranslationEntry in translationFileContent.GetEntriesList()) {
 				if (entry is RichSeparateTranslationEntry) {
 					if ((entry as RichSeparateTranslationEntry).isEmpty) { continue; }
 				}
 				entryPanel = new TranslateEntryPanel(entry);
 				_entriesPanelList.push(entryPanel);
-				entryPanel.setVisible(filter.length == 0 || entryPanel.getKey().toLowerCase().indexOf(filter) > -1);
-				entryPanel.addTranslateRequestListener(RecastTranslateRequest);
+				entryPanel.setVisible(filter.length == 0 || entry.GetKey().toLowerCase().indexOf(filter) > -1);
 				ItemsPlaceholder.append(entryPanel);
 			}
 			
-			_chinesedList.FillWithSource(sourceValues, filter);
-			_chinesedList.addTranslateRequestListener(RecastTranslateRequest);
-		}
-		
-		public function CollectTranslations():TranslationFileContent {
-			var toReturn:TranslationFileContent = new TranslationFileContent();
-			toReturn.LanguagePostfix = "l_russian";
-			switch (TabbingContainer.getSelectedIndex()) {
-				case 1:
-					for each (var entryPanel:TranslateEntryPanel in _entriesPanelList) {
-						var entry:BaseSeparateTranslationEntry = new BaseSeparateTranslationEntry();
-						entry.Key = entryPanel.getKey();
-						entry.TargetValue = entryPanel.GetValue();
-						toReturn.TranslateEntriesList.push(entry);
-					};
-					break;
-				case 0:
-					toReturn.TranslateEntriesList = _chinesedList.CollectData();
-					break;
-			}
-			return toReturn;
-			
+			_chinesedList.FillWithTranslations(translationFileContent, filter);
 		}
 	}
 }

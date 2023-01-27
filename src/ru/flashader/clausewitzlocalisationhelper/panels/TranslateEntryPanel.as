@@ -5,6 +5,7 @@ package ru.flashader.clausewitzlocalisationhelper.panels {
 	import org.aswing.event.AWEvent;
 	import org.aswing.ext.*;
 	import org.aswing.geom.*;
+	import ru.flashader.clausewitzlocalisationhelper.utils.EntryToTextfieldsBinderMediator;
 	import ru.flashader.clausewitzlocalisationhelper.utils.Utilities;
 	import ru.flashader.clausewitzlocalisationhelper.data.BaseSeparateTranslationEntry;
 	
@@ -31,15 +32,18 @@ package ru.flashader.clausewitzlocalisationhelper.panels {
 		private var OuterEastBordering:JPanel;
 		private var TargetTranslation:JTextArea;
 	
-		private var _translateRequestCallback:Function;
 		private var _entry:BaseSeparateTranslationEntry;
-		private var _key:String;
 		
 		public function TranslateEntryPanel(entry:BaseSeparateTranslationEntry) {
 			InitLayout();
 			_entry = entry;
-			FieldName.setText(_key = _entry.Key);
-			SourceTranslation.setText(Utilities.ConvertStringToR(_entry.SourceValue));
+			FieldName.setText(_entry.GetKey());
+			
+			SourceTranslation.setText(_entry.GetTextFieldReadyValue(true));
+			TargetTranslation.setText(_entry.GetTextFieldReadyValue(false));
+			
+			EntryToTextfieldsBinderMediator.UnbindFields(SourceTranslation, TargetTranslation);
+			EntryToTextfieldsBinderMediator.BindFields(_entry, SourceTranslation, TargetTranslation);
 			
 			MoveTranslationButton.addActionListener(JustCopyContent);
 			TranslateTranslationButton.addActionListener(processTranslateRequest);
@@ -256,31 +260,15 @@ package ru.flashader.clausewitzlocalisationhelper.panels {
 		}
 		
 		private function JustCopyContent(e:AWEvent):void {
-			TargetTranslation.setText(SourceTranslation.getText());
-		}
-		
-		public function getTargetTranslation():JTextArea {
-			return TargetTranslation;
-		}
-		
-		public function addTranslateRequestListener(callback:Function):void {
-			_translateRequestCallback = callback;
+			_entry.JustCopy();
 		}
 		
 		public function getKey():String {
-			return _key;
-		}
-		
-		public function GetValue():String {
-			return Utilities.ConvertStringToN(getTargetTranslation().getText());
+			return _entry.GetKey();
 		}
 		
 		private function processTranslateRequest(e:AWEvent):void {
-			_translateRequestCallback != null && _translateRequestCallback(SetTranslatedText, Utilities.ConvertStringToN(SourceTranslation.getText()));
-		}
-		
-		private function SetTranslatedText(translatedText:String):void {
-			TargetTranslation.setText(Utilities.ConvertStringToR(translatedText));
+			_entry.SomeoneRequestToTranslateYou();
 		}
 	}
 }

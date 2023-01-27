@@ -4,6 +4,6 @@ package ru.flashader.clausewitzlocalisationhelper.data.errors {
 	*/
 	
 	public class ValueCorruptedError extends YMLStringError {
-		public function ValueCorruptedError() { }
+		public function ValueCorruptedError() { super(-1); }
 	}
 }
