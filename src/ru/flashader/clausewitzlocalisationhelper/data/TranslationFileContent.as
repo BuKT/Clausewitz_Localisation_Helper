@@ -31,8 +31,12 @@ package ru.flashader.clausewitzlocalisationhelper.data {
 		public function ToYAML(isSource:Boolean):String {
 			var toReturnArray:Array = [ GetPostfix(isSource).concat(":") ];
 			for each (var entry:BaseSeparateTranslationEntry in _translateEntriesList) {
-				if (entry is RichSeparateTranslationEntry && (entry as RichSeparateTranslationEntry).isEmpty) { continue; }
-				toReturnArray.push(entry.ToString(isSource));
+				var richEntry:RichSeparateTranslationEntry = (entry as RichSeparateTranslationEntry);
+				if (richEntry != null && richEntry.isEmpty) {
+					toReturnArray.push(richEntry.Raw);
+				} else {
+					toReturnArray.push(entry.ToString(isSource));
+				}
 			}
 			return toReturnArray.join("\n");
 		}
