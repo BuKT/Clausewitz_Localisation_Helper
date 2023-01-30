@@ -73,6 +73,7 @@ package ru.flashader.clausewitzlocalisationhelper.data {
 				_instance = new TranslationFileContent(ALLOWING_TO_CALL_CONSTRUCTOR);
 			} else if (isSourceLoading) {
 				_instance.cleanEntries();
+				_instance.LanguageSourcePostfix = "";
 			}
 			return _instance;
 		}
