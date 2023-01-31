@@ -1,5 +1,7 @@
 package ru.flashader.clausewitzlocalisationhelper.data {
 	import ru.flashader.clausewitzlocalisationhelper.utils.Utilities;
+	//import ru.flashader.clausewitzlocalisationhelper.utils.EUUtils;
+	
 	/**
 	* @author Ilja 'flashader' Mickodin
 	*/
@@ -10,9 +12,19 @@ package ru.flashader.clausewitzlocalisationhelper.data {
 		protected var _key:String;
 		protected var _sourceValue:String = "";
 		protected var _targetValue:String = "";
+		//protected var _isFuckingGEKS:Boolean = true;
 		
 		public function ToString(isSource:Boolean):String {
-			return " ".concat(_key, ': "', isSource ? _sourceValue : _targetValue, '"');
+			return " ".concat(
+				_key,
+				': "',
+				isSource ?
+					_sourceValue :
+					//_isFuckingGEKS ?
+						//EUUtils.ConvertStringToEUCorr(_targetValue) :
+						_targetValue,
+				'"'
+			);
 		}
 		
 		public function ToTableArray():Array {
@@ -36,6 +48,7 @@ package ru.flashader.clausewitzlocalisationhelper.data {
 		}
 		
 		public function SetRawValue(value:String, isSource:Boolean):void {
+			//value = _isFuckingGEKS ? EUUtils.ConvertStringToEUCyr(value) : value;
 			isSource ? _sourceValue = value : _targetValue = value;
 		}
 		

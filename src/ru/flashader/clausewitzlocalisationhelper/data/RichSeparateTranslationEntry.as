@@ -2,6 +2,7 @@ package ru.flashader.clausewitzlocalisationhelper.data {
 	
 	import ru.flashader.clausewitzlocalisationhelper.data.errors.ForbiddenCharacterError;
 	import ru.flashader.clausewitzlocalisationhelper.data.errors.YMLStringError;
+	//import ru.flashader.clausewitzlocalisationhelper.utils.EUUtils;
 
 	/**
 	* @author Ilja 'flashader' Mickodin
@@ -19,7 +20,19 @@ package ru.flashader.clausewitzlocalisationhelper.data {
 		private var _targetErrors:Vector.<YMLStringError> = new Vector.<YMLStringError>();
 		
 		override public function ToString(isSource:Boolean):String {
-			return " ".concat(_key, ":", isNaN(Version) ? ' "' : Version + ' "', isSource ? _sourceValue : _targetValue, '"');
+			return " ".concat(
+				_key,
+				":",
+				isNaN(Version) ?
+					' "' :
+					Version + ' "',
+				isSource ?
+					_sourceValue :
+					//_isFuckingGEKS ?
+						//EUUtils.ConvertStringToEUCorr(_targetValue) :
+						_targetValue,
+				'"'
+			);
 		}
 		
 		public function GetErrors(isSource:Boolean):Vector.<YMLStringError> { //Инкапсуляция тут нафигачена исключительно в целях рефакторинга - чтобы не пропустить ни одного места, где использовались ошибки.
