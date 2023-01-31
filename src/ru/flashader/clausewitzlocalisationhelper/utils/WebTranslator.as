@@ -34,6 +34,8 @@ package ru.flashader.clausewitzlocalisationhelper.utils {
 		
 		private static const CLI_TRANSLATION_START_MARKER:String = '<div class="result-container">'
 		private static const CLI_TRANSLATION_END_MARKER:String = '</div><div class="links-container"><ul><li><a href="https://www.google.com/m?hl=en-US">Google home</a>'
+		private static var _usedLoaders:int = 0;
+		private static var _waitedTranslations:Array = [];
 		
 		public static function TranslateMe(input:String, stage:Stage, outputCallback:Function, useGUIAPI:Boolean = false):void {
 			_outputCallback = outputCallback;
@@ -41,22 +43,39 @@ package ru.flashader.clausewitzlocalisationhelper.utils {
 			if (useGUIAPI) {
 				TranslateWithGUIAPI(input, stage);
 			} else {
-				var cliLoader:URLLoader = GetNextFreeCLILoader();
-				cliLoader.addEventListener(Event.COMPLETE, completeTranslate);
-				_loaderToCallbackDictionary[cliLoader] = _outputCallback;
-				var requestString:String = CLIURLToLoad.replace(TEMPLATE_TO_CHANGE, input);
-				cliLoader.load(new URLRequest(requestString));
+				RunCLITranslate(input, outputCallback);
 			}
 		}
 		
+		private static function RunCLITranslate(input:String, callback:Function):void {
+			if (_usedLoaders > 30) {
+				_waitedTranslations.push({
+					input: input,
+					callback: callback
+				});
+				return;
+			}
+			var cliLoader:URLLoader = GetNextFreeCLILoader();
+			cliLoader.addEventListener(Event.COMPLETE, completeTranslate);
+			_loaderToCallbackDictionary[cliLoader] = callback;
+			var requestString:String = CLIURLToLoad.replace(TEMPLATE_TO_CHANGE, input);
+			cliLoader.load(new URLRequest(requestString));
+		}
+		
 		private static function GetNextFreeCLILoader():URLLoader {
+			_usedLoaders++;
 			return _freeLoaders.length == 0 ? new URLLoader() : _freeLoaders.pop();
 		}
 		
 		private static function FreeCLILoader(loader:URLLoader):void {
+			_usedLoaders--;
 			_loaderToCallbackDictionary[loader] = null;
 			loader.removeEventListener(Event.COMPLETE, completeTranslate);
 			_freeLoaders.push(loader);
+			if (_waitedTranslations.length > 0) {
+				var waitedTranslation:Object = _waitedTranslations.pop();
+				RunCLITranslate(waitedTranslation["input"], waitedTranslation["callback"]);
+			}
 		}
 		
 		private static function completeTranslate(e:Event):void {

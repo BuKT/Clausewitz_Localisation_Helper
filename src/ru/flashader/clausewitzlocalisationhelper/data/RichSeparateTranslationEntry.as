@@ -8,7 +8,7 @@ package ru.flashader.clausewitzlocalisationhelper.data {
 	*/
 	
 	public class RichSeparateTranslationEntry extends BaseSeparateTranslationEntry {
-		public var Version:int;
+		public var Version:Number = Number.NaN;
 		public var Comment:String;
 		public var Raw:String;
 		public var isEmpty:Boolean;
