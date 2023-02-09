@@ -53,6 +53,7 @@ package ru.flashader.clausewitzlocalisationhelper.panels {
 		private var _lastSelectedIndex:int = -1;
 		private var _selectedRow:Array;
 		private var _massTranslateIDXes:Array = [];
+		private var _massTranslateEntries:Vector.<BaseSeparateTranslationEntry> = new Vector.<BaseSeparateTranslationEntry>();
 		private var _filterString:String;
 		private var _massTranslationsCachedFilterString:String;
 		private var _rowsToEntryTranslator:Dictionary = new Dictionary(true);
@@ -61,7 +62,7 @@ package ru.flashader.clausewitzlocalisationhelper.panels {
 			InitLayout();
 			
 			MoveTranslationButton.addActionListener(JustCopyContent);
-			TranslateTranslationButton.addActionListener(processTranslateRequest);
+			TranslateTranslationButton.addActionListener(processTranslateRequestFromRow);
 			TranslateAllButton.addActionListener(processTranslateAllrequest);
 			
 			var columnsArray:Array = ["Ключ строки", "Оригинал", "Перевод"];
@@ -320,15 +321,7 @@ package ru.flashader.clausewitzlocalisationhelper.panels {
 			(_rowsToEntryTranslator[_selectedRow] as BaseSeparateTranslationEntry).JustCopy();
 		}
 		
-		private function TargetChangedHandler(e:Event):void {
-			(_rowsToEntryTranslator[_selectedRow] as BaseSeparateTranslationEntry).SetValueFromField(TargetTextField.getText(), false);
-		}
-		
-		private function SourceChangedHandler(e:Event):void {
-			(_rowsToEntryTranslator[_selectedRow] as BaseSeparateTranslationEntry).SetValueFromField(SourceTextField.getText(), true);
-		}
-		
-		private function processTranslateRequest(e:AWEvent):void {
+		private function processTranslateRequestFromRow(e:AWEvent):void {
 			(_rowsToEntryTranslator[_selectedRow] as BaseSeparateTranslationEntry).SomeoneRequestToTranslateYou();
 		}
 		
@@ -341,19 +334,53 @@ package ru.flashader.clausewitzlocalisationhelper.panels {
 					_massTranslateIDXes.push(idx);
 				}
 			}
-			_massTranslateIDXes.reverse();
-			ContinueMassTranslate();
+			if (_massTranslateIDXes.length < 100) {
+				_massTranslateIDXes.reverse();
+				ContinueFancyMassTranslate();
+				return;
+			} else {
+				if (_massTranslateIDXes.length < 1000) { //Fuck this fancy showings, we left no much time to live
+					for each (var entry:BaseSeparateTranslationEntry in _rowsToEntryTranslator) {
+						if (entry.GetTextFieldReadyValue(false).length > 0) { continue; }
+						entry.SomeoneRequestToTranslateYou();
+					}
+				} else  { //Ohhhh, shit, something big gonna happen
+					_massTranslateEntries.length = 0;
+					for each (var entry:BaseSeparateTranslationEntry in _rowsToEntryTranslator) {
+						if (entry.GetTextFieldReadyValue(false).length > 0) { continue; }
+						_massTranslateEntries.push(entry);
+					}
+					ContinueAsyncMassTranslate(null);
+				}
+			}
+			FilterData(_massTranslationsCachedFilterString);
 		}
 		
-		private function ContinueMassTranslate():void {
+		private function ContinueAsyncMassTranslate(e:Event = null):void {
+			if (e == null) {
+				addEventListener(Event.EXIT_FRAME, ContinueAsyncMassTranslate);
+			}
+			var translateRequestsSended:int = 0;
+			while (_massTranslateEntries.length > 0 && translateRequestsSended < 300) {
+				_massTranslateEntries.pop().SomeoneRequestToTranslateYou();
+				translateRequestsSended++;
+			}
+			if (_massTranslateEntries.length == 0) {
+				if (e != null) {
+					e.currentTarget.removeEventListener(e.type, arguments.callee);
+				}
+			}
+		}
+		
+		private function ContinueFancyMassTranslate():void {
 			if (_massTranslateIDXes.length == 0) {
 				FilterData(_massTranslationsCachedFilterString);
 				return;
 			}
 			var nextIDXToTranslate:int = _massTranslateIDXes.pop();
 			EntriesTable.changeSelection(nextIDXToTranslate, nextIDXToTranslate, false, false);
-			processTranslateRequest(null);
-			ContinueMassTranslate();
+			processTranslateRequestFromRow(null);
+			ContinueFancyMassTranslate();
 		}
 		
 		public function tableChanged(e:TableModelEvent):void {
