@@ -218,14 +218,15 @@ package ru.flashader.clausewitzlocalisationhelper.utils {
 			Utilities.FindAll(OPEN_PARAGRAPH_CHAR, value, OpenParagraphCharsIndex);
 			CloseParagraphCharsIndex.length = 0;
 			Utilities.FindAll(CLOSE_PARAGRAPH_CHAR, value, CloseParagraphCharsIndex);
-			for (var i:int = 0; i < CloseParagraphCharsIndex.length; i++) { //Открывающий тег очень похож на часть закрывающего
+			var i:int;
+			for (i = 0; i < CloseParagraphCharsIndex.length; i++) { //Открывающий тег очень похож на часть закрывающего
 				var doubledIndex:int = OpenParagraphCharsIndex.indexOf(CloseParagraphCharsIndex[i]);
 				if (doubledIndex > -1) {
 					OpenParagraphCharsIndex.removeAt(doubledIndex);
 				}
 			}
 			
-			for (var i:int = 0; i < OpenParagraphCharsIndex.length; i++) {
+			for (i = 0; i < OpenParagraphCharsIndex.length; i++) {
 				var startIndex:int = OpenParagraphCharsIndex[i];
 				var endIndex:int;
 				if (i >= CloseParagraphCharsIndex.length || (endIndex = CloseParagraphCharsIndex[i]) < startIndex) {
@@ -246,14 +247,15 @@ package ru.flashader.clausewitzlocalisationhelper.utils {
 			Utilities.FindAll(OPEN_SHARP_CHAR, value, OpenSharpCharsIndex);
 			CloseSharpCharsIndex.length = 0;
 			Utilities.FindAll(CLOSE_SHARP_CHAR, value, CloseSharpCharsIndex);
-			for (var i:int = 0; i < CloseSharpCharsIndex.length; i++) { //Открывающий тег очень похож на часть закрывающего
+			var i:int;
+			for (i = 0; i < CloseSharpCharsIndex.length; i++) { //Открывающий тег очень похож на часть закрывающего
 				var doubledIndex:int = OpenSharpCharsIndex.indexOf(CloseSharpCharsIndex[i]);
 				if (doubledIndex > -1) {
 					OpenSharpCharsIndex.removeAt(doubledIndex);
 				}
 			}
 			
-			for (var i:int = 0; i < OpenSharpCharsIndex.length; i++) {
+			for (i = 0; i < OpenSharpCharsIndex.length; i++) {
 				var startIndex:int = OpenSharpCharsIndex[i];
 				var endIndex:int;
 				if (i >= CloseSharpCharsIndex.length || (endIndex = CloseSharpCharsIndex[i]) < startIndex) {

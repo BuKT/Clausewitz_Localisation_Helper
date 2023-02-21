@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<application xmlns="http://ns.adobe.com/air/application/26.0">
+<application xmlns="http://ns.adobe.com/air/application/50.0">
   <id>ru.flashader.clausewitzlocalisationhelper.ClausewitzLocalisationHelper</id>
-  <versionNumber>0.9.7</versionNumber>
+  <versionNumber>1.0.0</versionNumber>
   <filename>CELTH</filename>
   <name>Облегчатор переводов локализаций Clausewitz Engine</name>
   <initialWindow>

@@ -340,14 +340,15 @@ package ru.flashader.clausewitzlocalisationhelper.panels {
 				ContinueFancyMassTranslate();
 				return;
 			} else {
+				var entry:BaseSeparateTranslationEntry;
 				if (_massTranslateIDXes.length < 1000) { //Fuck this fancy showings, we left no much time to live
-					for each (var entry:BaseSeparateTranslationEntry in _rowsToEntryTranslator) {
+					for each (entry in _rowsToEntryTranslator) {
 						if (entry.GetTextFieldReadyValue(false).length > 0) { continue; }
 						entry.SomeoneRequestToTranslateYou();
 					}
 				} else  { //Ohhhh, shit, something big gonna happen
 					_massTranslateEntries.length = 0;
-					for each (var entry:BaseSeparateTranslationEntry in _rowsToEntryTranslator) {
+					for each (entry in _rowsToEntryTranslator) {
 						if (entry.GetTextFieldReadyValue(false).length > 0) { continue; }
 						_massTranslateEntries.push(entry);
 					}

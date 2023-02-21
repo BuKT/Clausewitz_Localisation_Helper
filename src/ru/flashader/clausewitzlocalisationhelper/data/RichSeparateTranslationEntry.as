@@ -49,7 +49,7 @@ package ru.flashader.clausewitzlocalisationhelper.data {
 			isSource ? _sourceErrors.push(error) : _targetErrors.push(error);
 		}
 		
-		public function ClearErrors(isSource:Boolean) {
+		public function ClearErrors(isSource:Boolean):void {
 			isSource ? _sourceErrors.length = 0 : _targetErrors.length = 0;
 		}
 		
