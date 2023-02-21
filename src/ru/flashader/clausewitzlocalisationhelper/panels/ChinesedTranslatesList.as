@@ -280,6 +280,7 @@ package ru.flashader.clausewitzlocalisationhelper.panels {
 				if (filter.length == 0 || row[0].toLowerCase().indexOf(filter) > -1) {
 					_filteredTableData.push(row);
 				}
+				else if (row[1].toLowerCase().indexOf(filter) > -1 || row[2].toLowerCase().indexOf(filter) > -1) { _filteredTableData.push(row); } //TODO: flashader Ладно, ушло в релиз, но потом сделать чекбокс, который и будет проверять - хочет юзер искать по ключам, или нет.
 			}
 			_lastSelectedIndex = -1;
 			_selectedRow = null;

@@ -105,8 +105,6 @@ package ru.flashader.clausewitzlocalisationhelper.data {
 			value = value.replace(/<\/div >/g, '</div>');
 			value = value.replace(/<\/div> >/g, '</div>');
 			
-			trace(value);
-			
 			for (var i:int = _replacingStringParts.length - 1; i >= 0; i--) {
 				var rsp:ReplacedStringPart = _replacingStringParts[i];
 				value = value.replace(rsp.TemporaryString, rsp.ReplacingString);

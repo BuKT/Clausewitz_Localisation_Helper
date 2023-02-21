@@ -33,6 +33,7 @@ package ru.flashader.clausewitzlocalisationhelper.panels {
 		
 		private var _entriesPanelList:Vector.<TranslateEntryPanel> = new Vector.<TranslateEntryPanel>();
 		private var _chinesedList:ChinesedTranslatesList;
+		private var _translationFileContent:TranslationFileContent;
 		
 		public function TranslationsPanel() {
 			setSize(new IntDimension(1280, 720));
@@ -184,10 +185,8 @@ package ru.flashader.clausewitzlocalisationhelper.panels {
 		}
 		
 		private function FilterEntries(e:Event):void {
-			var filter:String = FilterString.getText().toLowerCase();
-			for each (var entryPanel:TranslateEntryPanel in _entriesPanelList) {
-				entryPanel.setVisible(filter.length == 0 || entryPanel.getKey().toLowerCase().indexOf(filter) > -1);
-			}
+			var filter:String = getFilterString();
+			RecreateEntryPanels(filter);
 			_chinesedList.FilterData(filter);
 		}
 		
@@ -195,44 +194,50 @@ package ru.flashader.clausewitzlocalisationhelper.panels {
 			return LoadButton;
 		}
 		
-		
 		public function getFileNameLabel():JLabel {
 			return FileNameLabel;
 		}
 		
-		public function getFilterString():JTextField {
-			return FilterString;
+		public function getFilterString():String {
+			return FilterString.getText().toLowerCase();
 		}
-		
 		
 		public function getSaveButton():JButton {
 			return SaveButton;
 		}
 		
 		public function FillWithTranslations(translationFileContent:TranslationFileContent, path:String):void {
+			_translationFileContent = translationFileContent;
 			FileNameLabel.setText(path);
 			var filter:String = FilterString.getText().toLowerCase();
-			
+			_chinesedList.FillWithTranslations(translationFileContent, filter);
+			RecreateEntryPanels(filter);
+		}
+		
+		private function RecreateEntryPanels(filter:String):void {
 			var entryPanel:TranslateEntryPanel;
-			
 			for each (entryPanel in _entriesPanelList) {
-				//entryPanel.dispose(); //TODO: flashader Да сделай ты уже нормальный пул!
+				entryPanel.Dispose();
 				ItemsPlaceholder.remove(entryPanel);
 			}
-			
 			_entriesPanelList.length = 0;
-			
-			for each (var entry:BaseSeparateTranslationEntry in translationFileContent.GetEntriesList()) {
+			for each (var entry:BaseSeparateTranslationEntry in _translationFileContent.GetEntriesList()) {
 				if (entry is RichSeparateTranslationEntry) {
 					if ((entry as RichSeparateTranslationEntry).isEmpty) { continue; }
 				}
-				entryPanel = new TranslateEntryPanel(entry);
-				_entriesPanelList.push(entryPanel);
-				entryPanel.setVisible(filter.length == 0 || entry.GetKey().toLowerCase().indexOf(filter) > -1);
-				ItemsPlaceholder.append(entryPanel);
+				if (
+					filter.length == 0 ||
+					entry.GetKey().toLowerCase().indexOf(filter) > -1 ||
+					entry.GetTextFieldReadyValue(true).toLowerCase().indexOf(filter) > -1 ||
+					entry.GetTextFieldReadyValue(false).toLowerCase().indexOf(filter) > -1
+				) {
+					entryPanel = TranslateEntryPanel.Obtain(entry);
+					_entriesPanelList.push(entryPanel);
+					entryPanel.setVisible(true);
+					ItemsPlaceholder.append(entryPanel);
+				}
+				if (_entriesPanelList.length > 50) { break; }
 			}
-			
-			_chinesedList.FillWithTranslations(translationFileContent, filter);
 		}
 	}
 }

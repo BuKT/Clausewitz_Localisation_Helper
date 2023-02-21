@@ -14,7 +14,10 @@ package ru.flashader.clausewitzlocalisationhelper.panels {
 	*/
 	
 	public class TranslateEntryPanel extends JPanel {
+		private static const ALLOWING_TO_CALL_CONSTRUCTOR:String = "ยง";
 		//members define
+		private static const _pool:Vector.<TranslateEntryPanel> = new Vector.<TranslateEntryPanel>();
+		
 		private var OuterWestBordering:JPanel;
 		private var SourceTranslation:JTextArea;
 		private var WestSpacer:JSpacer;
@@ -34,19 +37,33 @@ package ru.flashader.clausewitzlocalisationhelper.panels {
 	
 		private var _entry:BaseSeparateTranslationEntry;
 		
-		public function TranslateEntryPanel(entry:BaseSeparateTranslationEntry) {
+		public static function Obtain(entry:BaseSeparateTranslationEntry):TranslateEntryPanel {
+			var toReturn:TranslateEntryPanel;
+			if (_pool.length == 0) {
+				toReturn = new TranslateEntryPanel(ALLOWING_TO_CALL_CONSTRUCTOR);
+			} else {
+				toReturn = _pool.pop();
+			}
+			toReturn.InitWithEntry(entry);
+			return toReturn;
+		}
+		
+		public function TranslateEntryPanel(securityKey:String) {
+			if (securityKey != ALLOWING_TO_CALL_CONSTRUCTOR) {
+				throw new Error("Not allowed");
+			}
 			InitLayout();
-			_entry = entry;
-			FieldName.setText(_entry.GetKey());
-			
-			SourceTranslation.setText(_entry.GetTextFieldReadyValue(true));
-			TargetTranslation.setText(_entry.GetTextFieldReadyValue(false));
-			
-			EntryToTextfieldsBinderMediator.UnbindFields(SourceTranslation, TargetTranslation);
-			EntryToTextfieldsBinderMediator.BindFields(_entry, SourceTranslation, TargetTranslation);
-			
 			MoveTranslationButton.addActionListener(JustCopyContent);
 			TranslateTranslationButton.addActionListener(processTranslateRequest);
+		}
+		
+		public function InitWithEntry(entry:BaseSeparateTranslationEntry):void {
+			_entry = entry;
+			FieldName.setText(_entry.GetKey());
+			SourceTranslation.setText(_entry.GetTextFieldReadyValue(true));
+			TargetTranslation.setText(_entry.GetTextFieldReadyValue(false));
+			EntryToTextfieldsBinderMediator.UnbindFields(SourceTranslation, TargetTranslation);
+			EntryToTextfieldsBinderMediator.BindFields(_entry, SourceTranslation, TargetTranslation);
 		}
 		
 		private function InitLayout():void {
@@ -269,6 +286,12 @@ package ru.flashader.clausewitzlocalisationhelper.panels {
 		
 		private function processTranslateRequest(e:AWEvent):void {
 			_entry.SomeoneRequestToTranslateYou();
+		}
+		
+		public function Dispose():void {
+			EntryToTextfieldsBinderMediator.UnbindFields(SourceTranslation, TargetTranslation);
+			setVisible(false);
+			_pool.push(this);
 		}
 	}
 }
