@@ -2,6 +2,7 @@ package ru.flashader.clausewitzlocalisationhelper.utils {
 	import flash.display.Stage;
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
+	import flash.events.IOErrorEvent;
 	import flash.geom.Rectangle;
 	import flash.media.StageWebView;
 	import flash.net.URLLoader;
@@ -20,7 +21,8 @@ package ru.flashader.clausewitzlocalisationhelper.utils {
 		private static var Instances:Vector.<StageWebView> = new Vector.<StageWebView>();
 		private static const TEMPLATE_TO_CHANGE:String = "###TEMPLATETOCHAGE###";
 		private static const GUIURLToLoad:String = "https://translate.google.com/?sl=auto&tl=ru&text=" + TEMPLATE_TO_CHANGE + "&op=translate";
-		private static const CLIURLToLoad:String = "https://translate.google.com/m?sl=auto&tl=ru&q=" + TEMPLATE_TO_CHANGE;
+		private static const HTMLURLToLoad:String = "https://translate.google.com/m?sl=auto&tl=ru&q=" + TEMPLATE_TO_CHANGE;
+		private static const JSONURLToLoad:String = "https://translate.googleapis.com/translate_a/single?client=gtx&dt=t&sl=auto&tl=ru&q=" + TEMPLATE_TO_CHANGE;
 		private static var _secondsLeft:int;
 		private static var _callback:Function;
 		private static var _outputCallback:Function;
@@ -31,35 +33,92 @@ package ru.flashader.clausewitzlocalisationhelper.utils {
 		private static var _freeLoaders:Vector.<URLLoader> = new Vector.<URLLoader>();
 		private static var _loaderToCallbackDictionary:Dictionary = new Dictionary(true);
 		
-		
-		private static const CLI_TRANSLATION_START_MARKER:String = '<div class="result-container">'
-		private static const CLI_TRANSLATION_END_MARKER:String = '</div><div class="links-container"><ul><li><a href="https://www.google.com/m?hl=en-US">Google home</a>'
+		private static const HTML_TRANSLATION_START_MARKER:String = '<div class="result-container">'
+		private static const HTML_TRANSLATION_END_MARKER:String = '</div><div class="links-container"><ul><li><a href="https://www.google.com/m?hl=en-US">Google home</a>'
 		private static var _usedLoaders:int = 0;
 		private static var _waitedTranslations:Array = [];
 		
-		public static function TranslateMe(input:String, stage:Stage, outputCallback:Function, useGUIAPI:Boolean = false):void {
+		public static function TranslateMe(input:String, stage:Stage, outputCallback:Function, useGUIAPI:Boolean = false, useHTMLAPI:Boolean = false):void {
 			_outputCallback = outputCallback;
 			input = Utilities.RemoveSharps(input);
 			if (useGUIAPI) {
 				TranslateWithGUIAPI(input, stage);
+			} else if (useHTMLAPI){
+				RunHTMLTranslate(input, outputCallback);
 			} else {
-				RunCLITranslate(input, outputCallback);
+				RunJSONTranslate(input, _outputCallback);
 			}
 		}
 		
-		private static function RunCLITranslate(input:String, callback:Function):void {
+		private static function RunHTMLTranslate(input:String, callback:Function):void {
 			if (_usedLoaders > 30) {
 				_waitedTranslations.push({
 					input: input,
-					callback: callback
+					callback: callback,
+					isJSON: false
 				});
 				return;
 			}
 			var cliLoader:URLLoader = GetNextFreeCLILoader();
-			cliLoader.addEventListener(Event.COMPLETE, completeTranslate);
+			cliLoader.addEventListener(Event.COMPLETE, completeHTMLTranslate);
 			_loaderToCallbackDictionary[cliLoader] = callback;
-			var requestString:String = CLIURLToLoad.replace(TEMPLATE_TO_CHANGE, input);
+			var requestString:String = HTMLURLToLoad.replace(TEMPLATE_TO_CHANGE, input);
 			cliLoader.load(new URLRequest(requestString));
+		}
+		
+		private static function completeHTMLTranslate(e:Event):void {
+			var loader:URLLoader = e.currentTarget as URLLoader;
+			var html:String = loader.data.toString();
+			var startTranslationIDX:int = html.indexOf(HTML_TRANSLATION_START_MARKER) + HTML_TRANSLATION_START_MARKER.length;
+			var endTranslationIDX:int = html.indexOf(HTML_TRANSLATION_END_MARKER);
+			var translate:String = Utilities.RemoveStrangeSpaces(
+				Utilities.RestoreQuotation(
+					Utilities.RestoreSharps(
+						html.substring(startTranslationIDX, endTranslationIDX)
+					)
+				)
+			);
+			dispatchEvent(new WebTranslatorEvent(WebTranslatorEvent.TRANSLATION_ENDED));
+			_loaderToCallbackDictionary[loader] != null && _loaderToCallbackDictionary[loader](translate);
+			FreeCLILoader(loader);
+		}
+		
+		private static function RunJSONTranslate(input:String, callback:Function):void {
+			if (_usedLoaders > 30) {
+				_waitedTranslations.push({
+					input: input,
+					callback: callback,
+					isJSON: true
+				});
+				return;
+			}
+			var cliLoader:URLLoader = GetNextFreeCLILoader();
+			cliLoader.addEventListener(Event.COMPLETE, completeJSONTranslate);
+			_loaderToCallbackDictionary[cliLoader] = callback;
+			var requestString:String = JSONURLToLoad.replace(TEMPLATE_TO_CHANGE, input);
+			cliLoader.load(new URLRequest(requestString));
+		}
+		
+		private static function completeJSONTranslate(e:Event):void {
+			var loader:URLLoader = e.currentTarget as URLLoader;
+			var json:Object = JSON.parse(loader.data.toString());
+			var translate:String = '';
+			for each (var innerArray:Array in json[0]) {
+				while (innerArray[0] is Array) {
+					innerArray = innerArray[0];
+				}
+				translate = translate.concat(innerArray[0]);
+			}
+			translate = Utilities.RemoveStrangeSpaces(
+				Utilities.RestoreQuotation(
+					Utilities.RestoreSharps(
+						translate
+					)
+				)
+			);
+			dispatchEvent(new WebTranslatorEvent(WebTranslatorEvent.TRANSLATION_ENDED));
+			_loaderToCallbackDictionary[loader] != null && _loaderToCallbackDictionary[loader](translate);
+			FreeCLILoader(loader);
 		}
 		
 		private static function GetNextFreeCLILoader():URLLoader {
@@ -70,24 +129,15 @@ package ru.flashader.clausewitzlocalisationhelper.utils {
 		private static function FreeCLILoader(loader:URLLoader):void {
 			_usedLoaders--;
 			_loaderToCallbackDictionary[loader] = null;
-			loader.removeEventListener(Event.COMPLETE, completeTranslate);
+			loader.removeEventListener(Event.COMPLETE, completeHTMLTranslate);
+			loader.removeEventListener(Event.COMPLETE, completeJSONTranslate);
 			_freeLoaders.push(loader);
 			if (_waitedTranslations.length > 0) {
 				var waitedTranslation:Object = _waitedTranslations.pop();
-				RunCLITranslate(waitedTranslation["input"], waitedTranslation["callback"]);
+				waitedTranslation["isJSON"] ? RunJSONTranslate(waitedTranslation["input"], waitedTranslation["callback"]) : RunHTMLTranslate(waitedTranslation["input"], waitedTranslation["callback"]);
 			}
 		}
 		
-		private static function completeTranslate(e:Event):void {
-			var loader:URLLoader = e.currentTarget as URLLoader;
-			var html:String = loader.data.toString();
-			var startTranslationIDX:int = html.indexOf(CLI_TRANSLATION_START_MARKER) + CLI_TRANSLATION_START_MARKER.length;
-			var endTranslationIDX:int = html.indexOf(CLI_TRANSLATION_END_MARKER);
-			var translate:String = Utilities.RestoreQuotation(Utilities.RestoreSharps(html.substring(startTranslationIDX, endTranslationIDX)));
-			dispatchEvent(new WebTranslatorEvent(WebTranslatorEvent.TRANSLATION_ENDED));
-			_loaderToCallbackDictionary[loader] != null && _loaderToCallbackDictionary[loader](translate);
-			FreeCLILoader(loader);
-		}
 		
 		private static function TranslateWithGUIAPI(input:String, stage:Stage):void {
 			_callback = RequestUserInput;
