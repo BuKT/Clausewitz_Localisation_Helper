@@ -74,12 +74,37 @@ package ru.flashader.clausewitzlocalisationhelper.utils {
 		}
 		
 		public static function RestoreQuotation(toConvert:String):String {
-			while (toConvert.indexOf("&quot;") > -1) {
-				toConvert = toConvert.replace("&quot;", '"');
-			}
-			while (toConvert.indexOf("&#39;") > -1) {
-				toConvert = toConvert.replace("&#39;", "'");
-			}
+			toConvert = toConvert.replace(/&quot;/g, '"');
+			toConvert = toConvert.replace(/&#39;/g, '"');
+			return toConvert;
+		}
+		
+		public static function RemoveStrangeSpaces(toConvert:String):String {
+			toConvert = toConvert.replace(/%20/g, ' ');
+			toConvert = toConvert.replace(/&ZeroWidthSpace;/g, '');
+			toConvert = toConvert.replace(/\u0020/g, ' ');
+			toConvert = toConvert.replace(/\u00A0/g, ' ');
+			toConvert = toConvert.replace(/\u1680/g, ' ');
+			toConvert = toConvert.replace(/\u2000/g, ' ');
+			toConvert = toConvert.replace(/\u2001/g, ' ');
+			toConvert = toConvert.replace(/\u2002/g, ' ');
+			toConvert = toConvert.replace(/\u2003/g, ' ');
+			toConvert = toConvert.replace(/\u2004/g, ' ');
+			toConvert = toConvert.replace(/\u2005/g, ' ');
+			toConvert = toConvert.replace(/\u2006/g, ' ');
+			toConvert = toConvert.replace(/\u2007/g, ' ');
+			toConvert = toConvert.replace(/\u2008/g, ' ');
+			toConvert = toConvert.replace(/\u2009/g, ' ');
+			toConvert = toConvert.replace(/\u200A/g, ' ');
+			toConvert = toConvert.replace(/\u202F/g, ' ');
+			toConvert = toConvert.replace(/\u205F/g, ' ');
+			toConvert = toConvert.replace(/\u3000/g, ' ');
+			
+			toConvert = toConvert.replace(/\u180E/g, '');
+			toConvert = toConvert.replace(/\u200B/g, '');
+			toConvert = toConvert.replace(/\u200C/g, '');
+			toConvert = toConvert.replace(/\u200D/g, '');
+			toConvert = toConvert.replace(/\u2060/g, '');
 			return toConvert;
 		}
 	}

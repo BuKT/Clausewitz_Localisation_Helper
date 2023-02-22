@@ -105,6 +105,23 @@ package ru.flashader.clausewitzlocalisationhelper.data {
 			value = value.replace(/<\/div >/g, '</div>');
 			value = value.replace(/<\/div> >/g, '</div>');
 			
+			value = value.replace(/<дел>/g, '<div>');
+			value = value.replace(/< дел>/g, '<div>');
+			value = value.replace(/<д ел>/g, '<div>');
+			value = value.replace(/<де л>/g, '<div>');
+			value = value.replace(/<дел >/g, '<div>');
+			value = value.replace(/<дел> /g, '<div>');
+			
+			value = value.replace(/<\/дел>/g, '</div>');
+			value = value.replace(/ <\/дел>/g, '</div>');
+			value = value.replace(/< \/дел>/g, '</div>');
+			value = value.replace(/<\/ дел>/g, '</div>');
+			value = value.replace(/<\/д ел>/g, '</div>');
+			value = value.replace(/<\/де л>/g, '</div>');
+			value = value.replace(/<\/дел >/g, '</div>');
+			value = value.replace(/<\/дел> >/g, '</div>');
+			
+			
 			for (var i:int = _replacingStringParts.length - 1; i >= 0; i--) {
 				var rsp:ReplacedStringPart = _replacingStringParts[i];
 				value = value.replace(rsp.TemporaryString, rsp.ReplacingString);
