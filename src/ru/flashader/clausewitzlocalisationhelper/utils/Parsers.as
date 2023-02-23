@@ -39,6 +39,9 @@ package ru.flashader.clausewitzlocalisationhelper.utils {
 		private static const CloseBracketCharsIndex:Vector.<int> = new Vector.<int>();
 		private static const CLOSE_BRACKET_CHAR:String = "]";
 		
+		private static const PoundsCharsIndex:Vector.<int> = new Vector.<int>();
+		private static const POUND_CHAR:String = "£";
+		
 		private static const CORRECT_NAME_REG:RegExp = new RegExp("[^a-zA-Z0-9_.-]");
 		private static const CORRECT_VERSION_REG:RegExp = new RegExp("[^0-9]"); //Ever dots not allowed
 		
@@ -50,6 +53,7 @@ package ru.flashader.clausewitzlocalisationhelper.utils {
 			BUCKS_CHAR,
 			OPEN_BRACKET_CHAR,
 			CLOSE_BRACKET_CHAR,
+			POUND_CHAR,
 			' '
 		];
 		
@@ -184,6 +188,7 @@ package ru.flashader.clausewitzlocalisationhelper.utils {
 			ParseForParagraphs(value, taggedRegions, toReturn);
 			ParseForSharps(value, taggedRegions, toReturn);
 			ParseForBucks(value, taggedRegions, toReturn);
+			ParseForPounds(value, taggedRegions, toReturn);
 			return toReturn;
 		}
 		
@@ -296,6 +301,29 @@ package ru.flashader.clausewitzlocalisationhelper.utils {
 				bucksRegion.NonTranslatableStart = value.substr(startIndex, 1);
 				bucksRegion.NonTranslatableEnd = value.substr(startIndex + 1, endIndex - startIndex);
 				taggedRegions.push(bucksRegion);
+			}
+		}
+		
+		private static function ParseForPounds(value:String, taggedRegions:Vector.<TaggedRegion>, errorsContainer:Vector.<YMLStringError>):void {
+			PoundsCharsIndex.length = 0;
+			Utilities.FindAll(POUND_CHAR, value, PoundsCharsIndex);
+			for (var i:int = 0; i < PoundsCharsIndex.length; i++) {
+				var startIndex:int = PoundsCharsIndex[i];
+				var endIndex:int = value.indexOf(' ',  startIndex) - 1;
+				if (endIndex < 0) {
+					endIndex = value.length -1;
+				}
+				var firstForbiddenIndex:int = FindFirstForbiddenIndexAfter(value, startIndex);
+				if (endIndex > firstForbiddenIndex) {
+					errorsContainer.push(new UnknownTagFunction(startIndex));
+					break;
+				}
+				var poundRegion:TaggedRegion = new TaggedRegion();
+				poundRegion.RegionStartIndex = startIndex;
+				poundRegion.RegionEndIndex = startIndex + 1;
+				poundRegion.NonTranslatableStart = value.substr(startIndex, 1);
+				poundRegion.NonTranslatableEnd = value.substr(startIndex + 1, endIndex - startIndex);
+				taggedRegions.push(poundRegion);
 			}
 		}
 		
