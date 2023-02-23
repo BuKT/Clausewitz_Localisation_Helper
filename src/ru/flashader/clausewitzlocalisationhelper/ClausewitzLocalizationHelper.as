@@ -30,6 +30,7 @@ package ru.flashader.clausewitzlocalisationhelper {
 		private static const SAY_CHEESE:String = "Сейчас вылетит птичка";
 		private static const TRYING_TO_PARSE:String = "Пытаемся распарсить ваше файло";
 		private static const TOO_MANY_STRINGS:String = "\n\nСтрок для перевода много.\nПоэтому это окно появится ещё " + TRANSLATES_LEFT_PLACEHOLDER + " раз";
+		private static const TOO_FAILED_STRINGS:String = "\n\nСлучилось что-то непонятное, сервак ругается\nПоэтому не переведено " + TRANSLATES_LEFT_PLACEHOLDER + " строк\nВозможно, поможет пройти гугловую капчу и/или перезапустить перевод непереведённого.\n\nПроверим на капчу?";
 		private static const TOO_LONG_STRING:String = "\n\nСтрока для перевода очень длинная.\nПоэтому это окно появится ещё " + TRANSLATES_LEFT_PLACEHOLDER + " раз";
 		private static const TRANSLATES_LEFT_PLACEHOLDER:String = "###TEMPLATETOCHAGE###";
 		
@@ -47,6 +48,7 @@ package ru.flashader.clausewitzlocalisationhelper {
 		private var _lastLoadedfile:File = null;
 		private var _isSourceLoading:Boolean;
 		private var _translatesLeft:int = 0;
+		private var _translatesFailed:int = 0;
 		
 		public function ClausewitzLocalizationHelper() {
 			super();
@@ -55,6 +57,7 @@ package ru.flashader.clausewitzlocalisationhelper {
 			
 			WebTranslator.addEventListener(WebTranslatorEvent.REQUEST_USER_INPUT, handleUserInputRequest);
 			WebTranslator.addEventListener(WebTranslatorEvent.TRANSLATION_ENDED, TranslationEndedListener);
+			WebTranslator.addEventListener(WebTranslatorEvent.TRANSLATION_FAILED, TranslationFailedListener);
 			TranslationFileContent.addTranslateRequestListener(initiateTranslate);
 			
 			_translatingWindow = new TranslationsPanel();
@@ -256,8 +259,43 @@ package ru.flashader.clausewitzlocalisationhelper {
 			if (_translatesLeft > 0) {
 				ShowTranslationIsInProgressModal();
 			} else {
+				EndTranslationCycle();
+			}
+		}
+		
+		private function TranslationFailedListener(e:WebTranslatorEvent):void {
+			_translatesLeft--;
+			_translatesFailed++;
+			if (_translatesLeft > 0) {
+				ShowTranslationIsInProgressModal();
+			} else {
+				EndTranslationCycle();
+			}
+		}
+		
+		private function EndTranslationCycle():void {
+			_translatesLeft = 0;
+			if (_translatesFailed > 0) {
+				ShowTranslationFailedSomehow();
+			} else {
 				CloseModal();
 			}
+			_translatesFailed = 0;
+		}
+		
+		private function ShowTranslationFailedSomehow():void {
+			ShowModal(
+				"Короче",
+				TOO_FAILED_STRINGS.replace(TRANSLATES_LEFT_PLACEHOLDER, _translatesFailed),
+				function(userChoice:int):void {
+					if ((userChoice & JOptionPane.YES) > 0) {
+						WebTranslator.
+						NavigateHimToCaptcha();
+					}
+					CloseModal();
+				},
+				JOptionPane.YES | JOptionPane.NO
+			);
 		}
 		
 		private function ShowTranslationIsInProgressModal():void {
@@ -293,6 +331,7 @@ package ru.flashader.clausewitzlocalisationhelper {
 			if (_currentAlert != null) {
 				_currentAlert.getFrame().dispose();
 			}
+			_currentAlert = null;
 		}
 		
 		private function EmptyFunction(...args):void { }

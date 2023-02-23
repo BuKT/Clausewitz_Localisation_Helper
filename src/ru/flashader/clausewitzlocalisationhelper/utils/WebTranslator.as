@@ -1,5 +1,6 @@
 package ru.flashader.clausewitzlocalisationhelper.utils {
 	import flash.display.Stage;
+	import flash.events.ErrorEvent;
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
 	import flash.events.IOErrorEvent;
@@ -8,6 +9,7 @@ package ru.flashader.clausewitzlocalisationhelper.utils {
 	import flash.net.URLLoader;
 	import flash.net.URLRequest;
 	import flash.net.URLVariables;
+	import flash.net.navigateToURL;
 	import flash.text.TextField;
 	import flash.utils.Dictionary;
 	import flash.utils.setTimeout;
@@ -22,7 +24,9 @@ package ru.flashader.clausewitzlocalisationhelper.utils {
 		private static const TEMPLATE_TO_CHANGE:String = "###TEMPLATETOCHAGE###";
 		private static const GUIURLToLoad:String = "https://translate.google.com/?sl=auto&tl=ru&text=" + TEMPLATE_TO_CHANGE + "&op=translate";
 		private static const HTMLURLToLoad:String = "https://translate.google.com/m?sl=auto&tl=ru&q=" + TEMPLATE_TO_CHANGE;
+		private static const HTMLURLToCAPTCHA:String = "https://translate.google.com/m?sl=auto&tl=ru&q=Success";
 		private static const JSONURLToLoad:String = "https://translate.googleapis.com/translate_a/single?client=gtx&dt=t&sl=auto&tl=ru&q=" + TEMPLATE_TO_CHANGE;
+		private static const JSONURLToCAPTCHA:String = "https://translate.googleapis.com/translate_a/single";
 		private static var _secondsLeft:int;
 		private static var _callback:Function;
 		private static var _outputCallback:Function;
@@ -61,9 +65,10 @@ package ru.flashader.clausewitzlocalisationhelper.utils {
 			}
 			var cliLoader:URLLoader = GetNextFreeCLILoader();
 			cliLoader.addEventListener(Event.COMPLETE, completeHTMLTranslate);
+			cliLoader.addEventListener(IOErrorEvent.IO_ERROR, processNonTranslated);
 			_loaderToCallbackDictionary[cliLoader] = callback;
 			var requestString:String = HTMLURLToLoad.replace(TEMPLATE_TO_CHANGE, input);
-			cliLoader.load(new URLRequest(requestString));
+			cliLoader.load(new URLRequest(encodeURI(requestString)));
 		}
 		
 		private static function completeHTMLTranslate(e:Event):void {
@@ -94,9 +99,10 @@ package ru.flashader.clausewitzlocalisationhelper.utils {
 			}
 			var cliLoader:URLLoader = GetNextFreeCLILoader();
 			cliLoader.addEventListener(Event.COMPLETE, completeJSONTranslate);
+			cliLoader.addEventListener(IOErrorEvent.IO_ERROR, processNonTranslated);
 			_loaderToCallbackDictionary[cliLoader] = callback;
 			var requestString:String = JSONURLToLoad.replace(TEMPLATE_TO_CHANGE, input);
-			cliLoader.load(new URLRequest(requestString));
+			cliLoader.load(new URLRequest(encodeURI(requestString)));
 		}
 		
 		private static function completeJSONTranslate(e:Event):void {
@@ -131,6 +137,7 @@ package ru.flashader.clausewitzlocalisationhelper.utils {
 			_loaderToCallbackDictionary[loader] = null;
 			loader.removeEventListener(Event.COMPLETE, completeHTMLTranslate);
 			loader.removeEventListener(Event.COMPLETE, completeJSONTranslate);
+			loader.removeEventListener(IOErrorEvent.IO_ERROR, processNonTranslated);
 			_freeLoaders.push(loader);
 			if (_waitedTranslations.length > 0) {
 				var waitedTranslation:Object = _waitedTranslations.pop();
@@ -138,6 +145,20 @@ package ru.flashader.clausewitzlocalisationhelper.utils {
 			}
 		}
 		
+		private static function processNonTranslated(e:ErrorEvent):void {
+			dispatchEvent(new WebTranslatorEvent(WebTranslatorEvent.TRANSLATION_FAILED));
+			FreeCLILoader(e.currentTarget as URLLoader);
+		}
+		
+		public static function NavigateHimToCaptcha(useHTMLAPI:Boolean = false):void {
+			navigateToURL(
+				new URLRequest(
+					/*useHTMLAPI ?*/ //TODO: flashader Когда-нибудь потом, когда 400 не будет пугать пользователя
+						HTMLURLToCAPTCHA// :
+					/*	JSONURLToCAPTCHA */
+					)
+				);
+		}
 		
 		private static function TranslateWithGUIAPI(input:String, stage:Stage):void {
 			_callback = RequestUserInput;
