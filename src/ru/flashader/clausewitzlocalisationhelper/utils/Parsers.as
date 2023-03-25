@@ -1,4 +1,10 @@
 package ru.flashader.clausewitzlocalisationhelper.utils {
+	import flash.desktop.NativeProcess;
+	import flash.desktop.NativeProcessStartupInfo;
+	import flash.events.NativeProcessExitEvent;
+	import flash.filesystem.File;
+	import flash.filesystem.FileMode;
+	import flash.filesystem.FileStream;
 	import ru.flashader.clausewitzlocalisationhelper.utils.Utilities;
 	import ru.flashader.clausewitzlocalisationhelper.data.*;
 	import ru.flashader.clausewitzlocalisationhelper.data.errors.*;
@@ -57,7 +63,7 @@ package ru.flashader.clausewitzlocalisationhelper.utils {
 			' '
 		];
 		
-		public static function DoParseAndFill(fileContent:String, fullPath:String, targetTranslationContainer:TranslationFileContent, isSource:Boolean):void {
+		public static function DoParseAndFill(fileContent:String, targetTranslationContainer:TranslationFileContent, isSource:Boolean):void {
 			var escapedContent:String = fileContent.replace("\\n", FLASHADER_TEMPORARY_TEMPLATE);
 			var lines:Array = escapedContent.split("\r\n");
 			if (lines.length <= 1) {
@@ -358,6 +364,66 @@ package ru.flashader.clausewitzlocalisationhelper.utils {
 			for each (var error:YMLStringError in sourceErrors) {
 				lineEntry.AddError(error, isSource);
 			}
+		}
+		
+		
+		/*
+		*  External one
+		*/
+		
+		private static var _externalProcess:NativeProcess;
+		private static var _externalProcessInfo:NativeProcessStartupInfo;
+		
+		public static function CallExternalParser(
+			fullPath:String,
+			fullOutPath:String,
+			successHandler:Function,
+			errorHandler:Function,
+			doRemoveOutputFileAfterReading:Boolean = false
+		):void {
+			Modals.ShowModal(LocalisationStrings.PLEASE_WAIT, LocalisationStrings.SAY_CHEESE);
+			if (_externalProcessInfo == null) {
+				_externalProcess = new NativeProcess();
+				_externalProcessInfo = new NativeProcessStartupInfo();
+				_externalProcessInfo.arguments = new Vector.<String>();
+				with (_externalProcessInfo) {
+					executable = File.applicationDirectory.resolvePath("externals" + File.separator + "YAMLJSONConverter.exe");
+					workingDirectory = File.documentsDirectory;
+				};
+			}
+			var newArguments:Vector.<String> = new Vector.<String>();
+			newArguments.push(fullPath);
+			_externalProcessInfo.arguments = newArguments;
+			_externalProcess.addEventListener(
+				NativeProcessExitEvent.EXIT,
+				function (e:NativeProcessExitEvent):void {
+					e.currentTarget.removeEventListener(e.type, arguments.callee);
+					switch (e.exitCode) {
+						case 0:
+							successHandler(ReadFileAsText(fullOutPath));
+							doRemoveOutputFileAfterReading && RemoveFileAtPath(fullOutPath);
+							break;
+						default:
+							var logPath:String = fullPath.substring(0, fullPath.lastIndexOf(".")) + ".log";
+							errorHandler(ReadFileAsText(logPath));
+							RemoveFileAtPath(logPath);
+							break;
+					}
+				}
+			);
+			_externalProcess.start(_externalProcessInfo);
+		}
+		
+		private static function ReadFileAsText(path:String):String {
+			var stream:FileStream = new FileStream();
+			stream.open(new File(path), FileMode.READ);
+			var toReturn:String = stream.readUTFBytes(stream.bytesAvailable);
+			stream.close();
+			return toReturn;
+		}
+		
+		private static function RemoveFileAtPath(pathToRemove:String):void {
+			new File(pathToRemove).deleteFile();
 		}
 	}
 }

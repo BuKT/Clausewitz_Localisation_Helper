@@ -1,17 +1,6 @@
 package ru.flashader.clausewitzlocalisationhelper {
-	import flash.desktop.NativeProcess;
-	import flash.desktop.NativeProcessStartupInfo;
 	import flash.display.Sprite;
 	import flash.events.Event;
-	import flash.events.NativeProcessExitEvent;
-	import flash.filesystem.File;
-	import flash.filesystem.FileMode;
-	import flash.filesystem.FileStream;
-	import flash.net.FileFilter;
-	import flash.net.URLRequest;
-	import flash.net.navigateToURL;
-	import flash.text.TextField;
-	import flash.utils.ByteArray;
 	import org.aswing.*;
 	import org.aswing.event.AWEvent;
 	import ru.flashader.clausewitzlocalisationhelper.data.TranslationFileContent;
@@ -23,30 +12,11 @@ package ru.flashader.clausewitzlocalisationhelper {
 	*/
 	
 	public class ClausewitzLocalizationHelper extends Sprite {
-		private static const PLEASE_WAIT:String = "Подождите немного.";
-		private static const PLEASE_PRESS:String = "Нажмите 'Ctrl'+'Shift'+'S', а потом закройте это окно\n\nИмейте в виду, функционал перевода нестабилен и зависит не от меня\nЕсли не перевелось - попробуйте ещё раз";
-		private static const PLEASE_WAIT_AGAIN:String = "И ещё три секунды.";
-		private static const CHOOSE_SOURCE_YAML:String = "Выберите исходный yaml файл";
-		private static const SAY_CHEESE:String = "Сейчас вылетит птичка";
-		private static const TRYING_TO_PARSE:String = "Пытаемся распарсить ваше файло";
-		private static const TOO_MANY_STRINGS:String = "\n\nСтрок для перевода много.\nПоэтому это окно появится ещё " + TRANSLATES_LEFT_PLACEHOLDER + " раз";
-		private static const TOO_FAILED_STRINGS:String = "\n\nСлучилось что-то непонятное, сервак ругается\nПоэтому не переведено " + TRANSLATES_LEFT_PLACEHOLDER + " строк\nВозможно, поможет пройти гугловую капчу и/или перезапустить перевод непереведённого.\n\nПроверим на капчу?";
-		private static const TOO_LONG_STRING:String = "\n\nСтрока для перевода очень длинная.\nПоэтому это окно появится ещё " + TRANSLATES_LEFT_PLACEHOLDER + " раз";
-		private static const TRANSLATES_LEFT_PLACEHOLDER:String = "###TEMPLATETOCHAGE###";
-		
-		
 		private var scrollPane:JScrollPane;
 		private var _mainASWindow:JWindow;
 		private var _translatingWindow:TranslationsPanel;
 		private var _translationFileContent:TranslationFileContent;
-		private static const yamlFilters:Array = [new FileFilter("Yaml", "*.yml")];
-		private static const RUSSIAN_RUSSIAN_RUSSIAN:String = "Вы загрузили файл с русской локализацией. И пытаетесь сохранить в него же" +
-			"\nВы абсолютно точно уверены, что знаете, что делаете?" +
-			"\n\n(В итоговый файл не будут записаны строки слева" +
-			"\n только те, что справа (даже если они пустые)";
 		private var _doFastCheck:Boolean = true;
-		private var _lastLoadedfile:File = null;
-		private var _isSourceLoading:Boolean;
 		private var _translatesLeft:int = 0;
 		private var _translatesFailed:int = 0;
 		
@@ -62,191 +32,67 @@ package ru.flashader.clausewitzlocalisationhelper {
 			
 			_translatingWindow = new TranslationsPanel();
 			_translatingWindow.getLoadButton().addActionListener(OpenSourceLoadDialog);
-			_translatingWindow.getSaveButton().addActionListener(SaveTranslateEntries);
+			_translatingWindow.getSaveButton().addActionListener(SaveTranslateTargetEntries);
 			
 			_mainASWindow = new JWindow(this);
 			_mainASWindow.setContentPane(_translatingWindow);
 			_mainASWindow.setSizeWH(stage.stageWidth, stage.stageHeight);
 			_mainASWindow.show();
-			
-			//WebTranslator.TranslateMe("We can now choose another interaction in the Federal Assembly.We can now choose another interaction in the Federal Assembly.We can now choose another interaction in the Federal Assembly.We can now choose another interaction in the Federal Assembly.We can now choose another interaction in the Federal Assembly.We can now choose another interaction in the Federal Assembly.ASDFWe can now choose another interaction in the Federal Assembly.QWERWe can now choose another interaction in the Federal Assembly.", stage);
 		}
 		
-		private function SaveTranslateEntries(e:AWEvent):void {
-			if (_lastLoadedfile == null) {
+		private function SaveTranslateTargetEntries(e:AWEvent):void {
+			if (FileOperations.GetLastLoadedFile(true) == null) {
 				return;
 			}
-			var resultOutputFilePath:String = _lastLoadedfile.nativePath.substring(0, _lastLoadedfile.nativePath.lastIndexOf("l_english.")) + "l_russian.yml";
-			if (
-				resultOutputFilePath == "l_russian.yml"
-			) {
-				ShowModal(
-					"Русский русскому русский",
-					RUSSIAN_RUSSIAN_RUSSIAN,
-					function(
-						userChoice:int
-					):void {
-						if (
-							(
-								userChoice &
-								JOptionPane.YES
-							) > 0
-						) {
-							ShowModal(
-								"Ну, как хотите",
-								"На этом мои полномочия всё",
-								function(
-									secondUserChoice:int
-								):void {
-									if (
-										(
-											secondUserChoice &
-											JOptionPane.OK
-										) > 0
-									) {
-										WriteResultAndCallToParseIt(
-											_lastLoadedfile.nativePath //Не смотри на код такими глазами - в подобном стиле я могу писать бесконечно. И что ты мне сделаешь? Я в другом моде!
-										);
-									}
-								},
-								JOptionPane.OK
-							)
-						}
-					},
-					JOptionPane.YES | JOptionPane.NO
-				);
+			if (FileOperations.CreateOppositeTranslationsFilePath(true) == "l_russian.yml") {
+				ShowFirstWarningAboutSameTranslationSaving(false);
 				return;
 			}
-			
-			var resultOutputFile:File = new File(resultOutputFilePath);
-			if (resultOutputFile.exists) {
-				ShowModal(
-					"Файл существует",
-					"Найден уже существующий файл:\n" + resultOutputFile.nativePath + "\n Перезаписываю?",
-					function(userChoice:int):void {
-						if ((userChoice & JOptionPane.YES) > 0) {
-							WriteResultAndCallToParseIt(resultOutputFilePath);
-						}
-					},
-					JOptionPane.YES | JOptionPane.NO
-				);
-			} else {
-				WriteResultAndCallToParseIt(resultOutputFilePath);
+			SaveTranslateFile(false);
+		}
+		
+		private function SaveTranslateFile(isSource:Boolean):void {
+			FileOperations.CheckExistanceAndWriteToOutputFilePath(isSource, _translationFileContent.ToYAML(isSource));
+		}
+		
+		private var _isSourceFileSavingWarningsLoop:Boolean;
+		
+		private function ShowFirstWarningAboutSameTranslationSaving(isSourceFileSavingWarningsLoop:Boolean):void {
+			_isSourceFileSavingWarningsLoop = isSourceFileSavingWarningsLoop;
+			Modals.ShowModal(LocalisationStrings.RUSSIAN_RUSSIAN_RUSSIAN_LABEL, LocalisationStrings.RUSSIAN_RUSSIAN_RUSSIAN_DESCRIPTION, CheckIfHeIgnoredFirstWarningAboutSameTranslationSaving, JOptionPane.YES | JOptionPane.NO);
+		}
+		
+		private function CheckIfHeIgnoredFirstWarningAboutSameTranslationSaving(userChoice:int):void {
+			if ((userChoice & JOptionPane.YES) > 0) {
+				ShowSecondWarningAboutSameTranslationSaving();
 			}
 		}
 		
-		private function WriteResultAndCallToParseIt(resultOutputFilePath:String):void {
-			var tempFile:File = File.createTempFile();
-			var stream:FileStream = new FileStream();
-			var jsonBytes:ByteArray = new ByteArray();
-			
-			jsonBytes.writeMultiByte(_translationFileContent.ToYAML(false), "utf-8"); //He-he-he: ยง
-			stream.open(tempFile, FileMode.WRITE);
-			stream.writeBytes(jsonBytes);
-			stream.close();
-			
-			var resultOutFile:File = new File(resultOutputFilePath);
-			
-			tempFile.moveTo(resultOutFile, true);
-			
-			ShowModal(
-				"Поздравляю!",
-				"Ещё один файл переведён!\n\nХотите открыть его?",
-				function(userChoice:int):void {
-					if ((userChoice & JOptionPane.YES) > 0) {
-						navigateToURL(new URLRequest(resultOutFile.nativePath));
-					}
-				},
-				JOptionPane.YES | JOptionPane.NO
-			);
+		private function ShowSecondWarningAboutSameTranslationSaving():void {
+			Modals.ShowModal(LocalisationStrings.AS_YOUR_WISH, LocalisationStrings.I_RECALL_MY_QUESTIONS, CheckIfHeIgnoredSecondWarningAboutSameTranslationSaving, JOptionPane.OK);
+		}
+		
+		private function CheckIfHeIgnoredSecondWarningAboutSameTranslationSaving(secondUserChoice:int):void {
+			if ((secondUserChoice & JOptionPane.OK) > 0) {
+				FileOperations.WriteYamlToFile(FileOperations.GetLastLoadedFile(!_isSourceFileSavingWarningsLoop).nativePath, _translationFileContent.ToYAML(_isSourceFileSavingWarningsLoop)); //Тут до рефакторинга было шедевральное: "Не смотри на код такими глазами - в подобном стиле я могу писать бесконечно. И что ты мне сделаешь? Я в другом моде!"
+			}
 		}
 		
 		private function OpenSourceLoadDialog(e:AWEvent):void {
-			_isSourceLoading = true;
-			var file:File = new File();
-			file.addEventListener(Event.SELECT, fileToLoadSelectedListener);
-			file.browseForOpen(CHOOSE_SOURCE_YAML, yamlFilters);
+			FileOperations.LoadFileDialog(true, TryParseLoadedFile);
 		}
 		
-		private function fileToLoadSelectedListener(e:Event):void {
-			var file:File = e.currentTarget as File;
-			var stream:FileStream = new FileStream();
-			stream.open(file, FileMode.READ);
-			var fileData:String = stream.readUTFBytes(stream.bytesAvailable);
-			stream.close();
-			var fullPath:String = file.nativePath;
-			_lastLoadedfile = file;
-			_translationFileContent = TranslationFileContent.Obtain(_isSourceLoading);
-			TryParse(fileData, fullPath, _isSourceLoading);
-		}
-		
-		private function TryParse(fileContent:String, fullPath:String, isSource:Boolean):void {
-			ShowModal("Подождите", TRYING_TO_PARSE);
-			Parsers.DoParseAndFill(fileContent, fullPath, _translationFileContent, isSource);
-			_translatingWindow.FillWithTranslations(_translationFileContent, _lastLoadedfile.nativePath.replace(_lastLoadedfile.parent.nativePath + File.separator, ""));
-			CloseModal();
-		}
-		
-		private var _externalProcess:NativeProcess;
-		private var _externalProcessInfo:NativeProcessStartupInfo;
-		
-		private function CallExternalParser(
-			fullPath:String,
-			fullOutPath:String,
-			successHandler:Function,
-			errorHandler:Function,
-			doRemoveOutputFileAfterReading:Boolean = false
-		):void {
-			ShowModal("Подождите", SAY_CHEESE);
-			if (_externalProcessInfo == null) {
-				_externalProcess = new NativeProcess();
-				_externalProcessInfo = new NativeProcessStartupInfo();
-				_externalProcessInfo.arguments = new Vector.<String>();
-				with (_externalProcessInfo) {
-					executable = File.applicationDirectory.resolvePath("externals" + File.separator + "YAMLJSONConverter.exe");
-					workingDirectory = File.documentsDirectory;
-				};
-			}
-			var newArguments:Vector.<String> = new Vector.<String>();
-			newArguments.push(fullPath);
-			_externalProcessInfo.arguments = newArguments;
-			_externalProcess.addEventListener(
-				NativeProcessExitEvent.EXIT,
-				function (e:NativeProcessExitEvent):void {
-					e.currentTarget.removeEventListener(e.type, arguments.callee);
-					switch (e.exitCode) {
-						case 0:
-							successHandler(ReadFileAsText(fullOutPath));
-							doRemoveOutputFileAfterReading && RemoveFileAtPath(fullOutPath);
-							break;
-						default:
-							var logPath:String = fullPath.substring(0, fullPath.lastIndexOf(".")) + ".log";
-							errorHandler(ReadFileAsText(logPath));
-							RemoveFileAtPath(logPath);
-							break;
-					}
-				}
-			);
-			_externalProcess.start(_externalProcessInfo);
-		}
-		
-		private function RemoveFileAtPath(pathToRemove:String):void {
-			new File(pathToRemove).deleteFile();
-		}
-		
-		private function ReadFileAsText(path:String):String {
-			var stream:FileStream = new FileStream();
-			stream.open(new File(path), FileMode.READ);
-			var toReturn:String = stream.readUTFBytes(stream.bytesAvailable);
-			stream.close();
-			return toReturn;
+		private function TryParseLoadedFile(fileContent:String, filename:String, isSource:Boolean):void {
+			_translationFileContent = TranslationFileContent.Obtain(isSource);
+			Modals.ShowModal(LocalisationStrings.PLEASE_WAIT, LocalisationStrings.TRYING_TO_PARSE);
+			Parsers.DoParseAndFill(fileContent, _translationFileContent, isSource);
+			_translatingWindow.FillWithTranslations(_translationFileContent, filename);
+			Modals.CloseModal();
 		}
 		
 		/**
 		* Translation loop
 		*/
-		
-		private static var _currentAlert:JOptionPane;
 		
 		private function initiateTranslate(callback:Function, textToTranslate:String):void {
 			_translatesLeft++;
@@ -278,67 +124,41 @@ package ru.flashader.clausewitzlocalisationhelper {
 			if (_translatesFailed > 0) {
 				ShowTranslationFailedSomehow();
 			} else {
-				CloseModal();
+				Modals.CloseModal();
 			}
 			_translatesFailed = 0;
 		}
 		
 		private function ShowTranslationFailedSomehow():void {
-			ShowModal(
-				"Короче",
-				TOO_FAILED_STRINGS.replace(TRANSLATES_LEFT_PLACEHOLDER, _translatesFailed),
+			Modals.ShowModal(
+				LocalisationStrings.LISTEN_HERE_YOU_LITTLE_SHIT,
+				LocalisationStrings.TOO_FAILED_STRINGS.replace(LocalisationStrings.TEMPLATE_TO_CHANGE, _translatesFailed),
 				function(userChoice:int):void {
 					if ((userChoice & JOptionPane.YES) > 0) {
-						WebTranslator.
-						NavigateHimToCaptcha();
+						WebTranslator.NavigateHimToCaptcha();
 					}
-					CloseModal();
+					Modals.CloseModal();
 				},
 				JOptionPane.YES | JOptionPane.NO
 			);
 		}
 		
 		private function ShowTranslationIsInProgressModal():void {
-			ShowModal("Идёт перевод", PLEASE_WAIT.concat(_translatesLeft > 0 ? TOO_MANY_STRINGS.replace(TRANSLATES_LEFT_PLACEHOLDER, _translatesLeft) : ""));
+			Modals.ShowModal(LocalisationStrings.TRANSLATING_IN_PROGRESS, LocalisationStrings.PLEASE_WAIT.concat(_translatesLeft > 0 ? LocalisationStrings.TOO_MANY_STRINGS.replace(LocalisationStrings.TEMPLATE_TO_CHANGE, _translatesLeft) : ""));
 		}
 		
 		private function handleUserInputRequest(e:Event):void {
-			var message:String = PLEASE_PRESS;
+			var message:String = LocalisationStrings.PLEASE_PRESS;
 			var translatesLeft:int = WebTranslator.GetTranslatesLeft();
 			if (translatesLeft > 0) {
-				message = message.concat(TOO_LONG_STRING.replace(TRANSLATES_LEFT_PLACEHOLDER, translatesLeft));
+				message = message.concat(LocalisationStrings.TOO_LONG_STRING.replace(LocalisationStrings.TEMPLATE_TO_CHANGE, translatesLeft));
 			}
-			ShowModal("Нужна помощь", message, continueTranslate);
+			Modals.ShowModal(LocalisationStrings.NEED_HELP, message, continueTranslate);
 		}
 		
 		private function continueTranslate(e:int):void {
-			ShowModal("Спасибо", PLEASE_WAIT_AGAIN);
+			Modals.ShowModal(LocalisationStrings.THANK_YOU, LocalisationStrings.PLEASE_WAIT_AGAIN);
 			WebTranslator.ContinueTranslate();
-		}
-		
-		private static function ShowModal(title:String, message:String, closeHandler:Function = null, buttons:int = 0):void {
-			CloseModal();
-			_currentAlert = JOptionPane.showMessageDialog(title, message, closeHandler, null, true, null, buttons);
-			_currentAlert.getMsgLabel().setSelectable(closeHandler != null);
-			_currentAlert.getFrame().getTitleBar().getCloseButton().setVisible(closeHandler != null);
-		}
-		
-		private function ShowErrorMessage(message:String):void {
-			ShowModal("Произошла ошибка", message, EmptyFunction);
-		}
-		
-		private static function CloseModal(e:Event = null):void {
-			if (_currentAlert != null) {
-				_currentAlert.getFrame().dispose();
-			}
-			_currentAlert = null;
-		}
-		
-		private function EmptyFunction(...args):void { }
-		
-		private static function EmergencyLog(log:String):void {
-			ShowModal("Хуйня случилась", log);
-			throw new Error("To prevent code completion");
 		}
 	}
 }
