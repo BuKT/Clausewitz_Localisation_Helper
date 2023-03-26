@@ -9,5 +9,9 @@ package ru.flashader.clausewitzlocalisationhelper.data.errors {
 		public function UnknownTagFunction(position:int) {
 			super(position);
 		}
+		
+		override protected function GetNewInstance():YMLStringError {
+			return new UnknownTagFunction(-1);
+		}
 	}
 }

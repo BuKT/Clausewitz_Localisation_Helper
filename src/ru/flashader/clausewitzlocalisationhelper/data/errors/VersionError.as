@@ -6,5 +6,9 @@ package ru.flashader.clausewitzlocalisationhelper.data.errors {
 	
 	public class VersionError extends YMLStringError {
 		public function VersionError() { super( -1); }
+		
+		override protected function GetNewInstance():YMLStringError {
+			return new VersionError();
+		}
 	}
 }

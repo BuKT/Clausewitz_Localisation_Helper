@@ -47,7 +47,6 @@ package ru.flashader.clausewitzlocalisationhelper.panels {
 		private var EastSpacer:JSpacer;
 		private var SouthSpacer:JSpacer;
 		
-		
 		private var _fullTableData:Array;
 		private var _filteredTableData:Array;
 		private var _lastSelectedIndex:int = -1;
@@ -61,9 +60,9 @@ package ru.flashader.clausewitzlocalisationhelper.panels {
 		public function ChinesedTranslatesList() {
 			InitLayout();
 			
-			MoveTranslationButton.addActionListener(JustCopyContent);
-			TranslateTranslationButton.addActionListener(processTranslateRequestFromRow);
-			TranslateAllButton.addActionListener(processTranslateAllrequest);
+			MoveTranslationButton.addActionListener(JustCopyContentFromSourceToTarget);
+			TranslateTranslationButton.addActionListener(processTranslateRequestFromSourceRowToTarget);
+			TranslateAllButton.addActionListener(processTranslateAllFromSourceToTargetRequest);
 			
 			var columnsArray:Array = ["Ключ строки", "Оригинал", "Перевод"];
 			
@@ -318,15 +317,15 @@ package ru.flashader.clausewitzlocalisationhelper.panels {
 			TranslateAllButton.setEnabled(_fullTableData != null && _fullTableData.length > 0);
 		}
 		
-		private function JustCopyContent(e:AWEvent):void {
-			(_rowsToEntryTranslator[_selectedRow] as BaseSeparateTranslationEntry).JustCopy();
+		private function JustCopyContentFromSourceToTarget(e:AWEvent):void {
+			(_rowsToEntryTranslator[_selectedRow] as BaseSeparateTranslationEntry).JustCopyTo(false);
 		}
 		
-		private function processTranslateRequestFromRow(e:AWEvent):void {
-			(_rowsToEntryTranslator[_selectedRow] as BaseSeparateTranslationEntry).SomeoneRequestToTranslateYou();
+		private function processTranslateRequestFromSourceRowToTarget(e:AWEvent):void {
+			(_rowsToEntryTranslator[_selectedRow] as BaseSeparateTranslationEntry).SomeoneRequestToTranslateYou(false);
 		}
 		
-		private function processTranslateAllrequest(e:AWEvent):void {
+		private function processTranslateAllFromSourceToTargetRequest(e:AWEvent):void {
 			_massTranslationsCachedFilterString = _filterString;
 			FilterData("");
 			_massTranslateIDXes.length = 0;
@@ -344,7 +343,7 @@ package ru.flashader.clausewitzlocalisationhelper.panels {
 				if (_massTranslateIDXes.length < 1000) { //Fuck this fancy showings, we left no much time to live
 					for each (entry in _rowsToEntryTranslator) {
 						if (entry.GetTextFieldReadyValue(false).length > 0) { continue; }
-						entry.SomeoneRequestToTranslateYou();
+						entry.SomeoneRequestToTranslateYou(false);
 					}
 				} else  { //Ohhhh, shit, something big gonna happen
 					_massTranslateEntries.length = 0;
@@ -352,19 +351,19 @@ package ru.flashader.clausewitzlocalisationhelper.panels {
 						if (entry.GetTextFieldReadyValue(false).length > 0) { continue; }
 						_massTranslateEntries.push(entry);
 					}
-					ContinueAsyncMassTranslate(null);
+					ContinueAsyncMassTranslateFromSourceToTarget(null);
 				}
 			}
 			FilterData(_massTranslationsCachedFilterString);
 		}
 		
-		private function ContinueAsyncMassTranslate(e:Event = null):void {
+		private function ContinueAsyncMassTranslateFromSourceToTarget(e:Event = null):void {
 			if (e == null) {
-				addEventListener(Event.EXIT_FRAME, ContinueAsyncMassTranslate);
+				addEventListener(Event.EXIT_FRAME, ContinueAsyncMassTranslateFromSourceToTarget);
 			}
 			var translateRequestsSended:int = 0;
 			while (_massTranslateEntries.length > 0 && translateRequestsSended < 300) {
-				_massTranslateEntries.pop().SomeoneRequestToTranslateYou();
+				_massTranslateEntries.pop().SomeoneRequestToTranslateYou(false);
 				translateRequestsSended++;
 			}
 			if (_massTranslateEntries.length == 0) {
@@ -381,7 +380,7 @@ package ru.flashader.clausewitzlocalisationhelper.panels {
 			}
 			var nextIDXToTranslate:int = _massTranslateIDXes.pop();
 			EntriesTable.changeSelection(nextIDXToTranslate, nextIDXToTranslate, false, false);
-			processTranslateRequestFromRow(null);
+			processTranslateRequestFromSourceRowToTarget(null);
 			ContinueFancyMassTranslate();
 		}
 		

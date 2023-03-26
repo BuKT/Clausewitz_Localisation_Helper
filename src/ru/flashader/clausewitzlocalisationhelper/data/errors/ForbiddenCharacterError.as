@@ -16,5 +16,15 @@ package ru.flashader.clausewitzlocalisationhelper.data.errors {
 			_char = char;
 			super(position);
 		}
+		
+		override public function Clone():YMLStringError {
+			var clone: ForbiddenCharacterError = super.Clone() as ForbiddenCharacterError;
+			clone._char = _char;
+			return clone;
+		}
+		
+		override protected function GetNewInstance():YMLStringError {
+			return new ForbiddenCharacterError("", 0);
+		}
 	}
 }

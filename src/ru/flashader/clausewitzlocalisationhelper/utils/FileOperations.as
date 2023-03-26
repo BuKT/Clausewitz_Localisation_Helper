@@ -14,6 +14,9 @@ package ru.flashader.clausewitzlocalisationhelper.utils {
 	*/
 	
 	public class FileOperations {
+		public static const SOURCE_PATH_POSTFIX:String = "_l_english.yml";
+		public static const TARGET_PATH_POSTFIX:String = "_l_russian.yml";
+		
 		private static const yamlFilters:Array = [new FileFilter("Yaml", "*.yml")];
 		private static var _lastLoadedSourceFile:File = null;
 		private static var _lastLoadedTargetFile:File = null;
@@ -21,7 +24,7 @@ package ru.flashader.clausewitzlocalisationhelper.utils {
 		private static var _lastLoadFileCallback:Function;
 		
 		public static function CheckExistanceAndWriteToOutputFilePath(isSource:Boolean, serialized:String):void {
-			var outputFilePath:String = CreateOppositeTranslationsFilePath(!isSource);
+			var outputFilePath:String = GetAnyFullFilePath(isSource);
 			var outputFile:File = new File(outputFilePath);
 			if (outputFile.exists) {
 				Modals.ShowModal(
@@ -97,8 +100,13 @@ package ru.flashader.clausewitzlocalisationhelper.utils {
 			return file.nativePath.replace(file.parent.nativePath + File.separator, "");
 		}
 		
-		public static function CreateOppositeTranslationsFilePath(isOppositeToSource:Boolean):String {
-				return GetLastLoadedFile(isOppositeToSource).nativePath.substring(0, GetLastLoadedFile(isOppositeToSource).nativePath.lastIndexOf("l_english.")) + "l_russian.yml"; //TODO: flashader Магические строки надо заменить на текущий сорс и таргет трансляции
+		public static function GetAnyFullFilePath(isSourcePrefferable:Boolean):String {
+			var lastLoadedFile:File = GetLastLoadedFile(isSourcePrefferable);
+			if (lastLoadedFile == null) {
+				lastLoadedFile = GetLastLoadedFile(!isSourcePrefferable);
+			}
+			var toReturn:String = lastLoadedFile.nativePath;
+			return toReturn.substring(0, toReturn.lastIndexOf("_l_")) + (isSourcePrefferable ? SOURCE_PATH_POSTFIX : TARGET_PATH_POSTFIX);
 		}
 	}
 }

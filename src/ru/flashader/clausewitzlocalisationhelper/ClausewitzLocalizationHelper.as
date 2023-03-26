@@ -15,14 +15,13 @@ package ru.flashader.clausewitzlocalisationhelper {
 		private var scrollPane:JScrollPane;
 		private var _mainASWindow:JWindow;
 		private var _translatingWindow:TranslationsPanel;
-		private var _translationFileContent:TranslationFileContent;
+		private var _currentTranslationFileContent:TranslationFileContent;
 		private var _doFastCheck:Boolean = true;
 		private var _translatesLeft:int = 0;
 		private var _translatesFailed:int = 0;
 		
 		public function ClausewitzLocalizationHelper() {
 			super();
-			
 			AsWingManager.setRoot(this);
 			
 			WebTranslator.addEventListener(WebTranslatorEvent.REQUEST_USER_INPUT, handleUserInputRequest);
@@ -31,8 +30,13 @@ package ru.flashader.clausewitzlocalisationhelper {
 			TranslationFileContent.addTranslateRequestListener(initiateTranslate);
 			
 			_translatingWindow = new TranslationsPanel();
-			_translatingWindow.getLoadButton().addActionListener(OpenSourceLoadDialog);
-			_translatingWindow.getSaveButton().addActionListener(SaveTranslateTargetEntries);
+			_translatingWindow.getSourceLoadButton().addActionListener(OpenSourceLoadDialog);
+			_translatingWindow.getSourceSaveButton().addActionListener(SaveTranslateSourceEntries);
+			_translatingWindow.getTargetLoadButton().addActionListener(OpenTargetLoadDialog);
+			_translatingWindow.getTargetSaveButton().addActionListener(SaveTranslateTargetEntries);
+			
+			_translatingWindow.getSourceSaveButton().setEnabled(false);
+			_translatingWindow.getTargetSaveButton().setEnabled(false);
 			
 			_mainASWindow = new JWindow(this);
 			_mainASWindow.setContentPane(_translatingWindow);
@@ -40,11 +44,24 @@ package ru.flashader.clausewitzlocalisationhelper {
 			_mainASWindow.show();
 		}
 		
-		private function SaveTranslateTargetEntries(e:AWEvent):void {
-			if (FileOperations.GetLastLoadedFile(true) == null) {
+		private function SaveTranslateSourceEntries(e:AWEvent):void {
+			if (_currentTranslationFileContent == null) {
 				return;
 			}
-			if (FileOperations.CreateOppositeTranslationsFilePath(true) == "l_russian.yml") {
+			trace(FileOperations.GetAnyFullFilePath(true));
+			if (FileOperations.GetAnyFullFilePath(true) == FileOperations.SOURCE_PATH_POSTFIX) {
+				ShowFirstWarningAboutSameTranslationSaving(true);
+				return;
+			}
+			SaveTranslateFile(true);
+		}
+		
+		private function SaveTranslateTargetEntries(e:AWEvent):void {
+			if (_currentTranslationFileContent == null) {
+				return;
+			}
+			trace(FileOperations.GetAnyFullFilePath(false));
+			if (FileOperations.GetAnyFullFilePath(false) == FileOperations.TARGET_PATH_POSTFIX) {
 				ShowFirstWarningAboutSameTranslationSaving(false);
 				return;
 			}
@@ -52,7 +69,7 @@ package ru.flashader.clausewitzlocalisationhelper {
 		}
 		
 		private function SaveTranslateFile(isSource:Boolean):void {
-			FileOperations.CheckExistanceAndWriteToOutputFilePath(isSource, _translationFileContent.ToYAML(isSource));
+			FileOperations.CheckExistanceAndWriteToOutputFilePath(isSource, _currentTranslationFileContent.ToYAML(isSource));
 		}
 		
 		private var _isSourceFileSavingWarningsLoop:Boolean;
@@ -74,7 +91,7 @@ package ru.flashader.clausewitzlocalisationhelper {
 		
 		private function CheckIfHeIgnoredSecondWarningAboutSameTranslationSaving(secondUserChoice:int):void {
 			if ((secondUserChoice & JOptionPane.OK) > 0) {
-				FileOperations.WriteYamlToFile(FileOperations.GetLastLoadedFile(!_isSourceFileSavingWarningsLoop).nativePath, _translationFileContent.ToYAML(_isSourceFileSavingWarningsLoop)); //Тут до рефакторинга было шедевральное: "Не смотри на код такими глазами - в подобном стиле я могу писать бесконечно. И что ты мне сделаешь? Я в другом моде!"
+				FileOperations.WriteYamlToFile(FileOperations.GetLastLoadedFile(!_isSourceFileSavingWarningsLoop).nativePath, _currentTranslationFileContent.ToYAML(_isSourceFileSavingWarningsLoop)); //Тут до рефакторинга было шедевральное: "Не смотри на код такими глазами - в подобном стиле я могу писать бесконечно. И что ты мне сделаешь? Я в другом моде!"
 			}
 		}
 		
@@ -82,22 +99,73 @@ package ru.flashader.clausewitzlocalisationhelper {
 			FileOperations.LoadFileDialog(true, TryParseLoadedFile);
 		}
 		
+		private function OpenTargetLoadDialog(e:AWEvent):void {
+			FileOperations.LoadFileDialog(false, TryParseLoadedFile);
+		}
+		
 		private function TryParseLoadedFile(fileContent:String, filename:String, isSource:Boolean):void {
-			_translationFileContent = TranslationFileContent.Obtain(isSource);
+			filename = filename.substring(0, filename.lastIndexOf("_l_"));
 			Modals.ShowModal(LocalisationStrings.PLEASE_WAIT, LocalisationStrings.TRYING_TO_PARSE);
-			Parsers.DoParseAndFill(fileContent, _translationFileContent, isSource);
-			_translatingWindow.FillWithTranslations(_translationFileContent, filename);
+			
+			var newTFC:TranslationFileContent = TranslationFileContent.Obtain();
+			Parsers.DoParseAndFill(fileContent, newTFC, isSource);
 			Modals.CloseModal();
+			
+			if (_currentTranslationFileContent != null) {
+				var mergedTFC:TranslationFileContent = TranslationFileContent.DeepCloneFrom(_currentTranslationFileContent);
+				
+				mergedTFC.MergeWith(newTFC, isSource);
+				mergedTFC.RecountKeysCount();
+				var keysTotalNumber:int = mergedTFC.GetTotalKeysCount();
+				var sourceKeysNumber:int = mergedTFC.GetNotPairedKeysCount(true);
+				var targetKeysNumber:int = mergedTFC.GetNotPairedKeysCount(false);
+				if (sourceKeysNumber > 0 && targetKeysNumber > 0) {
+					AskForUserAssuringOfMerging(keysTotalNumber, sourceKeysNumber, targetKeysNumber, mergedTFC, filename);
+					return;
+				}
+				newTFC = mergedTFC;
+			}
+			CompleteTranslateLoading(newTFC, filename);
+		}
+		
+		private function AskForUserAssuringOfMerging(keysTotalNumber:int, sourceKeysNumber:int, targetKeysNumber:int, mergedTFC:TranslationFileContent, filename:String):void {
+			Modals.ShowModal(
+				LocalisationStrings.BAD_MERGING_LABEL,
+				LocalisationStrings.BAD_MERGING_DESCRIPTION.replace(
+					LocalisationStrings.KEYS_TOTAL_PLACEHOLDER,
+					keysTotalNumber
+				).replace(
+					LocalisationStrings.SOURCE_KEYS_PLACEHOLDER,
+					sourceKeysNumber
+				).replace(
+					LocalisationStrings.TARGET_KEYS_PLACEHOLDER,
+					targetKeysNumber
+				),
+				function (userChoice:int):void {
+					if ((userChoice & JOptionPane.OK) > 0) {
+						CompleteTranslateLoading(mergedTFC, filename);
+					}
+				},
+				JOptionPane.OK | JOptionPane.CANCEL
+			);
+		}
+		
+		private function CompleteTranslateLoading(tfc:TranslationFileContent, filename:String):void {
+			_currentTranslationFileContent = tfc;
+			_translatingWindow.FillWithTranslations(_currentTranslationFileContent, filename);
+			
+			_translatingWindow.getSourceSaveButton().setEnabled(true);
+			_translatingWindow.getTargetSaveButton().setEnabled(true);
 		}
 		
 		/**
 		* Translation loop
 		*/
 		
-		private function initiateTranslate(callback:Function, textToTranslate:String):void {
+		private function initiateTranslate(callback:Function, textToTranslate:String, isTranslationTargetSource:Boolean):void {
 			_translatesLeft++;
 			ShowTranslationIsInProgressModal();
-			WebTranslator.TranslateMe(textToTranslate, stage, callback);
+			WebTranslator.TranslateMe(textToTranslate, stage, callback, isTranslationTargetSource);
 		}
 		
 		private function TranslationEndedListener(e:WebTranslatorEvent):void {

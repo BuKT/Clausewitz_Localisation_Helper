@@ -8,5 +8,9 @@ package ru.flashader.clausewitzlocalisationhelper.data.errors {
 		public function UnclosedTagError(position:int) {
 			super(position);
 		}
+		
+		override protected function GetNewInstance():YMLStringError {
+			return new UnclosedTagError(-1);
+		}
 	}
 }

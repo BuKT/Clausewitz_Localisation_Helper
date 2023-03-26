@@ -36,30 +36,32 @@ package ru.flashader.clausewitzlocalisationhelper.utils {
 		private static var _currentInputToTranslate:String;
 		private static var _freeLoaders:Vector.<URLLoader> = new Vector.<URLLoader>();
 		private static var _loaderToCallbackDictionary:Dictionary = new Dictionary(true);
+		private static var _loaderToSourceDictionary:Dictionary = new Dictionary(true);
 		
 		private static const HTML_TRANSLATION_START_MARKER:String = '<div class="result-container">'
 		private static const HTML_TRANSLATION_END_MARKER:String = '</div><div class="links-container"><ul><li><a href="https://www.google.com/m?hl=en-US">Google home</a>'
 		private static var _usedLoaders:int = 0;
 		private static var _waitedTranslations:Array = [];
 		
-		public static function TranslateMe(input:String, stage:Stage, outputCallback:Function, useGUIAPI:Boolean = false, useHTMLAPI:Boolean = false):void {
+		public static function TranslateMe(input:String, stage:Stage, outputCallback:Function, isTranslationTargetSource:Boolean, useGUIAPI:Boolean = false, useHTMLAPI:Boolean = false):void {
 			_outputCallback = outputCallback;
 			input = Utilities.RemoveSharps(input);
 			if (useGUIAPI) {
-				TranslateWithGUIAPI(input, stage);
+				TranslateWithGUIAPI(input, stage, isTranslationTargetSource);
 			} else if (useHTMLAPI){
-				RunHTMLTranslate(input, outputCallback);
+				RunHTMLTranslate(input, outputCallback, isTranslationTargetSource);
 			} else {
-				RunJSONTranslate(input, _outputCallback);
+				RunJSONTranslate(input, _outputCallback, isTranslationTargetSource);
 			}
 		}
 		
-		private static function RunHTMLTranslate(input:String, callback:Function):void {
+		private static function RunHTMLTranslate(input:String, callback:Function, isSource:Boolean):void {
 			if (_usedLoaders > 30) {
 				_waitedTranslations.push({
 					input: input,
 					callback: callback,
-					isJSON: false
+					isJSON: false,
+					isSource: isSource
 				});
 				return;
 			}
@@ -67,6 +69,7 @@ package ru.flashader.clausewitzlocalisationhelper.utils {
 			cliLoader.addEventListener(Event.COMPLETE, completeHTMLTranslate);
 			cliLoader.addEventListener(IOErrorEvent.IO_ERROR, processNonTranslated);
 			_loaderToCallbackDictionary[cliLoader] = callback;
+			_loaderToSourceDictionary[cliLoader] = isSource;
 			var requestString:String = HTMLURLToLoad.replace(TEMPLATE_TO_CHANGE, input);
 			cliLoader.load(new URLRequest(encodeURI(requestString)));
 		}
@@ -84,16 +87,17 @@ package ru.flashader.clausewitzlocalisationhelper.utils {
 				)
 			);
 			dispatchEvent(new WebTranslatorEvent(WebTranslatorEvent.TRANSLATION_ENDED));
-			_loaderToCallbackDictionary[loader] != null && _loaderToCallbackDictionary[loader](translate);
+			_loaderToCallbackDictionary[loader] != null && _loaderToSourceDictionary[loader] != null && _loaderToCallbackDictionary[loader](translate, _loaderToSourceDictionary[loader]);
 			FreeCLILoader(loader);
 		}
 		
-		private static function RunJSONTranslate(input:String, callback:Function):void {
+		private static function RunJSONTranslate(input:String, callback:Function, isSource:Boolean):void {
 			if (_usedLoaders > 30) {
 				_waitedTranslations.push({
 					input: input,
 					callback: callback,
-					isJSON: true
+					isJSON: true,
+					isSource: isSource
 				});
 				return;
 			}
@@ -101,6 +105,7 @@ package ru.flashader.clausewitzlocalisationhelper.utils {
 			cliLoader.addEventListener(Event.COMPLETE, completeJSONTranslate);
 			cliLoader.addEventListener(IOErrorEvent.IO_ERROR, processNonTranslated);
 			_loaderToCallbackDictionary[cliLoader] = callback;
+			_loaderToSourceDictionary[cliLoader] = isSource;
 			var requestString:String = JSONURLToLoad.replace(TEMPLATE_TO_CHANGE, input);
 			cliLoader.load(new URLRequest(encodeURI(requestString)));
 		}
@@ -123,7 +128,7 @@ package ru.flashader.clausewitzlocalisationhelper.utils {
 				)
 			);
 			dispatchEvent(new WebTranslatorEvent(WebTranslatorEvent.TRANSLATION_ENDED));
-			_loaderToCallbackDictionary[loader] != null && _loaderToCallbackDictionary[loader](translate);
+			_loaderToCallbackDictionary[loader] != null && _loaderToSourceDictionary[loader] != null && _loaderToCallbackDictionary[loader](translate, _loaderToSourceDictionary[loader]);
 			FreeCLILoader(loader);
 		}
 		
@@ -135,13 +140,23 @@ package ru.flashader.clausewitzlocalisationhelper.utils {
 		private static function FreeCLILoader(loader:URLLoader):void {
 			_usedLoaders--;
 			_loaderToCallbackDictionary[loader] = null;
+			_loaderToSourceDictionary[loader] = null;
 			loader.removeEventListener(Event.COMPLETE, completeHTMLTranslate);
 			loader.removeEventListener(Event.COMPLETE, completeJSONTranslate);
 			loader.removeEventListener(IOErrorEvent.IO_ERROR, processNonTranslated);
 			_freeLoaders.push(loader);
 			if (_waitedTranslations.length > 0) {
 				var waitedTranslation:Object = _waitedTranslations.pop();
-				waitedTranslation["isJSON"] ? RunJSONTranslate(waitedTranslation["input"], waitedTranslation["callback"]) : RunHTMLTranslate(waitedTranslation["input"], waitedTranslation["callback"]);
+				waitedTranslation["isJSON"] ? RunJSONTranslate(
+					waitedTranslation["input"],
+					waitedTranslation["callback"],
+					waitedTranslation["isSource"]
+				) :
+					RunHTMLTranslate(
+						waitedTranslation["input"],
+						waitedTranslation["callback"],
+						waitedTranslation["isSource"]
+					);
 			}
 		}
 		
@@ -160,7 +175,7 @@ package ru.flashader.clausewitzlocalisationhelper.utils {
 				);
 		}
 		
-		private static function TranslateWithGUIAPI(input:String, stage:Stage):void {
+		private static function TranslateWithGUIAPI(input:String, stage:Stage, isSource:Boolean):void {
 			_callback = RequestUserInput;
 			_secondsLeft = 3;
 			_splittedInput = new SplittedInput(input);

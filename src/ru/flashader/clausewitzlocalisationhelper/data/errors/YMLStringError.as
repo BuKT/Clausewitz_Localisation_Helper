@@ -13,5 +13,15 @@ package ru.flashader.clausewitzlocalisationhelper.data.errors {
 		public function YMLStringError(position:int) {
 			_position = position;
 		}
+		
+		public function Clone():YMLStringError {
+			var clone:YMLStringError = GetNewInstance();
+			clone._position = _position;
+			return clone;
+		}
+		
+		protected function GetNewInstance():YMLStringError {
+			return new YMLStringError(_position);
+		}
 	}
 }

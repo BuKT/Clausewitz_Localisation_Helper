@@ -84,36 +84,122 @@
             </Value>
           </Property>
         </Properties>
-        <Com name="JButton" id="LoadButton">
+        <Com name="JPanel" id="LeftButtonsContainer">
           <Properties>
             <Property name="id" type="id">
-              <Value value="LoadButton"/>
+              <Value value="LeftButtonsContainer"/>
             </Property>
             <Property name="attr_scope" type="attr_scope">
               <Value value="private"/>
             </Property>
             <Property name="getter_scope" type="getter_scope">
-              <Value value="public"/>
+              <Value value="none"/>
             </Property>
             <Property name="Location" type="Location">
-              <Value value="138,9"/>
+              <Value value="138,8"/>
             </Property>
             <Property name="Size" type="Size">
-              <Value value="150,26"/>
+              <Value value="150,82"/>
             </Property>
-            <Property name="PreferredSize" type="PreferredSize">
-              <Value value="150,26"/>
-            </Property>
-            <Property name="Text" type="Text">
-              <Value value="Load..."/>
-            </Property>
-            <Property name="HorizontalAlignment" type="HorizontalAlignment">
-              <Value value="0"/>
-            </Property>
-            <Property name="VerticalTextPosition" type="VerticalTextPosition">
-              <Value value="0"/>
+            <Property name="Layout" type="Layout">
+              <Value>
+                <Layout name="BoxLayout">
+                  <Properties>
+                    <Property name="Axis" type="Axis">
+                      <Value value="1"/>
+                    </Property>
+                    <Property name="Gap" type="Gap">
+                      <Value value="2"/>
+                    </Property>
+                  </Properties>
+                </Layout>
+              </Value>
             </Property>
           </Properties>
+          <Com name="JLabel" id="LeftButtonsLabel">
+            <Properties>
+              <Property name="id" type="id">
+                <Value value="LeftButtonsLabel"/>
+              </Property>
+              <Property name="attr_scope" type="attr_scope">
+                <Value value="private"/>
+              </Property>
+              <Property name="getter_scope" type="getter_scope">
+                <Value value="none"/>
+              </Property>
+              <Property name="Location" type="Location">
+                <Value value="0,0"/>
+              </Property>
+              <Property name="Size" type="Size">
+                <Value value="150,26"/>
+              </Property>
+              <Property name="Text" type="Text">
+                <Value value="Source:"/>
+              </Property>
+            </Properties>
+          </Com>
+          <Com name="JButton" id="SourceLoadButton">
+            <Properties>
+              <Property name="id" type="id">
+                <Value value="SourceLoadButton"/>
+              </Property>
+              <Property name="attr_scope" type="attr_scope">
+                <Value value="private"/>
+              </Property>
+              <Property name="getter_scope" type="getter_scope">
+                <Value value="public"/>
+              </Property>
+              <Property name="Name" type="Name">
+                <Value value="SourceLoadButton"/>
+              </Property>
+              <Property name="Location" type="Location">
+                <Value value="138,9"/>
+              </Property>
+              <Property name="Size" type="Size">
+                <Value value="150,26"/>
+              </Property>
+              <Property name="PreferredSize" type="PreferredSize">
+                <Value value="150,26"/>
+              </Property>
+              <Property name="Text" type="Text">
+                <Value value="Load..."/>
+              </Property>
+              <Property name="HorizontalAlignment" type="HorizontalAlignment">
+                <Value value="0"/>
+              </Property>
+              <Property name="VerticalTextPosition" type="VerticalTextPosition">
+                <Value value="0"/>
+              </Property>
+            </Properties>
+          </Com>
+          <Com name="JButton" id="SourceSaveButton">
+            <Properties>
+              <Property name="id" type="id">
+                <Value value="SourceSaveButton"/>
+              </Property>
+              <Property name="attr_scope" type="attr_scope">
+                <Value value="private"/>
+              </Property>
+              <Property name="getter_scope" type="getter_scope">
+                <Value value="public"/>
+              </Property>
+              <Property name="Name" type="Name">
+                <Value value="SourceSaveButton"/>
+              </Property>
+              <Property name="Background" type="Background">
+                <Value value="479acd,0.7"/>
+              </Property>
+              <Property name="Location" type="Location">
+                <Value value="0,36"/>
+              </Property>
+              <Property name="Size" type="Size">
+                <Value value="150,26"/>
+              </Property>
+              <Property name="Text" type="Text">
+                <Value value="Save..."/>
+              </Property>
+            </Properties>
+          </Com>
         </Com>
       </Com>
       <Com name="JPanel" id="TitleFilterBorderLayout">
@@ -333,33 +419,116 @@
             </Value>
           </Property>
         </Properties>
-        <Com name="JButton" id="SaveButton">
+        <Com name="JPanel" id="RightButtonsContainer">
           <Properties>
             <Property name="id" type="id">
-              <Value value="SaveButton"/>
+              <Value value="RightButtonsContainer"/>
             </Property>
             <Property name="attr_scope" type="attr_scope">
               <Value value="private"/>
             </Property>
             <Property name="getter_scope" type="getter_scope">
-              <Value value="public"/>
-            </Property>
-            <Property name="Name" type="Name">
-              <Value value="SaveButton"/>
+              <Value value="none"/>
             </Property>
             <Property name="Location" type="Location">
-              <Value value="138,7"/>
+              <Value value="138,8"/>
             </Property>
             <Property name="Size" type="Size">
-              <Value value="150,26"/>
+              <Value value="150,57"/>
             </Property>
-            <Property name="PreferredSize" type="PreferredSize">
-              <Value value="150,26"/>
-            </Property>
-            <Property name="Text" type="Text">
-              <Value value="Save..."/>
+            <Property name="Layout" type="Layout">
+              <Value>
+                <Layout name="BoxLayout">
+                  <Properties>
+                    <Property name="Axis" type="Axis">
+                      <Value value="1"/>
+                    </Property>
+                    <Property name="Gap" type="Gap">
+                      <Value value="5"/>
+                    </Property>
+                  </Properties>
+                </Layout>
+              </Value>
             </Property>
           </Properties>
+          <Com name="JLabel" id="RightButtonsLabel">
+            <Properties>
+              <Property name="id" type="id">
+                <Value value="RightButtonsLabel"/>
+              </Property>
+              <Property name="attr_scope" type="attr_scope">
+                <Value value="private"/>
+              </Property>
+              <Property name="getter_scope" type="getter_scope">
+                <Value value="none"/>
+              </Property>
+              <Property name="Location" type="Location">
+                <Value value="0,0"/>
+              </Property>
+              <Property name="Size" type="Size">
+                <Value value="150,26"/>
+              </Property>
+              <Property name="Text" type="Text">
+                <Value value="Target:"/>
+              </Property>
+            </Properties>
+          </Com>
+          <Com name="JButton" id="TargetSaveButton">
+            <Properties>
+              <Property name="id" type="id">
+                <Value value="TargetSaveButton"/>
+              </Property>
+              <Property name="attr_scope" type="attr_scope">
+                <Value value="private"/>
+              </Property>
+              <Property name="getter_scope" type="getter_scope">
+                <Value value="public"/>
+              </Property>
+              <Property name="Name" type="Name">
+                <Value value="TargetSaveButton"/>
+              </Property>
+              <Property name="Location" type="Location">
+                <Value value="138,7"/>
+              </Property>
+              <Property name="Size" type="Size">
+                <Value value="150,26"/>
+              </Property>
+              <Property name="PreferredSize" type="PreferredSize">
+                <Value value="150,26"/>
+              </Property>
+              <Property name="Text" type="Text">
+                <Value value="Save..."/>
+              </Property>
+            </Properties>
+          </Com>
+          <Com name="JButton" id="TargetLoadButton">
+            <Properties>
+              <Property name="id" type="id">
+                <Value value="TargetLoadButton"/>
+              </Property>
+              <Property name="attr_scope" type="attr_scope">
+                <Value value="private"/>
+              </Property>
+              <Property name="getter_scope" type="getter_scope">
+                <Value value="public"/>
+              </Property>
+              <Property name="Name" type="Name">
+                <Value value="TargetLoadButton"/>
+              </Property>
+              <Property name="Background" type="Background">
+                <Value value="479acd,0.7"/>
+              </Property>
+              <Property name="Location" type="Location">
+                <Value value="160,5"/>
+              </Property>
+              <Property name="Size" type="Size">
+                <Value value="37,26"/>
+              </Property>
+              <Property name="Text" type="Text">
+                <Value value="Load..."/>
+              </Property>
+            </Properties>
+          </Com>
         </Com>
       </Com>
     </Com>

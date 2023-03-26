@@ -33,5 +33,14 @@ package ru.flashader.clausewitzlocalisationhelper.utils {
 		public static const TRANSLATING_IN_PROGRESS:String = "Идёт перевод";
 		public static const NEED_HELP:String = "Нужна помощь";
 		public static const LISTEN_HERE_YOU_LITTLE_SHIT:String = "Короче";
+		
+		public static const BAD_MERGING_LABEL:String = "Файлы не совпадают";
+		public static const BAD_MERGING_DESCRIPTION:String = "Похоже, вы загрузили не тот файл. Из " + KEYS_TOTAL_PLACEHOLDER + " ключей в исходном файле отсутствует " + TARGET_KEYS_PLACEHOLDER + " а в целевом " + SOURCE_KEYS_PLACEHOLDER +
+			"\nВы абсолютно точно уверены, что знаете, что делаете?" +
+			"\nПри сохранении в любой из файлов будут записаны все-все ключи, даже пустые" +
+			"\n\nВсё равно загружаем?";
+		public static const KEYS_TOTAL_PLACEHOLDER:String = "###KEYSTOTALTEMPLATETOCHAGE###";
+		public static const SOURCE_KEYS_PLACEHOLDER:String = "###SOURCEKEYSTEMPLATETOCHAGE###";
+		public static const TARGET_KEYS_PLACEHOLDER:String = "###TARGETKEYSTEMPLATETOCHAGE###";
 	}
 }

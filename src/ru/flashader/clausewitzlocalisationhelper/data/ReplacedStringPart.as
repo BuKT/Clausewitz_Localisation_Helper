@@ -23,5 +23,11 @@ package ru.flashader.clausewitzlocalisationhelper.data {
 			TemporaryString = temporary;
 			return value.substr(0, ReplacingStartIndex).concat(temporary).concat(value.substr(ReplacingStartIndex + ReplacingString.length));
 		}
+		
+		public function Clone():ReplacedStringPart {
+			var clone:ReplacedStringPart = new ReplacedStringPart(CorrespondingTag.Clone(), ReplacingStartIndex, ReplacingString);
+			clone.TemporaryString = TemporaryString;
+			return clone;
+		}
 	}
 }

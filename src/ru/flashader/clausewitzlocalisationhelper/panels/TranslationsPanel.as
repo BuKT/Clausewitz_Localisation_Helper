@@ -14,10 +14,12 @@ package ru.flashader.clausewitzlocalisationhelper.panels {
 	*/
 	
 	public class TranslationsPanel extends JPanel {
-		
 		private var TopBlock:JPanel;
 		private var LeftButtonCenterer:JPanel;
-		private var LoadButton:JButton;
+		private var LeftButtonsContainer:JPanel;
+		private var LeftButtonsLabel:JLabel;
+		private var SourceLoadButton:JButton;
+		private var SourceSaveButton:JButton;
 		private var TitleFilterBorderLayout:JPanel;
 		private var LabelNorthSpacer:JSpacer;
 		private var FileNameLabel:JLabel;
@@ -25,7 +27,10 @@ package ru.flashader.clausewitzlocalisationhelper.panels {
 		private var FilterString:JTextField;
 		private var FilterLabel:JLabel;
 		private var RightButtonCenterer:JPanel;
-		private var SaveButton:JButton;
+		private var RightButtonsContainer:JPanel;
+		private var RightButtonsLabel:JLabel;
+		private var TargetSaveButton:JButton;
+		private var TargetLoadButton:JButton;
 		private var TabbingContainer:JTabbedPane;
 		private var ScrollPane:JScrollPane;
 		private var ChinesedListPlaceholder:JPanel;
@@ -56,21 +61,42 @@ package ru.flashader.clausewitzlocalisationhelper.panels {
 			var layout2:CenterLayout = new CenterLayout();
 			LeftButtonCenterer.setLayout(layout2);
 			
-			LoadButton = new JButton();
-			LoadButton.setLocation(new IntPoint(138, 9));
-			LoadButton.setSize(new IntDimension(150, 26));
-			LoadButton.setPreferredSize(new IntDimension(150, 26));
-			LoadButton.setText("Load...");
-			LoadButton.setHorizontalAlignment(AsWingConstants.CENTER);
-			LoadButton.setVerticalTextPosition(AsWingConstants.CENTER);
+			LeftButtonsContainer = new JPanel();
+			LeftButtonsContainer.setLocation(new IntPoint(138, 8));
+			LeftButtonsContainer.setSize(new IntDimension(150, 82));
+			var layout3:BoxLayout = new BoxLayout();
+			layout3.setAxis(AsWingConstants.VERTICAL);
+			layout3.setGap(2);
+			LeftButtonsContainer.setLayout(layout3);
+			
+			LeftButtonsLabel = new JLabel();
+			LeftButtonsLabel.setLocation(new IntPoint(0, 0));
+			LeftButtonsLabel.setSize(new IntDimension(150, 26));
+			LeftButtonsLabel.setText("Source:");
+			
+			SourceLoadButton = new JButton();
+			SourceLoadButton.setName("SourceLoadButton");
+			SourceLoadButton.setLocation(new IntPoint(138, 9));
+			SourceLoadButton.setSize(new IntDimension(150, 26));
+			SourceLoadButton.setPreferredSize(new IntDimension(150, 26));
+			SourceLoadButton.setText("Load...");
+			SourceLoadButton.setHorizontalAlignment(AsWingConstants.CENTER);
+			SourceLoadButton.setVerticalTextPosition(AsWingConstants.CENTER);
+			
+			SourceSaveButton = new JButton();
+			SourceSaveButton.setName("SourceSaveButton");
+			SourceSaveButton.setBackground(new ASColor(0x479acd, 0.7));
+			SourceSaveButton.setLocation(new IntPoint(0, 36));
+			SourceSaveButton.setSize(new IntDimension(150, 26));
+			SourceSaveButton.setText("Save...");
 			
 			TitleFilterBorderLayout = new JPanel();
 			TitleFilterBorderLayout.setLocation(new IntPoint(370, 0));
 			TitleFilterBorderLayout.setSize(new IntDimension(426, 74));
-			var layout3:BorderLayout = new BorderLayout();
-			layout3.setHgap(5);
-			layout3.setVgap(10);
-			TitleFilterBorderLayout.setLayout(layout3);
+			var layout4:BorderLayout = new BorderLayout();
+			layout4.setHgap(5);
+			layout4.setVgap(10);
+			TitleFilterBorderLayout.setLayout(layout4);
 			
 			LabelNorthSpacer = new JSpacer();
 			LabelNorthSpacer.setSize(new IntDimension(426, 0));
@@ -84,10 +110,10 @@ package ru.flashader.clausewitzlocalisationhelper.panels {
 			FileNameLabel.setSize(new IntDimension(426, 32));
 			FileNameLabel.setPreferredSize(new IntDimension(500, 32));
 			FileNameLabel.setConstraints("Center");
-			var border4:BevelBorder = new BevelBorder();
-			border4.setBevelType(0);
-			border4.setThickness(3);
-			FileNameLabel.setBorder(border4);
+			var border5:BevelBorder = new BevelBorder();
+			border5.setBevelType(0);
+			border5.setThickness(3);
+			FileNameLabel.setBorder(border5);
 			FileNameLabel.setText("Flashader");
 			FileNameLabel.setSelectable(true);
 			
@@ -95,10 +121,10 @@ package ru.flashader.clausewitzlocalisationhelper.panels {
 			FilterBorderLayout.setLocation(new IntPoint(0, 19));
 			FilterBorderLayout.setSize(new IntDimension(426, 22));
 			FilterBorderLayout.setConstraints("South");
-			var layout5:BorderLayout = new BorderLayout();
-			layout5.setHgap(10);
-			layout5.setVgap(3);
-			FilterBorderLayout.setLayout(layout5);
+			var layout6:BorderLayout = new BorderLayout();
+			layout6.setHgap(10);
+			layout6.setVgap(3);
+			FilterBorderLayout.setLayout(layout6);
 			
 			FilterString = new JTextField();
 			FilterString.setLocation(new IntPoint(41, 0));
@@ -115,15 +141,35 @@ package ru.flashader.clausewitzlocalisationhelper.panels {
 			RightButtonCenterer = new JPanel();
 			RightButtonCenterer.setLocation(new IntPoint(852, 0));
 			RightButtonCenterer.setSize(new IntDimension(426, 45));
-			var layout6:CenterLayout = new CenterLayout();
-			RightButtonCenterer.setLayout(layout6);
+			var layout7:CenterLayout = new CenterLayout();
+			RightButtonCenterer.setLayout(layout7);
 			
-			SaveButton = new JButton();
-			SaveButton.setName("SaveButton");
-			SaveButton.setLocation(new IntPoint(138, 7));
-			SaveButton.setSize(new IntDimension(150, 26));
-			SaveButton.setPreferredSize(new IntDimension(150, 26));
-			SaveButton.setText("Save...");
+			RightButtonsContainer = new JPanel();
+			RightButtonsContainer.setLocation(new IntPoint(138, 8));
+			RightButtonsContainer.setSize(new IntDimension(150, 57));
+			var layout8:BoxLayout = new BoxLayout();
+			layout8.setAxis(AsWingConstants.VERTICAL);
+			layout8.setGap(5);
+			RightButtonsContainer.setLayout(layout8);
+			
+			RightButtonsLabel = new JLabel();
+			RightButtonsLabel.setLocation(new IntPoint(0, 0));
+			RightButtonsLabel.setSize(new IntDimension(150, 26));
+			RightButtonsLabel.setText("Target:");
+			
+			TargetSaveButton = new JButton();
+			TargetSaveButton.setName("TargetSaveButton");
+			TargetSaveButton.setLocation(new IntPoint(138, 7));
+			TargetSaveButton.setSize(new IntDimension(150, 26));
+			TargetSaveButton.setPreferredSize(new IntDimension(150, 26));
+			TargetSaveButton.setText("Save...");
+			
+			TargetLoadButton = new JButton();
+			TargetLoadButton.setName("TargetLoadButton");
+			TargetLoadButton.setBackground(new ASColor(0x479acd, 0.7));
+			TargetLoadButton.setLocation(new IntPoint(160, 5));
+			TargetLoadButton.setSize(new IntDimension(37, 26));
+			TargetLoadButton.setText("Load...");
 			
 			TabbingContainer = new JTabbedPane();
 			TabbingContainer.setLocation(new IntPoint(0, 74));
@@ -137,23 +183,18 @@ package ru.flashader.clausewitzlocalisationhelper.panels {
 			ItemsPlaceholder = new JPanel();
 			ItemsPlaceholder.setLocation(new IntPoint(640, 339));
 			ItemsPlaceholder.setSize(new IntDimension(0, 0));
-			var layout7:SoftBoxLayout = new SoftBoxLayout();
-			layout7.setAxis(AsWingConstants.VERTICAL);
-			ItemsPlaceholder.setLayout(layout7);
-			
-			
+			var layout9:SoftBoxLayout = new SoftBoxLayout();
+			layout9.setAxis(AsWingConstants.VERTICAL);
+			ItemsPlaceholder.setLayout(layout9);
 			
 			ChinesedListPlaceholder = new JPanel();
-			with (ChinesedListPlaceholder) {
-				setName("Табличка");
-				setLocation(new IntPoint(0, 74));
-				setSize(new IntDimension(1280, 646));
-				var layout8:BoxLayout = new BoxLayout();
-				layout8.setAxis(AsWingConstants.VERTICAL);
-				setLayout(layout8);
-			}
+			ChinesedListPlaceholder.setName("Табличка");
+			ChinesedListPlaceholder.setLocation(new IntPoint(0, 74));
+			ChinesedListPlaceholder.setSize(new IntDimension(1280, 646));
+			var layout10:BoxLayout = new BoxLayout();
+			layout10.setAxis(AsWingConstants.VERTICAL);
+			ChinesedListPlaceholder.setLayout(layout10);
 			
-			//component layoution
 			append(TopBlock);
 			append(TabbingContainer);
 			
@@ -161,7 +202,11 @@ package ru.flashader.clausewitzlocalisationhelper.panels {
 			TopBlock.append(TitleFilterBorderLayout);
 			TopBlock.append(RightButtonCenterer);
 			
-			LeftButtonCenterer.append(LoadButton);
+			LeftButtonCenterer.append(LeftButtonsContainer);
+			
+			LeftButtonsContainer.append(LeftButtonsLabel);
+			LeftButtonsContainer.append(SourceLoadButton);
+			LeftButtonsContainer.append(SourceSaveButton);
 			
 			TitleFilterBorderLayout.append(LabelNorthSpacer);
 			TitleFilterBorderLayout.append(FileNameLabel);
@@ -170,13 +215,16 @@ package ru.flashader.clausewitzlocalisationhelper.panels {
 			FilterBorderLayout.append(FilterString);
 			FilterBorderLayout.append(FilterLabel);
 			
-			RightButtonCenterer.append(SaveButton);
+			RightButtonCenterer.append(RightButtonsContainer);
+			
+			RightButtonsContainer.append(RightButtonsLabel);
+			RightButtonsContainer.append(TargetSaveButton);
+			RightButtonsContainer.append(TargetLoadButton);
 			
 			TabbingContainer.append(ChinesedListPlaceholder);
 			TabbingContainer.append(ScrollPane);
 			
 			ScrollPane.append(ItemsPlaceholder);
-			
 			
 			_chinesedList = new ChinesedTranslatesList();
 			ChinesedListPlaceholder.append(_chinesedList);
@@ -190,20 +238,28 @@ package ru.flashader.clausewitzlocalisationhelper.panels {
 			_chinesedList.FilterData(filter);
 		}
 		
-		public function getLoadButton():JButton {
-			return LoadButton;
+		public function getSourceLoadButton():JButton{
+			return SourceLoadButton;
 		}
 		
-		public function getFileNameLabel():JLabel {
+		public function getSourceSaveButton():JButton{
+			return SourceSaveButton;
+		}
+		
+		public function getFileNameLabel():JLabel{
 			return FileNameLabel;
+		}
+		
+		public function getTargetSaveButton():JButton{
+			return TargetSaveButton;
+		}
+		
+		public function getTargetLoadButton():JButton{
+			return TargetLoadButton;
 		}
 		
 		public function getFilterString():String {
 			return FilterString.getText().toLowerCase();
-		}
-		
-		public function getSaveButton():JButton {
-			return SaveButton;
 		}
 		
 		public function FillWithTranslations(translationFileContent:TranslationFileContent, path:String):void {

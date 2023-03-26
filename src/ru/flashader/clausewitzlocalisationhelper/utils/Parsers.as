@@ -79,7 +79,7 @@ package ru.flashader.clausewitzlocalisationhelper.utils {
 						'\\"',
 						'"'
 					),
-					true
+					isSource
 				);
 				var postfixToCheck:String = isSource ? targetTranslationContainer.LanguageSourcePostfix : targetTranslationContainer.LanguageTargetPostfix;
 				if (
@@ -100,7 +100,7 @@ package ru.flashader.clausewitzlocalisationhelper.utils {
 		//https://hoi4.paradoxwikis.com/Localisation#Special_characters
 		private static function ParseSingleLine(line:String, isSource:Boolean):RichSeparateTranslationEntry {
 			var lineEntry:RichSeparateTranslationEntry = new RichSeparateTranslationEntry();
-			lineEntry.Raw = line;
+			lineEntry.SetRawLine(line, isSource);
 			
 			var compressedLine:String = line.replace(" ", "").replace("\t", "");
 			if (compressedLine.length == 0) {
@@ -119,7 +119,7 @@ package ru.flashader.clausewitzlocalisationhelper.utils {
 				for (var i:int = 0; i < line.length; i++) {
 					var char:String = line.charAt(i);
 					if (char == OPEN_SHARP_CHAR) {
-						lineEntry.Comment = line.substring(i, line.length);
+						lineEntry.SetComment(line.substring(i, line.length), isSource);
 						break;
 					}
 					if (char != " " && char != "\t") {
@@ -131,7 +131,7 @@ package ru.flashader.clausewitzlocalisationhelper.utils {
 			var keyZone:String = line.substr(0, firstColonIndex); //Тут бы ещё проверку на количество пробелов до и после делать.
 			var commentStartIndex:int = FindComment(keyZone);
 			if (commentStartIndex > -1) {
-				lineEntry.Comment = line.substring(commentStartIndex, line.length);
+				lineEntry.SetComment(line.substring(commentStartIndex, line.length), isSource);
 				lineEntry.isEmpty = true;
 				return lineEntry;
 			}
@@ -159,7 +159,7 @@ package ru.flashader.clausewitzlocalisationhelper.utils {
 						if (forbiddenVersion != null && forbiddenVersion.length > 0) {
 							lineEntry.AddError(new ForbiddenCharacterError(char, line.indexOf(forbiddenVersion[0])), isSource);
 						} else {
-							lineEntry.Version = parseInt(versionString);
+							lineEntry.SetVersion(parseInt(versionString), isSource);
 						}
 						
 					}
@@ -167,7 +167,7 @@ package ru.flashader.clausewitzlocalisationhelper.utils {
 			}
 			lineEntry.SetRawValue(line.substring(QuoteCharsIndex[0] + 1, QuoteCharsIndex[QuoteCharsIndex.length - 1]), isSource);
 			
-			isSource ? ParseSourceTags(lineEntry) : ParseTargetTags(lineEntry);
+			ParseTags(lineEntry, isSource);
 			
 			//TODO: flashader Тут можно почистить от лишних эскейпов.
 			//Да ещё и проверки всяких раскрасок проводить. Но влом пока.
@@ -176,19 +176,21 @@ package ru.flashader.clausewitzlocalisationhelper.utils {
 			return lineEntry;
 		}
 		
-		public static function ParseSourceTags(lineEntry:RichSeparateTranslationEntry):void {
-			lineEntry.SourceTaggedRegions.length = 0;
-			lineEntry.ClearErrors(true);
-			AddNewTagsErrors(ParseTags(lineEntry.GetValueToParse(true), lineEntry.SourceTaggedRegions, true), lineEntry, true);
+		public static function ParseTags(lineEntry:RichSeparateTranslationEntry, isSource:Boolean):void {
+			lineEntry.CleanTaggedRegions(isSource);
+			lineEntry.ClearErrors(isSource);
+			AddNewTagsErrors(
+				InnerParseTags(
+					lineEntry.GetValueToParse(isSource),
+					lineEntry.GetTaggedRegions(isSource),
+					isSource
+				),
+				lineEntry,
+				isSource
+			);
 		}
 		
-		public static function ParseTargetTags(lineEntry:RichSeparateTranslationEntry):void {
-			lineEntry.TargetTaggedRegions.length = 0;
-			lineEntry.ClearErrors(false);
-			AddNewTagsErrors(ParseTags(lineEntry.GetValueToParse(false), lineEntry.TargetTaggedRegions, false), lineEntry, true);
-		}
-		
-		private static function ParseTags(value:String, taggedRegions:Vector.<TaggedRegion>, isSource:Boolean):Vector.<YMLStringError> {
+		private static function InnerParseTags(value:String, taggedRegions:Vector.<TaggedRegion>, isSource:Boolean):Vector.<YMLStringError> {
 			var toReturn:Vector.<YMLStringError> = new Vector.<YMLStringError>();
 			ParseForBrackets(value, taggedRegions, toReturn);
 			ParseForParagraphs(value, taggedRegions, toReturn);

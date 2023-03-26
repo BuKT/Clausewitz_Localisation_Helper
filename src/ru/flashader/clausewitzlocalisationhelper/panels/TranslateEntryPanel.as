@@ -53,8 +53,8 @@ package ru.flashader.clausewitzlocalisationhelper.panels {
 				throw new Error("Not allowed");
 			}
 			InitLayout();
-			MoveTranslationButton.addActionListener(JustCopyContent);
-			TranslateTranslationButton.addActionListener(processTranslateRequest);
+			MoveTranslationButton.addActionListener(JustCopyContentFromSourceToTarget);
+			TranslateTranslationButton.addActionListener(processTranslateRequestFromSourceToTarget);
 		}
 		
 		public function InitWithEntry(entry:BaseSeparateTranslationEntry):void {
@@ -276,16 +276,16 @@ package ru.flashader.clausewitzlocalisationhelper.panels {
 			OuterEastBordering.append(SouthSpacer);
 		}
 		
-		private function JustCopyContent(e:AWEvent):void {
-			_entry.JustCopy();
+		private function JustCopyContentFromSourceToTarget(e:AWEvent):void {
+			_entry.JustCopyTo(false);
 		}
 		
 		public function getKey():String {
 			return _entry.GetKey();
 		}
 		
-		private function processTranslateRequest(e:AWEvent):void {
-			_entry.SomeoneRequestToTranslateYou();
+		private function processTranslateRequestFromSourceToTarget(e:AWEvent):void {
+			_entry.SomeoneRequestToTranslateYou(false);
 		}
 		
 		public function Dispose():void {
