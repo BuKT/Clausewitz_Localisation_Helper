@@ -1,4 +1,5 @@
 package ru.flashader.clausewitzlocalisationhelper.utils {
+	import org.aswing.JOptionPane;
 
 	/**
 	* @author Ilja 'flashader' Mickodin
@@ -34,7 +35,7 @@ package ru.flashader.clausewitzlocalisationhelper.utils {
 		public static const NEED_HELP:String = "Нужна помощь";
 		public static const LISTEN_HERE_YOU_LITTLE_SHIT:String = "Короче";
 		
-		public static const BAD_MERGING_LABEL:String = "Файлы не совпадают";
+		public static const BAD_MERGING_LABEL:String = "Ключи файлов не совпадают";
 		public static const BAD_MERGING_DESCRIPTION:String = "Похоже, вы загрузили не тот файл. Из " + KEYS_TOTAL_PLACEHOLDER + " ключей в исходном файле отсутствует " + TARGET_KEYS_PLACEHOLDER + " а в целевом " + SOURCE_KEYS_PLACEHOLDER +
 			"\nВы абсолютно точно уверены, что знаете, что делаете?" +
 			"\nПри сохранении в любой из файлов будут записаны все-все ключи, даже пустые" +
@@ -42,5 +43,12 @@ package ru.flashader.clausewitzlocalisationhelper.utils {
 		public static const KEYS_TOTAL_PLACEHOLDER:String = "###KEYSTOTALTEMPLATETOCHAGE###";
 		public static const SOURCE_KEYS_PLACEHOLDER:String = "###SOURCEKEYSTEMPLATETOCHAGE###";
 		public static const TARGET_KEYS_PLACEHOLDER:String = "###TARGETKEYSTEMPLATETOCHAGE###";
+		
+		public static const ADDING_UNEQUAL_KEYS_LABEL:String = "Имена файлов не совпадают";
+		public static const ADDING_UNEQUAL_KEYS_DESCRIPTION:String = "Вы загружаете файл, имя которого не совпадает с ранее загруженным" +
+			"\nЭто может привести к несовпадению ключей строк." +
+			"\n\nДобавить ключи нового файла к текущим ('" + JOptionPane.YES_STR + "')?" +
+			"\nИли стереть ключи старого файла ('" + JOptionPane.NO_STR + "')?" +
+			"\n\nМожно также выбрать файл для загрузки заново ('" + JOptionPane.CANCEL_STR + "')?";
 	}
 }

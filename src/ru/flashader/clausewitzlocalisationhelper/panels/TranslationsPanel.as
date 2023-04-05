@@ -262,9 +262,9 @@ package ru.flashader.clausewitzlocalisationhelper.panels {
 			return FilterString.getText().toLowerCase();
 		}
 		
-		public function FillWithTranslations(translationFileContent:TranslationFileContent, path:String):void {
+		public function FillWithTranslations(translationFileContent:TranslationFileContent):void {
 			_translationFileContent = translationFileContent;
-			FileNameLabel.setText(path);
+			FileNameLabel.setText(_translationFileContent.GetFilename());
 			var filter:String = FilterString.getText().toLowerCase();
 			_chinesedList.FillWithTranslations(translationFileContent, filter);
 			RecreateEntryPanels(filter);

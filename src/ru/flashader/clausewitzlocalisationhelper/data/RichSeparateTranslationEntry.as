@@ -163,6 +163,46 @@ package ru.flashader.clausewitzlocalisationhelper.data {
 		override public function SetTranslatedValue(value:String, isSource:Boolean):void {
 			value = value.replace(/&gt;/g, '>');
 			value = value.replace(/&lt;/g, '<');
+			
+			value = value.replace(/<дел> /g, '<div>');
+			value = value.replace(/<дел>/g, '<div>');
+			value = value.replace(/< дел>/g, '<div>');
+			value = value.replace(/<д ел>/g, '<div>');
+			value = value.replace(/<де л>/g, '<div>');
+			value = value.replace(/<дел >/g, '<div>');
+			
+			value = value.replace(/ <\/дел>/g, '</div>');
+			value = value.replace(/<\/дел>/g, '</div>');
+			value = value.replace(/< \/дел>/g, '</div>');
+			value = value.replace(/<\/ дел>/g, '</div>');
+			value = value.replace(/<\/д ел>/g, '</div>');
+			value = value.replace(/<\/де л>/g, '</div>');
+			value = value.replace(/<\/дел >/g, '</div>');
+			value = value.replace(/<\/дел> >/g, '</div>');
+			
+			value = value.replace(/<раздел> /g, '<div>');
+			value = value.replace(/<раздел>/g, '<div>');
+			value = value.replace(/< раздел>/g, '<div>');
+			value = value.replace(/<р аздел>/g, '<div>');
+			value = value.replace(/<ра здел>/g, '<div>');
+			value = value.replace(/<раз дел>/g, '<div>');
+			value = value.replace(/<разд ел>/g, '<div>');
+			value = value.replace(/<разде л>/g, '<div>');
+			value = value.replace(/<раздел >/g, '<div>');
+			
+			value = value.replace(/ <\/раздел>/g, '</div>');
+			value = value.replace(/<\/раздел>/g, '</div>');
+			value = value.replace(/< \/раздел>/g, '</div>');
+			value = value.replace(/<\/ раздел>/g, '</div>');
+			value = value.replace(/<\/р аздел>/g, '</div>');
+			value = value.replace(/<\/ра здел>/g, '</div>');
+			value = value.replace(/<\/раз дел>/g, '</div>');
+			value = value.replace(/<\/разд ел>/g, '</div>');
+			value = value.replace(/<\/разде л>/g, '</div>');
+			value = value.replace(/<\/раздел >/g, '</div>');
+			value = value.replace(/<\/раздел> >/g, '</div>');
+			
+			
 			value = value.replace(/< div>/g, '<div>');
 			value = value.replace(/<d iv>/g, '<div>');
 			value = value.replace(/<di v>/g, '<div>');
@@ -176,22 +216,6 @@ package ru.flashader.clausewitzlocalisationhelper.data {
 			value = value.replace(/<\/di v>/g, '</div>');
 			value = value.replace(/<\/div >/g, '</div>');
 			value = value.replace(/<\/div> >/g, '</div>');
-			
-			value = value.replace(/<дел>/g, '<div>');
-			value = value.replace(/< дел>/g, '<div>');
-			value = value.replace(/<д ел>/g, '<div>');
-			value = value.replace(/<де л>/g, '<div>');
-			value = value.replace(/<дел >/g, '<div>');
-			value = value.replace(/<дел> /g, '<div>');
-			
-			value = value.replace(/<\/дел>/g, '</div>');
-			value = value.replace(/ <\/дел>/g, '</div>');
-			value = value.replace(/< \/дел>/g, '</div>');
-			value = value.replace(/<\/ дел>/g, '</div>');
-			value = value.replace(/<\/д ел>/g, '</div>');
-			value = value.replace(/<\/де л>/g, '</div>');
-			value = value.replace(/<\/дел >/g, '</div>');
-			value = value.replace(/<\/дел> >/g, '</div>');
 			
 			
 			var replacingStringParts:Vector.<ReplacedStringPart> = !isSource ? _sourceReplacingStringParts : _targetReplacingStringParts;

@@ -9,6 +9,7 @@ package ru.flashader.clausewitzlocalisationhelper.data {
 	public class TranslationFileContent {
 		private static const ALLOWING_TO_CALL_CONSTRUCTOR:String = "ยง";
 		
+		private var _filename:String;
 		public var LanguageSourcePostfix:String = "l_english";
 		public var LanguageTargetPostfix:String = "l_russian";
 		private var _translateEntriesList:Vector.<BaseSeparateTranslationEntry> = new Vector.<BaseSeparateTranslationEntry>();
@@ -18,10 +19,11 @@ package ru.flashader.clausewitzlocalisationhelper.data {
 		private var _notPairedSourceKeysCount:int;
 		private var _notPairedTargetKeysCount:int;
 		
-		public function TranslationFileContent(securityKey:String) {
+		public function TranslationFileContent(securityKey:String, filename:String) {
 			if (securityKey != ALLOWING_TO_CALL_CONSTRUCTOR) {
 				throw new Error("Not allowed");
 			}
+			_filename = filename;
 		}
 		
 		private function cleanEntries():void {
@@ -116,6 +118,10 @@ package ru.flashader.clausewitzlocalisationhelper.data {
 			return _translateEntriesList.concat();
 		}
 		
+		public function GetFilename():String {
+			return _filename;
+		}
+		
 		private function processTranslateRequestListener(entry:BaseSeparateTranslationEntry, isSource:Boolean):void {
 			if (_translateRequestProcessingCallback != null) {
 				_translateRequestProcessingCallback(entry.SetTranslatedValue, entry.GetValueToTranslate(!isSource), isSource);
@@ -126,12 +132,12 @@ package ru.flashader.clausewitzlocalisationhelper.data {
 			_translateRequestProcessingCallback = callback;
 		}
 		
-		public static function Obtain():TranslationFileContent {
-			return new TranslationFileContent(ALLOWING_TO_CALL_CONSTRUCTOR);
+		public static function Obtain(filename:String):TranslationFileContent {
+			return new TranslationFileContent(ALLOWING_TO_CALL_CONSTRUCTOR, filename);
 		}
 		
-		public static function DeepCloneFrom(original:TranslationFileContent):TranslationFileContent {
-			var clone:TranslationFileContent = Obtain();
+		public static function DeepCloneFrom(original:TranslationFileContent, filename:String):TranslationFileContent {
+			var clone:TranslationFileContent = Obtain(filename);
 			clone.LanguageSourcePostfix = original.LanguageSourcePostfix;
 			clone.LanguageTargetPostfix = original.LanguageTargetPostfix;
 			for (var i:int = 0; i < original._translateEntriesList.length; i++) {

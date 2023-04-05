@@ -107,28 +107,55 @@ package ru.flashader.clausewitzlocalisationhelper {
 			filename = filename.substring(0, filename.lastIndexOf("_l_"));
 			Modals.ShowModal(LocalisationStrings.PLEASE_WAIT, LocalisationStrings.TRYING_TO_PARSE);
 			
-			var newTFC:TranslationFileContent = TranslationFileContent.Obtain();
+			var newTFC:TranslationFileContent = TranslationFileContent.Obtain(filename);
 			Parsers.DoParseAndFill(fileContent, newTFC, isSource);
 			Modals.CloseModal();
 			
 			if (_currentTranslationFileContent != null) {
-				var mergedTFC:TranslationFileContent = TranslationFileContent.DeepCloneFrom(_currentTranslationFileContent);
-				
-				mergedTFC.MergeWith(newTFC, isSource);
-				mergedTFC.RecountKeysCount();
-				var keysTotalNumber:int = mergedTFC.GetTotalKeysCount();
-				var sourceKeysNumber:int = mergedTFC.GetNotPairedKeysCount(true);
-				var targetKeysNumber:int = mergedTFC.GetNotPairedKeysCount(false);
-				if (sourceKeysNumber > 0 && targetKeysNumber > 0) {
-					AskForUserAssuringOfMerging(keysTotalNumber, sourceKeysNumber, targetKeysNumber, mergedTFC, filename);
-					return;
+				if (_currentTranslationFileContent.GetFilename() != newTFC.GetFilename()) {
+					AskForUserAssuringOfAddKeys(newTFC, isSource);
+				} else {
+					MergeTranslates(newTFC, isSource);
 				}
-				newTFC = mergedTFC;
+			} else {
+				CompleteTranslateLoading(newTFC);
 			}
-			CompleteTranslateLoading(newTFC, filename);
 		}
 		
-		private function AskForUserAssuringOfMerging(keysTotalNumber:int, sourceKeysNumber:int, targetKeysNumber:int, mergedTFC:TranslationFileContent, filename:String):void {
+		private function AskForUserAssuringOfAddKeys(newTFC:TranslationFileContent, isSource:Boolean):void {
+			Modals.ShowModal(
+				LocalisationStrings.ADDING_UNEQUAL_KEYS_LABEL,
+				LocalisationStrings.ADDING_UNEQUAL_KEYS_DESCRIPTION,
+				function (userChoice:int):void {
+					if ((userChoice & JOptionPane.YES) > 0) {
+						MergeTranslates(newTFC, isSource);
+					}
+					if ((userChoice & JOptionPane.NO) > 0) {
+						CompleteTranslateLoading(newTFC);
+					}
+					if ((userChoice & JOptionPane.CANCEL) > 0) {
+						FileOperations.LoadFileDialog(isSource, TryParseLoadedFile);
+					}
+				},
+				JOptionPane.YES | JOptionPane.NO | JOptionPane.CANCEL
+			);
+		}
+		
+		private function MergeTranslates(newTFC:TranslationFileContent, isSource:Boolean):void {
+			var mergedTFC:TranslationFileContent = TranslationFileContent.DeepCloneFrom(_currentTranslationFileContent, newTFC.GetFilename());
+			mergedTFC.MergeWith(newTFC, isSource);
+			mergedTFC.RecountKeysCount();
+			var keysTotalNumber:int = mergedTFC.GetTotalKeysCount();
+			var sourceKeysNumber:int = mergedTFC.GetNotPairedKeysCount(true);
+			var targetKeysNumber:int = mergedTFC.GetNotPairedKeysCount(false);
+			if (sourceKeysNumber > 0 && targetKeysNumber > 0) {
+				AskForUserAssuringOfMerging(keysTotalNumber, sourceKeysNumber, targetKeysNumber, mergedTFC);
+				return;
+			}
+			CompleteTranslateLoading(mergedTFC);
+		}
+		
+		private function AskForUserAssuringOfMerging(keysTotalNumber:int, sourceKeysNumber:int, targetKeysNumber:int, mergedTFC:TranslationFileContent):void {
 			Modals.ShowModal(
 				LocalisationStrings.BAD_MERGING_LABEL,
 				LocalisationStrings.BAD_MERGING_DESCRIPTION.replace(
@@ -143,16 +170,16 @@ package ru.flashader.clausewitzlocalisationhelper {
 				),
 				function (userChoice:int):void {
 					if ((userChoice & JOptionPane.OK) > 0) {
-						CompleteTranslateLoading(mergedTFC, filename);
+						CompleteTranslateLoading(mergedTFC);
 					}
 				},
 				JOptionPane.OK | JOptionPane.CANCEL
 			);
 		}
 		
-		private function CompleteTranslateLoading(tfc:TranslationFileContent, filename:String):void {
+		private function CompleteTranslateLoading(tfc:TranslationFileContent):void {
 			_currentTranslationFileContent = tfc;
-			_translatingWindow.FillWithTranslations(_currentTranslationFileContent, filename);
+			_translatingWindow.FillWithTranslations(_currentTranslationFileContent);
 			
 			_translatingWindow.getSourceSaveButton().setEnabled(true);
 			_translatingWindow.getTargetSaveButton().setEnabled(true);
