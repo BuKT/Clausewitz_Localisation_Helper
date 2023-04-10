@@ -13,6 +13,7 @@ package ru.flashader.clausewitzlocalisationhelper.utils {
 	import flash.text.TextField;
 	import flash.utils.Dictionary;
 	import flash.utils.setTimeout;
+	import com.maccherone.json.JSON;
 	
 	/**
 	* @author Ilja 'flashader' Mickodin
@@ -112,7 +113,7 @@ package ru.flashader.clausewitzlocalisationhelper.utils {
 		
 		private static function completeJSONTranslate(e:Event):void {
 			var loader:URLLoader = e.currentTarget as URLLoader;
-			var json:Object = JSON.parse(loader.data.toString());
+			var json:Object = com.maccherone.json.JSON.decode(loader.data.toString());
 			var translate:String = '';
 			for each (var innerArray:Array in json[0]) {
 				while (innerArray[0] is Array) {

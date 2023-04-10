@@ -12,7 +12,8 @@ echo.
 echo Starting AIR Debug Launcher...
 echo.
 
-adl "%APP_XML%" "%APP_DIR%" -profile extendedDesktop
+adl "%APP_XML%" "%APP_DIR%"
+::-profile extendedDesktop
 if errorlevel 1 goto error
 goto end
 

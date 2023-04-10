@@ -8,8 +8,8 @@
     <movie fps="100" />
     <movie width="1280" />
     <movie height="720" />
-    <movie version="28" />
-    <movie minorVersion="0" />
+    <movie version="2" />
+    <movie minorVersion="6" />
     <movie platform="AIR" />
     <movie background="#FFFFFF" />
     <movie preferredSDK="Flex 4.6.0, AIR 3.7;4.6.0, 3.7;" />
@@ -54,6 +54,7 @@
   <!-- SWC Libraries -->
   <libraryPaths>
     <element path="lib\AsWing.swc" />
+    <element path="lib\JSON.swc" />
   </libraryPaths>
   <!-- External Libraries -->
   <externalLibraryPaths>

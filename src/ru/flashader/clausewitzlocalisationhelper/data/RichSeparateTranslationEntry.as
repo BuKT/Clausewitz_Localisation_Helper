@@ -115,7 +115,7 @@ package ru.flashader.clausewitzlocalisationhelper.data {
 		}
 		
 		public function RemoveErrorAt(errorIdx:int, isSource:Boolean):void {
-			isSource ? _sourceErrors.removeAt(errorIdx) : _targetErrors.removeAt(errorIdx);
+			isSource ? _sourceErrors.splice(errorIdx, 1) : _targetErrors.splice(errorIdx, 1);
 		}
 		
 		public function GetValueToParse(isSource:Boolean):String {
@@ -179,6 +179,7 @@ package ru.flashader.clausewitzlocalisationhelper.data {
 			value = value.replace(/<\/де л>/g, '</div>');
 			value = value.replace(/<\/дел >/g, '</div>');
 			value = value.replace(/<\/дел> >/g, '</div>');
+			
 			
 			value = value.replace(/<раздел> /g, '<div>');
 			value = value.replace(/<раздел>/g, '<div>');

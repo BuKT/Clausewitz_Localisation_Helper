@@ -15,7 +15,8 @@ set OUTPUT_NATIVE=%OUTPUT_BASE%.exe
 echo.
 echo Packaging %AIR_NAME%%AIR_TARGET%.air using certificate %CERT_FILE%...
 call adt -package %OPTIONS% %SIGNING_OPTIONS% %OUTPUT% %APP_XML% %FILE_OR_DIR%
-call adt -package -target native %OUTPUT_NATIVE% %OUTPUT%
+::call adt -package -target native %OUTPUT_NATIVE% %OUTPUT%
+
 if errorlevel 1 goto failed
 goto end
 

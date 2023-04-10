@@ -48,7 +48,7 @@ package ru.flashader.clausewitzlocalisationhelper.utils {
 					}
 				}
 				if (idxToDrop > -1) {
-					tableRows.removeAt(idxToDrop);
+					tableRows.splice(idxToDrop, 1);
 				}
 			}
 			
@@ -61,7 +61,7 @@ package ru.flashader.clausewitzlocalisationhelper.utils {
 					}
 				}
 				if (idxToDrop > -1) {
-					tableCallbacks.removeAt(idxToDrop);
+					tableCallbacks.splice(idxToDrop, 1);
 				}
 			}
 			
@@ -107,7 +107,7 @@ package ru.flashader.clausewitzlocalisationhelper.utils {
 					}
 				}
 				if (idxToDrop > -1) {
-					sourceArray.removeAt(idxToDrop);
+					sourceArray.splice(idxToDrop, 1);
 				}
 			}
 			idxToDrop = -1;
@@ -124,7 +124,7 @@ package ru.flashader.clausewitzlocalisationhelper.utils {
 					}
 				}
 				if (idxToDrop > -1) {
-					targetArray.removeAt(idxToDrop);
+					targetArray.splice(idxToDrop, 1);
 				}
 			}
 			

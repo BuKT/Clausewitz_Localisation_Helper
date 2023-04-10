@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<application xmlns="http://ns.adobe.com/air/application/28.0">
+<application xmlns="http://ns.adobe.com/air/application/2.6">
   <id>ru.flashader.clausewitzlocalisationhelper.ClausewitzLocalisationHelper</id>
-  <versionNumber>1.1.1</versionNumber>
+  <versionNumber>1.1.2</versionNumber>
   <filename>CELTH</filename>
   <name>Облегчатор переводов локализаций Clausewitz Engine</name>
   <initialWindow>
@@ -16,11 +16,11 @@
     <width>1280</width>
     <height>720</height>
     <minSize>1280 720</minSize>
-    <requestedDisplayResolution>standard</requestedDisplayResolution>
+    <!--<requestedDisplayResolution>standard</requestedDisplayResolution>-->
   </initialWindow>
-  <supportedProfiles>desktop extendedDesktop</supportedProfiles>
+  <supportedProfiles>desktop</supportedProfiles>
   <android>
     <manifestAdditions><![CDATA[<manifest android:installLocation="auto" xmlns:android="http://schemas.android.com/apk/res/android" />]]></manifestAdditions>
   </android>
-  <supportedLanguages>ru</supportedLanguages>
+  <!--<supportedLanguages>ru</supportedLanguages>-->
 </application>

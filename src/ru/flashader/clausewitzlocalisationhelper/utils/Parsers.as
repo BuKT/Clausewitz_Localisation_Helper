@@ -1,7 +1,7 @@
 package ru.flashader.clausewitzlocalisationhelper.utils {
-	import flash.desktop.NativeProcess;
-	import flash.desktop.NativeProcessStartupInfo;
-	import flash.events.NativeProcessExitEvent;
+	//import flash.desktop.NativeProcess;
+	//import flash.desktop.NativeProcessStartupInfo;
+	//import flash.events.NativeProcessExitEvent;
 	import flash.filesystem.File;
 	import flash.filesystem.FileMode;
 	import flash.filesystem.FileStream;
@@ -235,7 +235,7 @@ package ru.flashader.clausewitzlocalisationhelper.utils {
 			for (i = 0; i < CloseParagraphCharsIndex.length; i++) { //Открывающий тег очень похож на часть закрывающего
 				var doubledIndex:int = OpenParagraphCharsIndex.indexOf(CloseParagraphCharsIndex[i]);
 				if (doubledIndex > -1) {
-					OpenParagraphCharsIndex.removeAt(doubledIndex);
+					OpenParagraphCharsIndex.splice(doubledIndex, 1);
 				}
 			}
 			
@@ -264,7 +264,7 @@ package ru.flashader.clausewitzlocalisationhelper.utils {
 			for (i = 0; i < CloseSharpCharsIndex.length; i++) { //Открывающий тег очень похож на часть закрывающего
 				var doubledIndex:int = OpenSharpCharsIndex.indexOf(CloseSharpCharsIndex[i]);
 				if (doubledIndex > -1) {
-					OpenSharpCharsIndex.removeAt(doubledIndex);
+					OpenSharpCharsIndex.splice(doubledIndex, 1);
 				}
 			}
 			
@@ -372,7 +372,7 @@ package ru.flashader.clausewitzlocalisationhelper.utils {
 		/*
 		*  External one
 		*/
-		
+		/*
 		private static var _externalProcess:NativeProcess;
 		private static var _externalProcessInfo:NativeProcessStartupInfo;
 		
@@ -427,5 +427,6 @@ package ru.flashader.clausewitzlocalisationhelper.utils {
 		private static function RemoveFileAtPath(pathToRemove:String):void {
 			new File(pathToRemove).deleteFile();
 		}
+		*/
 	}
 }
